@@ -1,0 +1,137 @@
+/* BASE */
+.home__container {
+  min-width: 320px;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  overflow: hidden;
+
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  h1 {
+    font-size: 3.2em;
+  }
+
+  @media (prefers-color-scheme: light) {
+    color: #213547;
+    background-color: #ffffff;
+
+    a:hover {
+      color: #747bff;
+    }
+
+    button {
+      background-color: #f9f9f9;
+    }
+  }
+}
+
+/* LOGOS */
+
+.home__logos {
+
+  display: flex;
+  align-items: center;
+
+  a {
+    height: 6em;
+    padding: 1.5rem;
+    text-decoration: inherit;
+    color: #646cff;
+    font-weight: 500;
+    will-change: filter;
+  }
+
+  a:hover {
+    color: #535bf2;
+  }
+
+  a:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+
+  a:nth-child(2):hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    a:nth-child(2) img {
+      animation: logo-spin infinite 20s linear;
+    }
+  }
+
+  a:nth-child(3) {
+    padding-top: 1rem;
+  }
+  a:nth-child(3):hover {
+    filter: drop-shadow(0 0 2em #ffffffaa);
+  }
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+/* BUTTON */
+.home__button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+
+  border-radius: 8px;
+  border: 1px solid transparent;
+
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+
+  cursor: pointer;
+
+  transition: border-color 0.25s;
+
+  &:hover {
+    border-color: #646cff;
+  }
+
+  &:focus, &:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+}
+
+/* CARDS */
+.home__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+
+  p {
+    margin-top: 1rem;
+  }
+
+  p:last-child {
+    color: #888;
+  }
+}
