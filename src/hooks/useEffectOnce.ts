@@ -38,5 +38,6 @@ export default function useEffectOnce(effect: () => void | (() => void)) {
       if (!renderedAfterCalled.current) return;
       if (cleanupFunction.current) cleanupFunction.current();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

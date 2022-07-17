@@ -25,8 +25,15 @@ module.exports = {
         node: true,
         es6: true,
       },
-      extends: ['eslint:recommended', 'plugin:prettier/recommended'],
-      plugins: ['html', 'simple-import-sort'],
+      extends: [
+        'eslint:recommended',
+        'plugin:prettier/recommended',
+        'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:react-hooks/recommended',
+        'plugin:jsx-a11y/recommended',
+      ],
+      plugins: ['simple-import-sort'],
       rules: {
         // Warn about unused variables
         'no-unused-vars': 'warn',
@@ -53,7 +60,12 @@ module.exports = {
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:prettier/recommended',
+        'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:react-hooks/recommended',
+        'plugin:jsx-a11y/recommended',
       ],
+      plugins: ['simple-import-sort'],
       rules: {
         // Override prettier/recommended to show errors as warnings
         'prettier/prettier': ['warn'],
