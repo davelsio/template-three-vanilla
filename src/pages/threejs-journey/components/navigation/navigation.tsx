@@ -35,7 +35,7 @@ const Navigation: React.FC = () => {
     const tl = portalTimeline.current;
     if (!nav || !tl) return;
 
-    // Camera API
+    // API
     const camera = CameraController.camera;
 
     // Original coordinates
@@ -89,7 +89,7 @@ const Navigation: React.FC = () => {
           <button type="button">Oil Lamps</button>
         </li>
         <li>
-          <button type="button">Woodchopper's Axe</button>
+          <button type="button">Woodchopper{"'"}s Axe</button>
         </li>
         <li>
           <button type="button">Jagged Rocks</button>
