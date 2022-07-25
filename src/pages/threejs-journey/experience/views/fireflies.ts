@@ -124,7 +124,7 @@ export class Fireflies extends Group implements WebGLView {
     const debugSub = Store.debug.subscribe((state) => {
       if (state.active) this.debug();
     });
-    this._subscriptions.push(debugSub);
+    this._subscriptions2.push(debugSub);
   }
 
   /* CALLBACKS */

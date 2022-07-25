@@ -1,7 +1,8 @@
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { FolderApi, FolderParams, Pane } from 'tweakpane';
+import createStore from 'zustand/vanilla';
 
 import { Store } from '../store';
 import { InputArgs } from '../types/debug';
@@ -14,19 +15,19 @@ export class DebugController {
   private static _panel: Pane;
   private static _folders: Record<string, FolderApi>;
 
-  private static _state = new BehaviorSubject({
+  private static _state = createStore(() => ({
     active: false,
-  });
+  }));
 
   public static get state() {
     return {
-      ...this._state.getValue(),
+      ...this._state.getState(),
       subscribe: this._state.subscribe.bind(this._state),
     };
   }
 
   public static init() {
-    this._state.next({
+    this._state.setState({
       active: window.location.hash === '#debug',
     });
     if (!this.state.active) return;
@@ -42,7 +43,7 @@ export class DebugController {
 
   public static destroy() {
     this._subscriptions.forEach((subscription) => subscription.unsubscribe());
-    this._state.complete();
+    this._state.destroy();
 
     this._panel.dispose();
     this._folders = {};

@@ -68,7 +68,7 @@ export class RenderController {
     const debugSubscriber = Store.debug.subscribe((state) => {
       this.debug(state.active);
     });
-    this._subscriptions.push(debugSubscriber);
+    this._subscriptions2.push(debugSubscriber);
   }
 
   /* CALLBACKS */

@@ -13,6 +13,7 @@ import { GLTF } from 'three-stdlib';
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
 import { Store } from '../store';
+import { Subscription as _Subscription } from '../types/store';
 import { WebGLView } from '../types/ui';
 
 interface ModelMeshes {
@@ -51,6 +52,7 @@ export class Portal extends Group implements WebGLView {
   private materials: ModelMaterials;
 
   private _subscriptions: Subscription[] = [];
+  private _subscriptions2: _Subscription[] = [];
 
   public namespace = 'Portal';
 
@@ -145,7 +147,7 @@ export class Portal extends Group implements WebGLView {
     const debugSub = Store.debug.subscribe((state) => {
       if (state.active) this.debug();
     });
-    this._subscriptions.push(debugSub);
+    this._subscriptions2.push(debugSub);
 
     const frameSub = Store.time.frame.subscribe(({ elapsed }) => {
       this.update(elapsed);
