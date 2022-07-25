@@ -4,6 +4,7 @@ import { TpChangeEvent } from 'tweakpane';
 
 import { Store } from '../store';
 import { ColorRGBA } from '../types/debug';
+import { Subscription as _Subscription } from '../types/store';
 
 interface RendererOptions {
   clearColor?: number;
@@ -17,6 +18,7 @@ export class RenderController {
   private static _camera: Camera;
   private static _scene: Scene;
   private static _subscriptions: Subscription[] = [];
+  private static _subscriptions2: _Subscription[] = [];
 
   public static renderer: WebGLRenderer;
 
@@ -61,7 +63,7 @@ export class RenderController {
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.width, state.height, state.pixelRatio);
     });
-    this._subscriptions.push(resizeSub);
+    this._subscriptions2.push(resizeSub);
 
     const debugSubscriber = Store.debug.subscribe((state) => {
       this.debug(state.active);
