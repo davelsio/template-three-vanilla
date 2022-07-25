@@ -1,6 +1,5 @@
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
-import { Subscription } from 'rxjs';
 import { FolderApi, FolderParams, Pane } from 'tweakpane';
 import createStore from 'zustand/vanilla';
 
@@ -9,8 +8,7 @@ import { InputArgs } from '../types/debug';
 import { Subscription as _Subscription } from '../types/store';
 
 export class DebugController {
-  private static _subscriptions2: _Subscription[] = [];
-  private static _subscriptions: Subscription[] = [];
+  private static _subscriptions: _Subscription[] = [];
 
   private static _panel: Pane;
   private static _folders: Record<string, FolderApi>;
@@ -22,13 +20,13 @@ export class DebugController {
   public static get state() {
     return {
       ...this._state.getState(),
-      subscribe: this._state.subscribe.bind(this._state),
+      subscribe: this._state.subscribe,
     };
   }
 
   public static init() {
     this._state.setState({
-      active: window.location.hash === '#debug',
+      active: window.location.href.endsWith('#debug'),
     });
     if (!this.state.active) return;
 
@@ -42,7 +40,7 @@ export class DebugController {
   }
 
   public static destroy() {
-    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this._subscriptions.forEach((unsub) => unsub());
     this._state.destroy();
 
     this._panel.dispose();
@@ -61,7 +59,7 @@ export class DebugController {
         this._panel.hidden = false;
       }
     });
-    this._subscriptions2.push(worldSub);
+    this._subscriptions.push(worldSub);
   }
 
   /* CALLBACKS */
@@ -73,13 +71,13 @@ export class DebugController {
       lineCount: 2,
     }) as FpsGraphBladeApi;
 
-    const beforeFrameSub = Store.time.beforeFrame.subscribe(() => {
-      fpsGraph.begin();
+    const beforeFrameSub = Store.time.subscribe((state) => {
+      if (state.beforeFrame) fpsGraph.begin();
     });
     this._subscriptions.push(beforeFrameSub);
 
-    const afterFrameSub = Store.time.afterFrame.subscribe(() => {
-      fpsGraph.end();
+    const afterFrameSub = Store.time.subscribe((state) => {
+      if (state.afterFrame) fpsGraph.end();
     });
     this._subscriptions.push(afterFrameSub);
   };

@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
 
@@ -17,8 +16,7 @@ export class RenderController {
 
   private static _camera: Camera;
   private static _scene: Scene;
-  private static _subscriptions: Subscription[] = [];
-  private static _subscriptions2: _Subscription[] = [];
+  private static _subscriptions: _Subscription[] = [];
 
   public static renderer: WebGLRenderer;
 
@@ -48,27 +46,27 @@ export class RenderController {
   }
 
   public static destroy() {
-    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this._subscriptions.forEach((unsub) => unsub());
     this.renderer.dispose();
   }
 
   /* SETUP */
 
   private static setupSubscriptions() {
-    const frameSub = Store.time.frame.subscribe(() => {
-      this.update();
+    const frameSub = Store.time.subscribe((state) => {
+      if (!state.afterFrame && !state.beforeFrame) this.update();
     });
     this._subscriptions.push(frameSub);
 
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.width, state.height, state.pixelRatio);
     });
-    this._subscriptions2.push(resizeSub);
+    this._subscriptions.push(resizeSub);
 
     const debugSubscriber = Store.debug.subscribe((state) => {
       this.debug(state.active);
     });
-    this._subscriptions2.push(debugSubscriber);
+    this._subscriptions.push(debugSubscriber);
   }
 
   /* CALLBACKS */

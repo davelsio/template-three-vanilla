@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import {
   Color,
   Group,
@@ -51,7 +50,6 @@ export class Portal extends Group implements WebGLView {
   private meshes: ModelMeshes;
   private materials: ModelMaterials;
 
-  private _subscriptions: Subscription[] = [];
   private _subscriptions2: _Subscription[] = [];
 
   public namespace = 'Portal';
@@ -71,7 +69,7 @@ export class Portal extends Group implements WebGLView {
   }
 
   public destroy() {
-    this._subscriptions.forEach((subscriber) => subscriber.unsubscribe());
+    this._subscriptions2.forEach((unsub) => unsub());
     this.materials.baked.dispose();
     this.materials.poleLight.dispose();
     this.materials.portalLight.dispose();
@@ -149,10 +147,12 @@ export class Portal extends Group implements WebGLView {
     });
     this._subscriptions2.push(debugSub);
 
-    const frameSub = Store.time.frame.subscribe(({ elapsed }) => {
-      this.update(elapsed);
-    });
-    this._subscriptions.push(frameSub);
+    const frameSub = Store.time.subscribe(
+      ({ elapsed, afterFrame, beforeFrame }) => {
+        if (!afterFrame && !beforeFrame) this.update(elapsed);
+      }
+    );
+    this._subscriptions2.push(frameSub);
   }
 
   /* CALLBACKS */

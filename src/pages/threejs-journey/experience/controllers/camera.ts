@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
@@ -10,8 +9,7 @@ interface CameraOptions {
 }
 
 export class CameraController {
-  private static _subscriptions2: _Subscription[] = [];
-  private static _subscriptions: Subscription[] = [];
+  private static _subscriptions: _Subscription[] = [];
 
   public static camera: PerspectiveCamera;
   public static controls: OrbitControls;
@@ -37,22 +35,22 @@ export class CameraController {
   }
 
   public static destroy() {
-    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this._subscriptions.forEach((unsub) => unsub());
     this.controls.dispose();
   }
 
   /* SETUP */
 
   private static setupSubscriptions() {
-    const frameSub = Store.time.frame.subscribe(() => {
-      this.update();
+    const frameSub = Store.time.subscribe((state) => {
+      if (!state.beforeFrame && !state.afterFrame) this.update();
     });
     this._subscriptions.push(frameSub);
 
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.aspectRatio);
     });
-    this._subscriptions2.push(resizeSub);
+    this._subscriptions.push(resizeSub);
   }
 
   /* CALLBACKS */

@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -26,8 +25,7 @@ export class Fireflies extends Group implements WebGLView {
     baseSize: 0.75,
   };
 
-  private _subscriptions: Subscription[] = [];
-  private _subscriptions2: _Subscription[] = [];
+  private _subscriptions: _Subscription[] = [];
 
   private geometry: BufferGeometry;
   private material: ShaderMaterial;
@@ -50,7 +48,7 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   public destroy() {
-    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this._subscriptions.forEach((unsub) => unsub());
 
     this.geometry.dispose();
     this.material.dispose();
@@ -111,20 +109,22 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const frameSub = Store.time.frame.subscribe(({ elapsed }) => {
-      this.update(elapsed);
-    });
+    const frameSub = Store.time.subscribe(
+      ({ elapsed, afterFrame, beforeFrame }) => {
+        if (!afterFrame && !beforeFrame) this.update(elapsed);
+      }
+    );
     this._subscriptions.push(frameSub);
 
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.pixelRatio);
     });
-    this._subscriptions2.push(resizeSub);
+    this._subscriptions.push(resizeSub);
 
     const debugSub = Store.debug.subscribe((state) => {
       if (state.active) this.debug();
     });
-    this._subscriptions2.push(debugSub);
+    this._subscriptions.push(debugSub);
   }
 
   /* CALLBACKS */
