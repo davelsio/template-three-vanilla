@@ -12,7 +12,7 @@ interface State {
 }
 
 export class WorldController {
-  private static _state = createStore<State>((set, getState, state) => ({
+  private static _state = createStore<State>((set, get) => ({
     // Values
     viewsToLoad: [],
     viewsLoaded: [],
@@ -29,7 +29,7 @@ export class WorldController {
         return { viewsLoaded, viewsProgress };
       });
 
-      if (state.getState().viewsProgress === 1) {
+      if (get().viewsProgress === 1) {
         setTimeout(() => {
           set({
             worldReady: true,
