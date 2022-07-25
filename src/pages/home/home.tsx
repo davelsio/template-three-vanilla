@@ -11,13 +11,13 @@ const Home: React.FC = () => {
   return (
     <div className="home__container">
       <div className="home__logos">
-        <a href="https://vitejs.dev/" target="_blank">
+        <a href="https://vitejs.dev/" target="_blank" rel="noreferrer">
           <img src="/vite.svg" alt="Vite logo" />
         </a>
-        <a href="https://reactjs.org/" target="_blank">
+        <a href="https://reactjs.org/" target="_blank" rel="noreferrer">
           <img src={reactLogo} alt="React logo" />
         </a>
-        <a href="https://threejs.org/" target="_blank">
+        <a href="https://threejs.org/" target="_blank" rel="noreferrer">
           <img src={threejsLogo} alt="Three.js logo" />
         </a>
       </div>
