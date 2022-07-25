@@ -62,7 +62,7 @@ const Navigation: React.FC = () => {
       .to(nav, { opacity: 1 });
   };
 
-  const enableNavigation = () => {
+  const exploreScene = () => {
     const nav = navRef.current;
     const tl = exploreTimeline.current;
     if (!nav || !tl) return;
@@ -96,7 +96,7 @@ const Navigation: React.FC = () => {
         </li>
       </ul>
 
-      <button type="button" className="explore" onClick={enableNavigation}>
+      <button type="button" className="explore" onClick={exploreScene}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
