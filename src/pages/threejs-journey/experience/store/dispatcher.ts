@@ -1,5 +1,5 @@
-import { DebugController, WorldController } from '../controllers';
-import { DebugAction, Dispatch, WorldAction } from '../types/store';
+import { DebugController } from '../controllers';
+import { DebugAction, Dispatch } from '../types/store';
 
 export class Dispatcher {
   public static dispatch(dispatch: Dispatch) {
@@ -8,10 +8,6 @@ export class Dispatcher {
     switch (controller) {
       case 'DebugController':
         Dispatcher.forwardDebugAction(action);
-        break;
-
-      case 'WorldController':
-        Dispatcher.forwardWorldAction(action);
         break;
     }
   }
@@ -26,20 +22,6 @@ export class Dispatcher {
 
       case 'ADD_FOLDER':
         DebugController.addFolder(payload);
-        break;
-    }
-  }
-
-  private static forwardWorldAction(action: WorldAction) {
-    const { type, payload } = action;
-
-    switch (type) {
-      case 'UPDATE_VIEWS_TO_LOAD':
-        WorldController.updateViewsToLoad(payload.names);
-        break;
-
-      case 'UPDATE_VIEW_PROGRESS':
-        WorldController.updateViewProgress(payload.name);
         break;
     }
   }

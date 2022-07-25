@@ -1,7 +1,7 @@
-import { Subscription } from 'rxjs';
 import { Scene } from 'three';
 
 import { Store } from '../store';
+import { Subscription } from '../types/store';
 import { WebGLView } from '../types/ui';
 import { Fireflies } from './fireflies';
 import { Loading } from './loading';
@@ -27,14 +27,8 @@ export class SceneView extends Scene implements WebGLView {
     this._portal = new Portal();
     this._fireflies = new Fireflies();
 
-    // Update the WorldController with the view count
-    Store.dispatch({
-      controller: 'WorldController',
-      action: {
-        type: 'UPDATE_VIEWS_TO_LOAD',
-        payload: { names: [this._portal.namespace, this._fireflies.namespace] },
-      },
-    });
+    // Update the WorldController state with the views to load
+    Store.world.addViews([this._portal.namespace, this._fireflies.namespace]);
 
     // Setup the listeners
     this.setupSubscriptions();
@@ -55,18 +49,17 @@ export class SceneView extends Scene implements WebGLView {
     this.remove(this._fireflies);
     this._portal.destroy();
     this.remove(this._portal);
-    this._subscriptions.forEach((sub) => sub.unsubscribe());
+    this._subscriptions.forEach((unsub) => unsub());
   }
 
   /* SETUP */
 
   private setupSubscriptions() {
     const worldSub = Store.world.subscribe((state) => {
-      if (state.viewsProgress === 1) {
-        setTimeout(() => {
-          this._loading.destroy();
-          this.remove(this._loading);
-        }, 500);
+      // Remove the loading progress once the world is ready
+      if (state.worldReady) {
+        this._loading.destroy();
+        this.remove(this._loading);
       }
     });
     this._subscriptions.push(worldSub);

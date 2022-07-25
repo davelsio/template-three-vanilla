@@ -35,6 +35,8 @@ interface WorldDispatch {
   action: WorldAction;
 }
 
+export type Subscription = () => void;
+
 export type DebugAction = AddInput | AddFolder;
 export type WorldAction = UpdateViewProgress | UpdateViewsToLoad;
 

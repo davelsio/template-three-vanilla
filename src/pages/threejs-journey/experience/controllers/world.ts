@@ -1,23 +1,48 @@
-import { BehaviorSubject } from 'rxjs';
+import createStore from 'zustand/vanilla';
 
 import { SceneView } from '../views/scene';
 
-export class WorldController {
-  private static _viewsToLoad: string[] = [];
+interface State {
+  viewsToLoad: string[];
+  viewsLoaded: string[];
+  viewsProgress: number;
+  worldReady: boolean;
+  addViews: (views: string[]) => void;
+  loadView: (name: string) => void;
+}
 
-  private static _state = new BehaviorSubject<{
-    viewsLoaded: string[];
-    viewsProgress: number;
-  }>({
+export class WorldController {
+  private static _state = createStore<State>((set, getState, state) => ({
+    // Values
+    viewsToLoad: [],
     viewsLoaded: [],
     viewsProgress: 0,
-  });
+    worldReady: false,
+    // Mutations
+    addViews: (views: string[]) => {
+      set((state) => ({ viewsToLoad: [...state.viewsToLoad, ...views] }));
+    },
+    loadView: (name: string) => {
+      set((state) => {
+        const viewsLoaded = [...state.viewsLoaded, name];
+        const viewsProgress = viewsLoaded.length / state.viewsToLoad.length;
+        return { viewsLoaded, viewsProgress };
+      });
+
+      if (state.getState().viewsProgress === 1) {
+        setTimeout(() => {
+          set({
+            worldReady: true,
+          });
+        }, 800);
+      }
+    },
+  }));
 
   public static get state() {
     return {
-      ...this._state.getValue(),
-      // observable: this._state.asObservable(),
-      subscribe: this._state.subscribe.bind(this._state),
+      ...this._state.getState(),
+      subscribe: this._state.subscribe,
     };
   }
   public static scene: SceneView;
@@ -28,22 +53,6 @@ export class WorldController {
 
   public static destroy() {
     this.scene.destroy();
-    this._state.complete();
-  }
-
-  /* MUTATIONS */
-
-  public static updateViewProgress(name: string) {
-    const viewsLoaded = [...this._state.value.viewsLoaded, name];
-    const viewsProgress = viewsLoaded.length / this._viewsToLoad.length;
-
-    this._state.next({
-      viewsLoaded,
-      viewsProgress,
-    });
-  }
-
-  public static updateViewsToLoad(names: string[]) {
-    this._viewsToLoad.push(...names);
+    this._state.destroy();
   }
 }

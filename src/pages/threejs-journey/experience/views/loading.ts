@@ -1,5 +1,4 @@
 import gsap from 'gsap';
-import { Subscription } from 'rxjs';
 import { Group, Mesh, PlaneBufferGeometry, ShaderMaterial } from 'three';
 
 import {
@@ -9,6 +8,7 @@ import {
   overlayVertexShader,
 } from '../shaders/progress';
 import { Store } from '../store';
+import { Subscription } from '../types/store';
 import { WebGLView } from '../types/ui';
 
 export interface LoadingProps {
@@ -17,7 +17,7 @@ export interface LoadingProps {
 
 export class Loading extends Group implements WebGLView {
   private _props = {
-    loadingDelay: 0.5,
+    loadAnimDuration: 0.5,
   };
 
   private _subscriptions: Subscription[] = [];
@@ -50,7 +50,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   public destroy() {
-    this._subscriptions.forEach((sub) => sub.unsubscribe());
+    this._subscriptions.forEach((sub) => sub());
     this._barGeometry.dispose();
     this._barMaterial.dispose();
     this._overlayGeometry.dispose();
@@ -103,20 +103,11 @@ export class Loading extends Group implements WebGLView {
 
   private setupSubscriptions() {
     const worldSub = Store.world.subscribe((state) => {
-      this.animate(
-        state.viewsLoaded[state.viewsLoaded.length - 1],
-        state.viewsProgress
-      );
+      gsap.to(this._barMaterial.uniforms.uProgress, {
+        duration: 0.5,
+        value: state.viewsProgress,
+      });
     });
     this._subscriptions.push(worldSub);
   }
-
-  /* CALLBACKS */
-
-  private animate = (view: string, progress: number) => {
-    gsap.to(this._barMaterial.uniforms.uProgress, {
-      duration: this._props.loadingDelay,
-      value: progress,
-    });
-  };
 }

@@ -1,5 +1,3 @@
-import { Subscription } from 'rxjs';
-
 import {
   CameraController,
   DebugController,
@@ -10,6 +8,8 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
+import { Store } from './store';
+import { Subscription } from './types/store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
@@ -66,7 +66,7 @@ export class Experience {
    * Destroy all dependencies.
    */
   public static destroy = () => {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub());
 
     RenderController.destroy();
     CameraController.destroy();
@@ -82,8 +82,8 @@ export class Experience {
    * @param callback callback function to execute
    */
   public static onLoad(callback: () => void) {
-    const worldSub = WorldController.state.subscribe((state) => {
-      if (state.viewsProgress === 1) {
+    const worldSub = Store.world.subscribe((state) => {
+      if (state.worldReady) {
         callback();
       }
     });

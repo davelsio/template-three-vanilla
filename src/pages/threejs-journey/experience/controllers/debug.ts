@@ -5,8 +5,10 @@ import { FolderApi, FolderParams, Pane } from 'tweakpane';
 
 import { Store } from '../store';
 import { InputArgs } from '../types/debug';
+import { Subscription as _Subscription } from '../types/store';
 
 export class DebugController {
+  private static _subscriptions2: _Subscription[] = [];
   private static _subscriptions: Subscription[] = [];
 
   private static _panel: Pane;
@@ -54,13 +56,11 @@ export class DebugController {
 
   private static setupSubscriptions() {
     const worldSub = Store.world.subscribe((state) => {
-      if (state.viewsProgress === 1) {
-        setTimeout(() => {
-          this._panel.hidden = false;
-        }, 500);
+      if (state.worldReady) {
+        this._panel.hidden = false;
       }
     });
-    this._subscriptions.push(worldSub);
+    this._subscriptions2.push(worldSub);
   }
 
   /* CALLBACKS */

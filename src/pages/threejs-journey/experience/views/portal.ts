@@ -65,13 +65,7 @@ export class Portal extends Group implements WebGLView {
     this.setupModel();
     this.setupSubscriptions();
 
-    Store.dispatch({
-      controller: 'WorldController',
-      action: {
-        type: 'UPDATE_VIEW_PROGRESS',
-        payload: { name: this.namespace },
-      },
-    });
+    Store.world.loadView(this.namespace);
   }
 
   public destroy() {
