@@ -13,7 +13,7 @@ import {
   fireflyVertexShader,
 } from '../shaders/fireflies';
 import { Store } from '../store';
-import { Subscription as _Subscription } from '../types/store';
+import { Subscription } from '../types/store';
 import { WebGLView } from '../types/ui';
 
 interface Props {
@@ -25,7 +25,7 @@ export class Fireflies extends Group implements WebGLView {
     baseSize: 0.75,
   };
 
-  private _subscriptions: _Subscription[] = [];
+  private _subscriptions: Subscription[] = [];
 
   private geometry: BufferGeometry;
   private material: ShaderMaterial;
@@ -121,45 +121,42 @@ export class Fireflies extends Group implements WebGLView {
     });
     this._subscriptions.push(resizeSub);
 
-    const debugSub = Store.debug.subscribe((state) => {
-      if (state.active) this.debug();
-    });
+    const debugSub = Store.debug.subscribe(
+      (state) => state.active,
+      this.debug,
+      { fireImmediately: true }
+    );
     this._subscriptions.push(debugSub);
   }
 
   /* CALLBACKS */
 
-  private debug = () => {
-    Store.dispatch({
-      controller: 'DebugController',
-      action: {
-        type: 'ADD_INPUT',
-        payload: {
-          inputs: [
-            {
-              object: this.material.uniforms.uSize,
-              key: 'value',
-              options: {
-                label: 'baseSize',
-                min: 0.01,
-                max: 2.0,
-                step: 0.01,
-              },
-            },
-            {
-              object: this.material.uniforms.uColor,
-              key: 'value',
-              options: {
-                label: 'uColor',
-                color: { type: 'float' },
-              },
-            },
-          ],
-          folder: {
-            title: 'Fireflies',
+  private debug = (active?: boolean) => {
+    if (!active) return;
+    Store.debug.addInputs({
+      folder: {
+        title: 'Fireflies',
+      },
+      inputs: [
+        {
+          object: this.material.uniforms.uSize,
+          key: 'value',
+          options: {
+            label: 'baseSize',
+            min: 0.01,
+            max: 2.0,
+            step: 0.01,
           },
         },
-      },
+        {
+          object: this.material.uniforms.uColor,
+          key: 'value',
+          options: {
+            label: 'uColor',
+            color: { type: 'float' },
+          },
+        },
+      ],
     });
   };
 
