@@ -10,7 +10,7 @@ interface CameraOptions {
 export class CameraController {
   public static camera: PerspectiveCamera;
   public static controls: OrbitControls;
-  public static namespace: 'CameraController';
+  public static namespace = 'CameraController';
 
   public static init(
     aspectRatio: number,
