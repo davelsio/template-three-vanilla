@@ -1,6 +1,10 @@
+import { Scene } from 'three';
 import createStore from 'zustand/vanilla';
 
-import { SceneView } from '../views/scene';
+import { Subscription } from '../types/store';
+import { Fireflies } from '../views/fireflies';
+import { Loading } from '../views/loading';
+import { Portal } from '../views/portal';
 
 interface State {
   viewsToLoad: string[];
@@ -12,17 +16,22 @@ interface State {
 }
 
 export class WorldController {
+  private static _loading: Loading;
+  private static _portal: Portal;
+  private static _fireflies: Fireflies;
+  private static _subscriptions: Subscription[] = [];
+
   private static _state = createStore<State>((set, get) => ({
-    // Values
     viewsToLoad: [],
     viewsLoaded: [],
     viewsProgress: 0,
     worldReady: false,
-    // Mutations
-    addViews: (views: string[]) => {
+
+    addViews: (views) => {
       set((state) => ({ viewsToLoad: [...state.viewsToLoad, ...views] }));
     },
-    loadView: (name: string) => {
+
+    loadView: (name) => {
       set((state) => {
         const viewsLoaded = [...state.viewsLoaded, name];
         const viewsProgress = viewsLoaded.length / state.viewsToLoad.length;
@@ -45,14 +54,55 @@ export class WorldController {
       subscribe: this._state.subscribe,
     };
   }
-  public static scene: SceneView;
+
+  public static scene: Scene;
 
   public static init() {
-    this.scene = new SceneView();
+    this.setupScene();
+    this.setupSubscriptions();
   }
 
   public static destroy() {
-    this.scene.destroy();
+    this._fireflies.destroy();
+    this.scene.remove(this._fireflies);
+
+    this._portal.destroy();
+    this.scene.remove(this._portal);
+
+    this._subscriptions.forEach((unsub) => unsub());
     this._state.destroy();
+  }
+
+  private static setupScene() {
+    this.scene = new Scene();
+
+    // Load each view constructor, so we have access to their namespaces
+    this._loading = new Loading();
+    this._portal = new Portal();
+    this._fireflies = new Fireflies();
+
+    // Update the WorldController state with the views to load
+    this.state.addViews([this._portal.namespace, this._fireflies.namespace]);
+
+    // Asynchronously initialize and add each view
+    this._loading.init();
+    this.scene.add(this._loading);
+
+    this._portal.init();
+    this.scene.add(this._portal);
+
+    this._fireflies.init();
+    this.scene.add(this._fireflies);
+  }
+
+  private static setupSubscriptions() {
+    const worldSub = this.state.subscribe((state) => {
+      // Remove the loading progress once the world is ready
+      if (state.worldReady) {
+        this._loading.destroy();
+        this.scene.remove(this._loading);
+      }
+    });
+    this._subscriptions.push(worldSub);
   }
 }
