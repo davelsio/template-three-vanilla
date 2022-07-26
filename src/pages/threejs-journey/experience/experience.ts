@@ -72,6 +72,7 @@ export class Experience {
     CameraController.destroy();
     WorldController.destroy();
 
+    DebugController.destroy();
     TimeController.destroy();
     StageController.destroy();
     ResourceController.destroy();
