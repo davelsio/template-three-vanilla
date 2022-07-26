@@ -42,9 +42,10 @@ export class CameraController {
   /* SETUP */
 
   private static setupSubscriptions() {
-    const frameSub = Store.time.subscribe((state) => {
-      if (!state.beforeFrame && !state.afterFrame) this.update();
-    });
+    const frameSub = Store.time.subscribe(
+      (state) => state.elapsed,
+      this.update
+    );
     this._subscriptions.push(frameSub);
 
     const resizeSub = Store.stage.subscribe((state) => {

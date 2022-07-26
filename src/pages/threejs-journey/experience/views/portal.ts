@@ -179,9 +179,8 @@ export class Portal extends Group implements WebGLView {
     this._subscriptions2.push(debugSub);
 
     const frameSub = Store.time.subscribe(
-      ({ elapsed, afterFrame, beforeFrame }) => {
-        if (!afterFrame && !beforeFrame) this.update(elapsed);
-      }
+      (state) => state.elapsed,
+      this.update
     );
     this._subscriptions2.push(frameSub);
   }

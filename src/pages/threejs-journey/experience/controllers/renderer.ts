@@ -77,9 +77,10 @@ export class RenderController {
     );
     this._subscriptions.push(debugSub);
 
-    const frameSub = Store.time.subscribe((state) => {
-      if (!state.afterFrame && !state.beforeFrame) this.update();
-    });
+    const frameSub = Store.time.subscribe(
+      (state) => state.elapsed,
+      this.update
+    );
     this._subscriptions.push(frameSub);
 
     const renderSub = this._state.subscribe((state) => {

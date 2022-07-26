@@ -110,9 +110,8 @@ export class Fireflies extends Group implements WebGLView {
 
   private setupSubscriptions() {
     const frameSub = Store.time.subscribe(
-      ({ elapsed, afterFrame, beforeFrame }) => {
-        if (!afterFrame && !beforeFrame) this.update(elapsed);
-      }
+      (state) => state.elapsed,
+      this.update
     );
     this._subscriptions.push(frameSub);
 

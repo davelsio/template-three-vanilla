@@ -103,15 +103,14 @@ export class DebugController {
       lineCount: 2,
     }) as FpsGraphBladeApi;
 
-    const beforeFrameSub = Store.time.subscribe((state) => {
-      if (state.beforeFrame) fpsGraph.begin();
-    });
-    this._subscriptions.push(beforeFrameSub);
-
-    const afterFrameSub = Store.time.subscribe((state) => {
-      if (state.afterFrame) fpsGraph.end();
-    });
-    this._subscriptions.push(afterFrameSub);
+    const metaFrameSub = Store.time.subscribe(
+      (state) => [state.beforeFrame, state.afterFrame],
+      ([beforeFrame, afterFrame]) => {
+        beforeFrame && fpsGraph.begin();
+        afterFrame && fpsGraph.end();
+      }
+    );
+    this._subscriptions.push(metaFrameSub);
   }
 
   private static setupSubscriptions() {

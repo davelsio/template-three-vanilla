@@ -1,4 +1,5 @@
 import { Clock } from 'three';
+import { subscribeWithSelector } from 'zustand/middleware';
 import createStore from 'zustand/vanilla';
 
 export class TimeController {
@@ -8,12 +9,14 @@ export class TimeController {
 
   private static _animationHandle: number;
 
-  private static _state = createStore(() => ({
-    beforeFrame: false,
-    delta: 16,
-    elapsed: 0,
-    afterFrame: false,
-  }));
+  private static _state = createStore(
+    subscribeWithSelector(() => ({
+      beforeFrame: false,
+      delta: 16,
+      elapsed: 0,
+      afterFrame: false,
+    }))
+  );
 
   public static get state() {
     return {
