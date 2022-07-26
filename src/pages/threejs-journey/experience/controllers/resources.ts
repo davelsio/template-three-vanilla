@@ -1,11 +1,34 @@
-import { BehaviorSubject } from 'rxjs';
+import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { Assets, LoadedAssets } from '../types/resources';
 
+interface State {
+  /**
+   * Number of assets already loaded.
+   */
+  assetsLoaded: number;
+
+  /**
+   * Total number assets available in the sources pack.
+   */
+  assetsTotal: number;
+
+  /**
+   * Progress ([0,1]) of the asset loading process.
+   */
+  assetsProgress: number;
+
+  /**
+   * Update the asset loading progress.
+   * @param loaded number of assets loaded
+   */
+  updateAssets: (loaded: number) => void;
+}
+
 export class ResourceController {
   /**
-   * Available assets _total_.
+   * Available _total_ assets.
    */
   private static _sourceAssets: Assets;
 
@@ -14,56 +37,40 @@ export class ResourceController {
    */
   private static _loadedAssets: LoadedAssets;
 
-  /**
-   * Total number assets available in the sources pack.
-   */
-  private static _assetsTotal = 0;
-
-  private static _state = new BehaviorSubject({
-    /**
-     * Number of assets already loaded.
-     */
+  private static _state = createStore<State>((set, get) => ({
     assetsLoaded: 0,
-    /**
-     * Number of ssets required by the application.
-     */
-    assetsToLoad: 0,
-    /**
-     * Progress ([0,1]) of the asset loading process.
-     */
+    assetsTotal: 0,
     assetsProgress: 0,
-  });
+    updateAssets: (loaded) =>
+      set({
+        assetsLoaded: loaded,
+        assetsProgress: loaded / get().assetsTotal,
+      }),
+  }));
 
   public static get state() {
     return {
-      ...this._state.getValue(),
+      ...this._state.getState(),
       subscribe: this._state.subscribe.bind(this._state),
     };
   }
 
   public static init(assets: Assets) {
     this._sourceAssets = assets;
-    this._assetsTotal = assets.length;
     this._loadedAssets = {
       cubeTexture: {},
       texture: {},
       gltf: {},
     };
 
+    this._state.setState({
+      assetsTotal: this._sourceAssets.length,
+    });
+
     ResourceLoader.init(this._sourceAssets, this._loadedAssets);
   }
 
   public static destroy() {
-    this._state.complete();
-  }
-
-  /* MUTATIONS */
-
-  public static updateAssetProgress(loaded: number, total: number) {
-    this._state.next({
-      assetsLoaded: loaded,
-      assetsToLoad: total,
-      assetsProgress: loaded / total,
-    });
+    this._state.destroy();
   }
 }
