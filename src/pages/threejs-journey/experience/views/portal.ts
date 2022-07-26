@@ -29,29 +29,20 @@ interface ModelMaterials {
   portalLight: ShaderMaterial;
 }
 
-interface Props {
+interface StateProps {
   portalColorStart: Color;
   portalColorEnd: Color;
   uvDisplacementOffset: number;
   uvStrengthOffset: number;
 }
 
-interface State {
-  portalColorStart: Color;
-  portalColorEnd: Color;
-  uvDisplacementOffset: number;
-  uvStrengthOffset: number;
+interface StateActions {
   setColorStart: (color: Color) => void;
 }
 
-export class Portal extends Group implements WebGLView {
-  private _props: Props = {
-    portalColorStart: new Color(0x000000),
-    portalColorEnd: new Color(0xffffff),
-    uvDisplacementOffset: 5.0,
-    uvStrengthOffset: 5.0,
-  };
+type State = StateProps & StateActions;
 
+export class Portal extends Group implements WebGLView {
   private portalBakedTexture: Texture;
   private portalScene: GLTF;
 
@@ -83,9 +74,11 @@ export class Portal extends Group implements WebGLView {
   }
   public namespace = 'Portal';
 
-  constructor(props?: Partial<Props>) {
+  constructor(props?: Partial<StateProps>) {
     super();
-    this._props = Object.assign(this._props, props);
+    if (props) {
+      this._state.setState(props);
+    }
   }
 
   public async init() {
@@ -132,10 +125,10 @@ export class Portal extends Group implements WebGLView {
       fragmentShader: portalFragmentShader,
       vertexShader: portalVertexShader,
       uniforms: {
-        uColorEnd: { value: this._props.portalColorEnd },
-        uColorStart: { value: this._props.portalColorStart },
-        uOffsetDisplacementUv: { value: this._props.uvDisplacementOffset },
-        uOffsetStrengthUv: { value: this._props.uvStrengthOffset },
+        uColorEnd: { value: this.state.portalColorEnd },
+        uColorStart: { value: this.state.portalColorStart },
+        uOffsetDisplacementUv: { value: this.state.uvDisplacementOffset },
+        uOffsetStrengthUv: { value: this.state.uvStrengthOffset },
         uTime: { value: 0 },
       },
     });
