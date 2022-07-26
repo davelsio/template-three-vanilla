@@ -1,6 +1,7 @@
 import './home.scss';
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import reactLogo from './assets/react.svg';
 import threejsLogo from './assets/threejs.svg';
@@ -38,6 +39,10 @@ const Home: React.FC = () => {
 
         <p>Click on the Vite and React logos to learn more</p>
       </div>
+
+      <Link to="/threejs-journey" className="home__button">
+        Go to Experience
+      </Link>
     </div>
   );
 };
