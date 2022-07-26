@@ -1,5 +1,6 @@
-import { Subject } from 'rxjs';
 import { Clock } from 'three';
+import { subscribeWithSelector } from 'zustand/middleware';
+import createStore from 'zustand/vanilla';
 
 export class TimeController {
   private static _clock: Clock;
@@ -8,15 +9,19 @@ export class TimeController {
 
   private static _animationHandle: number;
 
-  private static _afterFrame = new Subject<void>();
-  private static _beforeFrame = new Subject<void>();
-  private static _frame = new Subject<{ delta: number; elapsed: number }>();
+  private static _state = createStore(
+    subscribeWithSelector(() => ({
+      beforeFrame: false,
+      delta: 16,
+      elapsed: 0,
+      afterFrame: false,
+    }))
+  );
 
   public static get state() {
     return {
-      afterFrame: this._afterFrame,
-      beforeFrame: this._beforeFrame,
-      frame: this._frame,
+      ...this._state.getState(),
+      subscribe: this._state.subscribe,
     };
   }
 
@@ -30,9 +35,7 @@ export class TimeController {
 
   public static destroy() {
     window.cancelAnimationFrame(this._animationHandle);
-    this._afterFrame.complete();
-    this._beforeFrame.complete();
-    this._frame.complete();
+    this._state.destroy();
   }
 
   /*  CALLBACKS */
@@ -44,9 +47,14 @@ export class TimeController {
 
     this._current = newCurrent;
 
-    this._beforeFrame.next();
-    this._frame.next({ delta, elapsed });
-    this._afterFrame.next();
+    this._state.setState({ afterFrame: false, beforeFrame: true });
+    this._state.setState({
+      delta,
+      elapsed,
+      afterFrame: false,
+      beforeFrame: false,
+    });
+    this._state.setState({ beforeFrame: false, afterFrame: true });
 
     this._animationHandle = window.requestAnimationFrame(this.tick);
   };

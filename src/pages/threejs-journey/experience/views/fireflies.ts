@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -25,8 +24,6 @@ export class Fireflies extends Group implements WebGLView {
     baseSize: 0.75,
   };
 
-  private _subscriptions: Subscription[] = [];
-
   private geometry: BufferGeometry;
   private material: ShaderMaterial;
   private fireflies: Points;
@@ -44,17 +41,11 @@ export class Fireflies extends Group implements WebGLView {
     this.setupPoints();
     this.setupSubscriptions();
 
-    Store.dispatch({
-      controller: 'WorldController',
-      action: {
-        type: 'UPDATE_VIEW_PROGRESS',
-        payload: { name: this.namespace },
-      },
-    });
+    Store.world.loadView(this.namespace);
   }
 
   public destroy() {
-    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
+    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
 
     this.geometry.dispose();
     this.material.dispose();
@@ -115,55 +106,52 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const frameSub = Store.time.frame.subscribe(({ elapsed }) => {
-      this.update(elapsed);
-    });
-    this._subscriptions.push(frameSub);
+    const frameSub = Store.time.subscribe(
+      (state) => state.elapsed,
+      this.update
+    );
 
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.pixelRatio);
     });
-    this._subscriptions.push(resizeSub);
 
-    const debugSub = Store.debug.subscribe((state) => {
-      if (state.active) this.debug();
-    });
-    this._subscriptions.push(debugSub);
+    const debugSub = Store.debug.subscribe(
+      (state) => state.active,
+      this.debug,
+      { fireImmediately: true }
+    );
+
+    Store.subscriptions[this.namespace].push(debugSub, frameSub, resizeSub);
   }
 
   /* CALLBACKS */
 
-  private debug = () => {
-    Store.dispatch({
-      controller: 'DebugController',
-      action: {
-        type: 'ADD_INPUT',
-        payload: {
-          inputs: [
-            {
-              object: this.material.uniforms.uSize,
-              key: 'value',
-              options: {
-                label: 'baseSize',
-                min: 0.01,
-                max: 2.0,
-                step: 0.01,
-              },
-            },
-            {
-              object: this.material.uniforms.uColor,
-              key: 'value',
-              options: {
-                label: 'uColor',
-                color: { type: 'float' },
-              },
-            },
-          ],
-          folder: {
-            title: 'Fireflies',
+  private debug = (active?: boolean) => {
+    if (!active) return;
+    Store.debug.addInputs({
+      folder: {
+        title: 'Fireflies',
+      },
+      inputs: [
+        {
+          object: this.material.uniforms.uSize,
+          key: 'value',
+          options: {
+            label: 'baseSize',
+            min: 0.01,
+            max: 2.0,
+            step: 0.01,
           },
         },
-      },
+        {
+          object: this.material.uniforms.uColor,
+          key: 'value',
+          options: {
+            label: 'uColor',
+            color: { type: 'float' },
+          },
+        },
+      ],
     });
   };
 

@@ -1,5 +1,3 @@
-import { Subscription } from 'rxjs';
-
 import {
   CameraController,
   DebugController,
@@ -10,16 +8,16 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
+import { Store } from './store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
 }
 
 export class Experience {
-  private static subscriptions: Subscription[] = [];
-
   public static isInit = false;
   public static isLoaded = false;
+  public static namespace = 'Experience';
 
   public static init(root: HTMLElement, options?: ExperienceOptions) {
     // Assets and resources
@@ -66,12 +64,13 @@ export class Experience {
    * Destroy all dependencies.
    */
   public static destroy = () => {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    Store.subscriptions[this.namespace].forEach((sub) => sub());
 
     RenderController.destroy();
     CameraController.destroy();
     WorldController.destroy();
 
+    DebugController.destroy();
     TimeController.destroy();
     StageController.destroy();
     ResourceController.destroy();
@@ -82,11 +81,11 @@ export class Experience {
    * @param callback callback function to execute
    */
   public static onLoad(callback: () => void) {
-    const worldSub = WorldController.state.subscribe((state) => {
-      if (state.viewsProgress === 1) {
+    const worldSub = Store.world.subscribe((state) => {
+      if (state.worldReady) {
         callback();
       }
     });
-    this.subscriptions.push(worldSub);
+    Store.subscriptions[this.namespace].push(worldSub);
   }
 }

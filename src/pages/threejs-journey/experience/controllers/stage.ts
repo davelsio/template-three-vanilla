@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subscription } from 'rxjs';
+import createStore from 'zustand/vanilla';
 
 interface StageOptions {
   canvas?: HTMLCanvasElement;
@@ -6,13 +6,12 @@ interface StageOptions {
 }
 
 export class StageController {
-  private static _state = new BehaviorSubject({
+  private static _state = createStore(() => ({
     width: 0,
     height: 0,
     aspectRatio: 0,
     pixelRatio: 1,
-  });
-  private static _subscriptions: Subscription[] = [];
+  }));
 
   public static app: HTMLDivElement;
   public static canvas: HTMLCanvasElement;
@@ -20,7 +19,7 @@ export class StageController {
 
   public static get state() {
     return {
-      ...this._state.getValue(),
+      ...this._state.getState(),
       subscribe: this._state.subscribe.bind(this._state),
     };
   }
@@ -42,8 +41,7 @@ export class StageController {
 
   public static destroy() {
     window.removeEventListener('resize', this.updateSize);
-    this._subscriptions.forEach((sub) => sub.unsubscribe());
-    this._state.complete();
+    this._state.destroy();
   }
 
   /*  CALLBACKS */
@@ -54,7 +52,7 @@ export class StageController {
     const aspectRatio = width / height;
     const pixelRatio = Math.min(window.devicePixelRatio, 2);
 
-    this._state.next({
+    this._state.setState({
       width,
       height,
       aspectRatio,

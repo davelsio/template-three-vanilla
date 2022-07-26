@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs';
 import {
   Color,
   Group,
@@ -9,6 +8,7 @@ import {
   Texture,
 } from 'three';
 import { GLTF } from 'three-stdlib';
+import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
@@ -28,21 +28,20 @@ interface ModelMaterials {
   portalLight: ShaderMaterial;
 }
 
-interface Props {
+interface StateProps {
   portalColorStart: Color;
   portalColorEnd: Color;
   uvDisplacementOffset: number;
   uvStrengthOffset: number;
 }
 
-export class Portal extends Group implements WebGLView {
-  private _props: Props = {
-    portalColorStart: new Color(0x000000),
-    portalColorEnd: new Color(0xffffff),
-    uvDisplacementOffset: 5.0,
-    uvStrengthOffset: 5.0,
-  };
+interface StateActions {
+  setColorStart: (color: Color) => void;
+}
 
+type State = StateProps & StateActions;
+
+export class Portal extends Group implements WebGLView {
   private portalBakedTexture: Texture;
   private portalScene: GLTF;
 
@@ -50,13 +49,34 @@ export class Portal extends Group implements WebGLView {
   private meshes: ModelMeshes;
   private materials: ModelMaterials;
 
-  private _subscriptions: Subscription[] = [];
+  private _state = createStore<State>((set) => ({
+    portalColorStart: new Color(0x000000),
+    portalColorEnd: new Color(0xffffff),
+    uvDisplacementOffset: 5.0,
+    uvStrengthOffset: 5.0,
+    // Mutations
+    setColorStart: (color) =>
+      set(() => {
+        console.log(color);
+        return {
+          portalColorStart: color,
+        };
+      }),
+  }));
 
+  public get state() {
+    return {
+      ...this._state.getState(),
+      subscribe: this._state.subscribe,
+    };
+  }
   public namespace = 'Portal';
 
-  constructor(props?: Partial<Props>) {
+  constructor(props?: Partial<StateProps>) {
     super();
-    this._props = Object.assign(this._props, props);
+    if (props) {
+      this._state.setState(props);
+    }
   }
 
   public async init() {
@@ -65,17 +85,11 @@ export class Portal extends Group implements WebGLView {
     this.setupModel();
     this.setupSubscriptions();
 
-    Store.dispatch({
-      controller: 'WorldController',
-      action: {
-        type: 'UPDATE_VIEW_PROGRESS',
-        payload: { name: this.namespace },
-      },
-    });
+    Store.world.loadView(this.namespace);
   }
 
   public destroy() {
-    this._subscriptions.forEach((subscriber) => subscriber.unsubscribe());
+    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
     this.materials.baked.dispose();
     this.materials.poleLight.dispose();
     this.materials.portalLight.dispose();
@@ -109,10 +123,10 @@ export class Portal extends Group implements WebGLView {
       fragmentShader: portalFragmentShader,
       vertexShader: portalVertexShader,
       uniforms: {
-        uColorEnd: { value: this._props.portalColorEnd },
-        uColorStart: { value: this._props.portalColorStart },
-        uOffsetDisplacementUv: { value: this._props.uvDisplacementOffset },
-        uOffsetStrengthUv: { value: this._props.uvStrengthOffset },
+        uColorEnd: { value: this.state.portalColorEnd },
+        uColorStart: { value: this.state.portalColorStart },
+        uOffsetDisplacementUv: { value: this.state.uvDisplacementOffset },
+        uOffsetStrengthUv: { value: this.state.uvStrengthOffset },
         uTime: { value: 0 },
       },
     });
@@ -148,89 +162,82 @@ export class Portal extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const debugSub = Store.debug.subscribe((state) => {
-      if (state.active) this.debug();
-    });
-    this._subscriptions.push(debugSub);
+    const debugSub = Store.debug.subscribe(
+      (state) => state.active,
+      this.debug,
+      { fireImmediately: true }
+    );
 
-    const frameSub = Store.time.frame.subscribe(({ elapsed }) => {
-      this.update(elapsed);
-    });
-    this._subscriptions.push(frameSub);
+    const frameSub = Store.time.subscribe(
+      (state) => state.elapsed,
+      this.update
+    );
+
+    Store.subscriptions[this.namespace].push(debugSub, frameSub);
   }
 
   /* CALLBACKS */
 
-  private debug = () => {
-    Store.dispatch({
-      controller: 'DebugController',
-      action: {
-        type: 'ADD_INPUT',
-        payload: {
-          inputs: [
-            {
-              object: this.materials.portalLight.uniforms.uColorStart,
-              key: 'value',
-              options: {
-                label: 'uColorStart',
-                color: { type: 'float' },
-              },
-            },
-            {
-              object: this.materials.portalLight.uniforms.uColorEnd,
-              key: 'value',
-              options: {
-                label: 'uColorEnd',
-                color: { type: 'float' },
-              },
-            },
-            {
-              object: this.materials.portalLight.uniforms.uOffsetDisplacementUv,
-              key: 'value',
-              options: {
-                label: 'uDisplacement',
-                min: 0,
-                max: 50,
-                step: 0.1,
-              },
-            },
-            {
-              object: this.materials.portalLight.uniforms.uOffsetStrengthUv,
-              key: 'value',
-              options: {
-                label: 'uStrength',
-                min: 0,
-                max: 50,
-                step: 0.1,
-              },
-            },
-          ],
-          folder: {
-            title: 'Portal',
+  private debug = (active?: boolean) => {
+    if (!active) return;
+
+    Store.debug.addInputs({
+      folder: {
+        title: 'Portal',
+      },
+      inputs: [
+        {
+          object: this.materials.portalLight.uniforms.uColorStart,
+          key: 'value',
+          options: {
+            label: 'uColorStart',
+            color: { type: 'float' },
           },
         },
-      },
+        {
+          object: this.materials.portalLight.uniforms.uColorEnd,
+          key: 'value',
+          options: {
+            label: 'uColorEnd',
+            color: { type: 'float' },
+          },
+        },
+        {
+          object: this.materials.portalLight.uniforms.uOffsetDisplacementUv,
+          key: 'value',
+          options: {
+            label: 'uDisplacement',
+            min: 0,
+            max: 50,
+            step: 0.1,
+          },
+        },
+        {
+          object: this.materials.portalLight.uniforms.uOffsetStrengthUv,
+          key: 'value',
+          options: {
+            label: 'uStrength',
+            min: 0,
+            max: 50,
+            step: 0.1,
+          },
+        },
+      ],
     });
 
-    Store.dispatch({
-      controller: 'DebugController',
-      action: {
-        type: 'ADD_INPUT',
-        payload: {
-          inputs: [
-            {
-              object: this.materials.poleLight,
-              key: 'color',
-              options: {
-                label: 'poleLightColor',
-                color: { type: 'float' },
-              },
-            },
-          ],
-          folder: {
-            title: 'Environment',
+    Store.debug.addInputs({
+      inputs: [
+        {
+          object: this.materials.poleLight,
+          key: 'color',
+          options: {
+            label: 'poleLightColor',
+            color: { type: 'float' },
           },
         },
+      ],
+      folder: {
+        title: 'Environment',
       },
     });
   };

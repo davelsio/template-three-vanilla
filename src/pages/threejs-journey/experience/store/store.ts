@@ -1,15 +1,21 @@
 import {
   DebugController,
+  RenderController,
   ResourceController,
   StageController,
   TimeController,
   WorldController,
 } from '../controllers';
-import { Dispatcher } from './dispatcher';
+import { Subscription } from '../types/store';
+import { defaultDict } from '../utils/default-dict';
 
 export class Store {
   public static get debug() {
     return DebugController.state;
+  }
+
+  public static get renderer() {
+    return RenderController.state;
   }
 
   public static get resources() {
@@ -28,6 +34,5 @@ export class Store {
     return WorldController.state;
   }
 
-  // Actions
-  public static dispatch = Dispatcher.dispatch;
+  public static subscriptions = defaultDict<Subscription[]>(() => []);
 }
