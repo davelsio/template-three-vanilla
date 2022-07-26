@@ -1,4 +1,5 @@
 import './styles/reset.scss';
+import './styles/default.scss';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

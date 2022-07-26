@@ -1,0 +1,17 @@
+/**
+ * Remove borders from buttons
+ */
+button {
+  border: none;
+}
+
+/**
+ * Remove underline and visited color from anchor elements
+ */
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: inherit;
+}
