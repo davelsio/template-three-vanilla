@@ -9,17 +9,15 @@ import {
 } from './controllers';
 import sources from './sources';
 import { Store } from './store';
-import { Subscription } from './types/store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
 }
 
 export class Experience {
-  private static subscriptions: Subscription[] = [];
-
   public static isInit = false;
   public static isLoaded = false;
+  public static namespace = 'Experience';
 
   public static init(root: HTMLElement, options?: ExperienceOptions) {
     // Assets and resources
@@ -66,7 +64,7 @@ export class Experience {
    * Destroy all dependencies.
    */
   public static destroy = () => {
-    this.subscriptions.forEach((sub) => sub());
+    Store.subscriptions[this.namespace].forEach((sub) => sub());
 
     RenderController.destroy();
     CameraController.destroy();
@@ -88,6 +86,6 @@ export class Experience {
         callback();
       }
     });
-    this.subscriptions.push(worldSub);
+    Store.subscriptions[this.namespace].push(worldSub);
   }
 }

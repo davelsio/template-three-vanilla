@@ -6,6 +6,8 @@ import {
   TimeController,
   WorldController,
 } from '../controllers';
+import { Subscription } from '../types/store';
+import { defaultDict } from '../utils/default-dict';
 
 export class Store {
   public static get debug() {
@@ -31,4 +33,6 @@ export class Store {
   public static get world() {
     return WorldController.state;
   }
+
+  public static subscriptions = defaultDict<Subscription[]>(() => []);
 }

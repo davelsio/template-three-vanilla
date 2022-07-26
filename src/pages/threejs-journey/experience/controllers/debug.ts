@@ -6,7 +6,6 @@ import createStore from 'zustand/vanilla';
 
 import { Store } from '../store';
 import { InputArgs, InputItem } from '../types/debug';
-import { Subscription } from '../types/store';
 
 interface State {
   active: boolean;
@@ -20,10 +19,9 @@ interface State {
 }
 
 export class DebugController {
-  private static _subscriptions: Subscription[] = [];
-
   private static _panel: Pane;
   private static _folders: Record<string, FolderApi>;
+  private static _fpsGraph: FpsGraphBladeApi;
 
   private static _state = createStore(
     subscribeWithSelector<State>((set) => ({
@@ -71,6 +69,8 @@ export class DebugController {
     };
   }
 
+  public static namespace = 'DebugController';
+
   public static init() {
     this._state.setState({
       active: window.location.href.endsWith('#debug'),
@@ -87,9 +87,9 @@ export class DebugController {
   }
 
   public static destroy() {
-    this._subscriptions.forEach((unsub) => unsub());
+    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
     this._state.destroy();
-
+    this._fpsGraph.dispose();
     this._panel.dispose();
     this._folders = {};
   }
@@ -97,28 +97,28 @@ export class DebugController {
   /* SETUP */
 
   private static setupBasePanel() {
-    const fpsGraph = this._panel.addBlade({
+    this._fpsGraph = this._panel.addBlade({
       view: 'fpsgraph',
       label: 'FPS',
       lineCount: 2,
     }) as FpsGraphBladeApi;
-
-    const metaFrameSub = Store.time.subscribe(
-      (state) => [state.beforeFrame, state.afterFrame],
-      ([beforeFrame, afterFrame]) => {
-        beforeFrame && fpsGraph.begin();
-        afterFrame && fpsGraph.end();
-      }
-    );
-    this._subscriptions.push(metaFrameSub);
   }
 
   private static setupSubscriptions() {
+    const metaFrameSub = Store.time.subscribe(
+      (state) => [state.beforeFrame, state.afterFrame],
+      ([beforeFrame, afterFrame]) => {
+        beforeFrame && this._fpsGraph.begin();
+        afterFrame && this._fpsGraph.end();
+      }
+    );
+
     const worldSub = Store.world.subscribe((state) => {
       if (state.worldReady) {
         this._panel.hidden = false;
       }
     });
-    this._subscriptions.push(worldSub);
+
+    Store.subscriptions[this.namespace].push(metaFrameSub, worldSub);
   }
 }

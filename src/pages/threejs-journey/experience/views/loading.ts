@@ -8,7 +8,6 @@ import {
   overlayVertexShader,
 } from '../shaders/progress';
 import { Store } from '../store';
-import { Subscription } from '../types/store';
 import { WebGLView } from '../types/ui';
 
 export interface LoadingProps {
@@ -19,8 +18,6 @@ export class Loading extends Group implements WebGLView {
   private _props = {
     loadAnimDuration: 0.5,
   };
-
-  private _subscriptions: Subscription[] = [];
 
   private _barGeometry: PlaneBufferGeometry;
   private _barMaterial: ShaderMaterial;
@@ -50,7 +47,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   public destroy() {
-    this._subscriptions.forEach((sub) => sub());
+    Store.subscriptions[this.namespace].forEach((sub) => sub());
     this._barGeometry.dispose();
     this._barMaterial.dispose();
     this._overlayGeometry.dispose();
@@ -108,6 +105,7 @@ export class Loading extends Group implements WebGLView {
         value: state.viewsProgress,
       });
     });
-    this._subscriptions.push(worldSub);
+
+    Store.subscriptions[this.namespace].push(worldSub);
   }
 }

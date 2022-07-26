@@ -4,7 +4,6 @@ import createStore from 'zustand/vanilla';
 
 import { Store } from '../store';
 import { ColorRGBA } from '../types/debug';
-import { Subscription } from '../types/store';
 
 interface StateProps {
   clearColor: ColorRGBA;
@@ -19,13 +18,13 @@ type State = StateProps & StateActions;
 export class RenderController {
   private static _camera: Camera;
   private static _scene: Scene;
-  private static _subscriptions: Subscription[] = [];
 
   private static _state = createStore<State>((set) => ({
     clearColor: { ...new Color(0x201919), a: 1.0 },
     updateColor: (clearColor: ColorRGBA) => set({ clearColor }),
   }));
 
+  public static namespace = 'RenderController';
   public static renderer: WebGLRenderer;
   public static get state() {
     return {
@@ -63,7 +62,7 @@ export class RenderController {
   }
 
   public static destroy() {
-    this._subscriptions.forEach((unsub) => unsub());
+    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
     this.renderer.dispose();
   }
 
@@ -75,24 +74,27 @@ export class RenderController {
       this.debug,
       { fireImmediately: true }
     );
-    this._subscriptions.push(debugSub);
 
     const frameSub = Store.time.subscribe(
       (state) => state.elapsed,
       this.update
     );
-    this._subscriptions.push(frameSub);
 
     const renderSub = this._state.subscribe((state) => {
       const { r, g, b, a } = state.clearColor;
       this.renderer.setClearColor(new Color(r, g, b), a);
     });
-    this._subscriptions.push(renderSub);
 
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.width, state.height, state.pixelRatio);
     });
-    this._subscriptions.push(resizeSub);
+
+    Store.subscriptions[this.namespace].push(
+      debugSub,
+      frameSub,
+      renderSub,
+      resizeSub
+    );
   }
 
   /* CALLBACKS */

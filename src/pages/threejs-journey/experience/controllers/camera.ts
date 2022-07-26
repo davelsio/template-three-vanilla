@@ -2,17 +2,15 @@ import { PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
 import { Store } from '../store';
-import { Subscription } from '../types/store';
 
 interface CameraOptions {
   target: Vector3;
 }
 
 export class CameraController {
-  private static _subscriptions: Subscription[] = [];
-
   public static camera: PerspectiveCamera;
   public static controls: OrbitControls;
+  public static namespace: 'CameraController';
 
   public static init(
     aspectRatio: number,
@@ -35,7 +33,7 @@ export class CameraController {
   }
 
   public static destroy() {
-    this._subscriptions.forEach((unsub) => unsub());
+    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
     this.controls.dispose();
   }
 
@@ -46,12 +44,12 @@ export class CameraController {
       (state) => state.elapsed,
       this.update
     );
-    this._subscriptions.push(frameSub);
 
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.aspectRatio);
     });
-    this._subscriptions.push(resizeSub);
+
+    Store.subscriptions[this.namespace].push(frameSub, resizeSub);
   }
 
   /* CALLBACKS */

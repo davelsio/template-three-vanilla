@@ -1,7 +1,7 @@
 import { Scene } from 'three';
 import createStore from 'zustand/vanilla';
 
-import { Subscription } from '../types/store';
+import { Store } from '../store';
 import { Fireflies } from '../views/fireflies';
 import { Loading } from '../views/loading';
 import { Portal } from '../views/portal';
@@ -19,7 +19,6 @@ export class WorldController {
   private static _loading: Loading;
   private static _portal: Portal;
   private static _fireflies: Fireflies;
-  private static _subscriptions: Subscription[] = [];
 
   private static _state = createStore<State>((set, get) => ({
     viewsToLoad: [],
@@ -48,6 +47,7 @@ export class WorldController {
     },
   }));
 
+  public static namespace = 'WorldController';
   public static get state() {
     return {
       ...this._state.getState(),
@@ -69,7 +69,7 @@ export class WorldController {
     this._portal.destroy();
     this.scene.remove(this._portal);
 
-    this._subscriptions.forEach((unsub) => unsub());
+    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
     this._state.destroy();
   }
 
@@ -103,6 +103,6 @@ export class WorldController {
         this.scene.remove(this._loading);
       }
     });
-    this._subscriptions.push(worldSub);
+    Store.subscriptions[this.namespace].push(worldSub);
   }
 }
