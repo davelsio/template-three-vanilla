@@ -1,4 +1,5 @@
 import { Scene } from 'three';
+import { subscribeWithSelector } from 'zustand/middleware';
 import createStore from 'zustand/vanilla';
 
 import { Store } from '../store';
@@ -6,46 +7,67 @@ import { Fireflies } from '../views/fireflies';
 import { Loading } from '../views/loading';
 import { Portal } from '../views/portal';
 
-interface State {
+/**
+ * API to access the component state.
+ */
+interface StateProps {
   viewsToLoad: string[];
   viewsLoaded: string[];
   viewsProgress: number;
-  worldReady: boolean;
-  addViews: (views: string[]) => void;
-  loadView: (name: string) => void;
+  viewsReady: boolean;
+  loadingReady: boolean;
 }
+
+/**
+ * API to mutate with the controller state.
+ */
+interface StateActions {
+  /**
+   * Set a WebGL view as loaded.
+   * @param name namespace of the loaded view
+   */
+  addViewLoaded: (name: string) => void;
+
+  /**
+   * Set the loading view and animation as completed.
+   */
+  setLoadingReady: () => void;
+}
+
+type State = StateProps & StateActions;
 
 export class WorldController {
   private static _loading: Loading;
   private static _portal: Portal;
   private static _fireflies: Fireflies;
 
-  private static _state = createStore<State>((set, get) => ({
-    viewsToLoad: [],
-    viewsLoaded: [],
-    viewsProgress: 0,
-    worldReady: false,
+  private static _state = createStore(
+    subscribeWithSelector<State>((set, get) => ({
+      viewsToLoad: [],
+      viewsLoaded: [],
+      viewsProgress: 0,
+      viewsReady: false,
+      loadingReady: false,
 
-    addViews: (views) => {
-      set((state) => ({ viewsToLoad: [...state.viewsToLoad, ...views] }));
-    },
+      addViewLoaded: (name) => {
+        set((state) => {
+          const viewsLoaded = [...state.viewsLoaded, name];
+          const viewsProgress = viewsLoaded.length / state.viewsToLoad.length;
+          return { viewsLoaded, viewsProgress };
+        });
 
-    loadView: (name) => {
-      set((state) => {
-        const viewsLoaded = [...state.viewsLoaded, name];
-        const viewsProgress = viewsLoaded.length / state.viewsToLoad.length;
-        return { viewsLoaded, viewsProgress };
-      });
-
-      if (get().viewsProgress === 1) {
-        setTimeout(() => {
+        if (get().viewsProgress === 1) {
           set({
-            worldReady: true,
+            viewsReady: true,
           });
-        }, 800);
-      }
-    },
-  }));
+        }
+      },
+
+      setLoadingReady: () => {
+        set({ loadingReady: true });
+      },
+    }))
+  );
 
   public static namespace = 'WorldController';
   public static get state() {
@@ -81,8 +103,10 @@ export class WorldController {
     this._portal = new Portal();
     this._fireflies = new Fireflies();
 
-    // Update the WorldController state with the views to load
-    this.state.addViews([this._portal.namespace, this._fireflies.namespace]);
+    // Update the state with the views to load
+    this._state.setState({
+      viewsToLoad: [this._portal.namespace, this._fireflies.namespace],
+    });
 
     // Asynchronously initialize and add each view
     this._loading.init();
@@ -96,13 +120,16 @@ export class WorldController {
   }
 
   private static setupSubscriptions() {
-    const worldSub = this.state.subscribe((state) => {
-      // Remove the loading progress once the world is ready
-      if (state.worldReady) {
-        this._loading.destroy();
-        this.scene.remove(this._loading);
+    const worldSub = this.state.subscribe(
+      (state) => [state.loadingReady, state.viewsReady],
+      ([loadingReady, worldReady]) => {
+        // Remove the loading progress once the world is ready
+        if (loadingReady && worldReady) {
+          this._loading.destroy();
+          this.scene.remove(this._loading);
+        }
       }
-    });
+    );
     Store.subscriptions[this.namespace].push(worldSub);
   }
 }

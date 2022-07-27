@@ -85,7 +85,7 @@ export class Portal extends Group implements WebGLView {
     this.setupModel();
     this.setupSubscriptions();
 
-    Store.world.loadView(this.namespace);
+    Store.world.addViewLoaded(this.namespace);
   }
 
   public destroy() {

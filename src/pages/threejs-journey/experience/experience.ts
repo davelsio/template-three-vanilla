@@ -82,7 +82,7 @@ export class Experience {
    */
   public static onLoad(callback: () => void) {
     const worldSub = Store.world.subscribe((state) => {
-      if (state.worldReady) {
+      if (state.viewsReady) {
         callback();
       }
     });

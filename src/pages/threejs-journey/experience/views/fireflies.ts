@@ -41,7 +41,7 @@ export class Fireflies extends Group implements WebGLView {
     this.setupPoints();
     this.setupSubscriptions();
 
-    Store.world.loadView(this.namespace);
+    Store.world.addViewLoaded(this.namespace);
   }
 
   public destroy() {

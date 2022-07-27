@@ -99,12 +99,21 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const worldSub = Store.world.subscribe((state) => {
-      gsap.to(this._barMaterial.uniforms.uProgress, {
-        duration: 0.5,
-        value: state.viewsProgress,
-      });
-    });
+    const worldSub = Store.world.subscribe(
+      (state) => state.viewsProgress,
+      (progress) => {
+        gsap
+          .to(this._barMaterial.uniforms.uProgress, {
+            duration: 0.5,
+            value: progress,
+          })
+          .then((res) => {
+            if (res.vars.value === 1) {
+              Store.world.setLoadingReady();
+            }
+          });
+      }
+    );
 
     Store.subscriptions[this.namespace].push(worldSub);
   }
