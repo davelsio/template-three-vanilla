@@ -12,7 +12,7 @@ import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
-import { Store } from '../store';
+import { debugStore, Store } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface ModelMeshes {
@@ -162,11 +162,9 @@ export class Portal extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const debugSub = Store.debug.subscribe(
-      (state) => state.active,
-      this.debug,
-      { fireImmediately: true }
-    );
+    const debugSub = debugStore.subscribe((state) => state.enabled, this.debug, {
+      fireImmediately: true,
+    });
 
     const frameSub = Store.time.subscribe(
       (state) => state.elapsed,
@@ -181,7 +179,7 @@ export class Portal extends Group implements WebGLView {
   private debug = (active?: boolean) => {
     if (!active) return;
 
-    Store.debug.addInputs({
+    debugStore.addConfig({
       folder: {
         title: 'Portal',
       },
@@ -225,7 +223,7 @@ export class Portal extends Group implements WebGLView {
       ],
     });
 
-    Store.debug.addInputs({
+    debugStore.addConfig({
       inputs: [
         {
           object: this.materials.poleLight,

@@ -21,7 +21,7 @@ export type InputItem = {
   options?: InputParams;
   onChange?: (event: InputChangeEvent) => void;
 };
-export type InputArgs = {
+export type InputConfig = {
   inputs: InputItem[];
   folder?: FolderParams;
 };

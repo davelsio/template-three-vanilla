@@ -2,7 +2,7 @@ import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
 import createStore from 'zustand/vanilla';
 
-import { Store } from '../store';
+import { debugStore, Store } from '../store';
 import { ColorRGBA } from '../types/debug';
 
 interface StateProps {
@@ -69,11 +69,9 @@ export class RenderController {
   /* SETUP */
 
   private static setupSubscriptions() {
-    const debugSub = Store.debug.subscribe(
-      (state) => state.active,
-      this.debug,
-      { fireImmediately: true }
-    );
+    const debugSub = debugStore.subscribe((state) => state.enabled, this.debug, {
+      fireImmediately: true,
+    });
 
     const frameSub = Store.time.subscribe(
       (state) => state.elapsed,
@@ -114,7 +112,7 @@ export class RenderController {
       },
     };
 
-    Store.debug.addInputs({
+    debugStore.addConfig({
       inputs: [
         {
           object,

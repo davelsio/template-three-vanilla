@@ -8,7 +8,7 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
-import { Store } from './store';
+import { debugStore, Store } from './store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
@@ -30,7 +30,7 @@ export class Experience {
 
     // DOM debug interface
     DebugController.init();
-    if (DebugController.state.active) {
+    if (debugStore.enabled) {
       window.experience = this;
     }
 
