@@ -1,7 +1,7 @@
 import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
 
-import { debugStore, stageStore, Store, timeStore } from '../store';
+import { debugStore, stageStore, subscriptions, timeStore } from '../store';
 import { ColorRGBA } from '../types/debug';
 
 interface Options {
@@ -46,29 +46,25 @@ export class RenderController {
   }
 
   public static destroy() {
-    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
+    subscriptions[this.namespace].forEach((unsub) => unsub());
     this.renderer.dispose();
   }
 
   /* SETUP */
 
   private static setupSubscriptions() {
-    const debugSub = debugStore.subscribe(
-      (state) => state.enabled,
-      this.debug,
-      {
+    subscriptions[this.namespace].push(
+      debugStore.subscribe((state) => state.enabled, this.debug, {
         fireImmediately: true,
-      }
+      }),
+
+      timeStore.subscribe((state) => state.elapsed, this.update),
+
+      stageStore.subscribe(
+        (state) => [state.width, state.height, state.pixelRatio],
+        ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio)
+      )
     );
-
-    const frameSub = timeStore.subscribe((state) => state.elapsed, this.update);
-
-    const resizeSub = stageStore.subscribe(
-      (state) => [state.width, state.height, state.pixelRatio],
-      ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio)
-    );
-
-    Store.subscriptions[this.namespace].push(debugSub, frameSub, resizeSub);
   }
 
   /* CALLBACKS */

@@ -1,6 +1,18 @@
 import { Subscription } from '../types/store';
 import { defaultDict } from '../utils/default-dict';
+import debugStore from './debug';
+import resourceStore from './resources';
+import stageStore from './stage';
+import timeStore from './time';
+import worldStore from './world';
 
-export class Store {
-  public static subscriptions = defaultDict<Subscription[]>(() => []);
-}
+const subscriptions = defaultDict<Subscription[]>(() => []);
+
+export {
+  debugStore,
+  resourceStore,
+  stageStore,
+  subscriptions,
+  timeStore,
+  worldStore,
+};

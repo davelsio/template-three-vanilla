@@ -2,7 +2,7 @@ import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
 import { FolderApi, Pane } from 'tweakpane';
 
-import { debugStore, Store, timeStore, worldStore } from '../store';
+import { debugStore, subscriptions, timeStore, worldStore } from '../store';
 import { InputConfig } from '../types/debug';
 
 export class DebugController {
@@ -27,7 +27,7 @@ export class DebugController {
   }
 
   public static destroy() {
-    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
+    subscriptions[this.namespace].forEach((unsub) => unsub());
     this._fpsGraph?.dispose();
     this._panel?.dispose();
     this._folders = {};
@@ -44,27 +44,27 @@ export class DebugController {
   }
 
   private static setupSubscriptions() {
-    debugStore.subscribe(
-      (state) => state.panels,
-      (panels) => this.addConfig(panels[panels.length - 1])
-    );
+    subscriptions[this.namespace].push(
+      debugStore.subscribe(
+        (state) => state.panels,
+        (panels) => this.addConfig(panels[panels.length - 1])
+      ),
 
-    const metaFrameSub = timeStore.subscribe(
-      (state) => [state.beforeFrame, state.afterFrame],
-      ([beforeFrame, afterFrame]) => {
-        beforeFrame && this._fpsGraph.begin();
-        afterFrame && this._fpsGraph.end();
-      }
-    );
+      timeStore.subscribe(
+        (state) => [state.beforeFrame, state.afterFrame],
+        ([beforeFrame, afterFrame]) => {
+          beforeFrame && this._fpsGraph.begin();
+          afterFrame && this._fpsGraph.end();
+        }
+      ),
 
-    const worldSub = worldStore.subscribe(
-      (state) => state.loadingReady,
-      (loadingReady) => {
-        if (loadingReady) this._panel.hidden = false;
-      }
+      worldStore.subscribe(
+        (state) => state.loadingReady,
+        (loadingReady) => {
+          if (loadingReady) this._panel.hidden = false;
+        }
+      )
     );
-
-    Store.subscriptions[this.namespace].push(metaFrameSub, worldSub);
   }
 
   /* CALLBACKS */

@@ -8,7 +8,7 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
-import { debugStore, Store, worldStore } from './store';
+import { debugStore, subscriptions, worldStore } from './store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
@@ -62,7 +62,7 @@ export class Experience {
    * Destroy all dependencies.
    */
   public static destroy = () => {
-    Store.subscriptions[this.namespace].forEach((sub) => sub());
+    subscriptions[this.namespace].forEach((sub) => sub());
 
     RenderController.destroy();
     CameraController.destroy();
@@ -79,12 +79,13 @@ export class Experience {
    * @param callback callback function to execute
    */
   public static onLoad(callback: () => void) {
-    const worldSub = worldStore.subscribe(
-      (state) => state.loadingReady,
-      (loadingReady) => {
-        if (loadingReady) callback();
-      }
+    subscriptions[this.namespace].push(
+      worldStore.subscribe(
+        (state) => state.loadingReady,
+        (loadingReady) => {
+          if (loadingReady) callback();
+        }
+      )
     );
-    Store.subscriptions[this.namespace].push(worldSub);
   }
 }

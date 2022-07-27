@@ -1,6 +1,6 @@
 import { Scene } from 'three';
 
-import { Store, worldStore } from '../store';
+import { subscriptions, worldStore } from '../store';
 import { Fireflies } from '../views/fireflies';
 import { Loading } from '../views/loading';
 import { Portal } from '../views/portal';
@@ -38,7 +38,7 @@ export class WorldController {
     this._portal.destroy();
     this.scene.remove(this._portal);
 
-    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
+    subscriptions[this.namespace].forEach((unsub) => unsub());
   }
 
   private static initViews() {
@@ -53,32 +53,24 @@ export class WorldController {
   }
 
   private static setupSubscriptions() {
-    Store.subscriptions[this.namespace].push(
-      this.viewLoadedSub(),
-      this.worldReadySubscription()
-    );
-  }
-
-  private static viewLoadedSub() {
-    return worldStore.subscribe(
-      (state) => state.viewsLoaded,
-      (viewsLoaded) => {
-        const viewsProgress = viewsLoaded.length / this._viewsToLoad.length;
-        worldStore.updateProgress(viewsProgress);
-      }
-    );
-  }
-
-  private static worldReadySubscription() {
-    return worldStore.subscribe(
-      (state) => [state.loadingReady, state.viewsReady],
-      ([loadingReady, worldReady]) => {
-        // Remove the loading progress once the world is ready
-        if (loadingReady && worldReady) {
-          this._loading.destroy();
-          this.scene.remove(this._loading);
+    subscriptions[this.namespace].push(
+      worldStore.subscribe(
+        (state) => state.viewsLoaded,
+        (viewsLoaded) => {
+          const viewsProgress = viewsLoaded.length / this._viewsToLoad.length;
+          worldStore.updateProgress(viewsProgress);
         }
-      }
+      ),
+      worldStore.subscribe(
+        (state) => [state.loadingReady, state.viewsReady],
+        ([loadingReady, worldReady]) => {
+          // Remove the loading progress once the world is ready
+          if (loadingReady && worldReady) {
+            this._loading.destroy();
+            this.scene.remove(this._loading);
+          }
+        }
+      )
     );
   }
 }
