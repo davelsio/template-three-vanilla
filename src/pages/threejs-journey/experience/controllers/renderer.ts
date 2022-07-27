@@ -1,37 +1,22 @@
 import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
-import createStore from 'zustand/vanilla';
 
 import { debugStore, Store } from '../store';
 import { ColorRGBA } from '../types/debug';
 
-interface StateProps {
-  clearColor: ColorRGBA;
+interface Options {
+  clearColor: number;
 }
-
-interface StateActions {
-  updateColor: (clearColor: ColorRGBA) => void;
-}
-
-type State = StateProps & StateActions;
 
 export class RenderController {
   private static _camera: Camera;
   private static _scene: Scene;
-
-  private static _state = createStore<State>((set) => ({
-    clearColor: { ...new Color(0x201919), a: 1.0 },
-    updateColor: (clearColor: ColorRGBA) => set({ clearColor }),
-  }));
+  private static _options: Options = {
+    clearColor: 0x201919,
+  };
 
   public static namespace = 'RenderController';
   public static renderer: WebGLRenderer;
-  public static get state() {
-    return {
-      ...this._state.getState(),
-      subscribe: this._state.subscribe,
-    };
-  }
 
   public static init(
     canvas: HTMLCanvasElement,
@@ -39,12 +24,12 @@ export class RenderController {
     height: number,
     camera: Camera,
     scene: Scene,
-    props?: Partial<StateProps>
+    options?: Partial<Options>
   ) {
     this._camera = camera;
     this._scene = scene;
 
-    if (props) this._state.setState(props);
+    if (options) Object.assign(this._options, options);
 
     this.renderer = new WebGLRenderer({
       canvas: canvas,
@@ -53,8 +38,7 @@ export class RenderController {
     });
     this.renderer.outputEncoding = sRGBEncoding;
 
-    const { r, g, b, a } = this._state.getState().clearColor;
-    this.renderer.setClearColor(new Color(r, g, b), a);
+    this.renderer.setClearColor(this._options.clearColor);
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(1);
 
@@ -69,30 +53,24 @@ export class RenderController {
   /* SETUP */
 
   private static setupSubscriptions() {
-    const debugSub = debugStore.subscribe((state) => state.enabled, this.debug, {
-      fireImmediately: true,
-    });
+    const debugSub = debugStore.subscribe(
+      (state) => state.enabled,
+      this.debug,
+      {
+        fireImmediately: true,
+      }
+    );
 
     const frameSub = Store.time.subscribe(
       (state) => state.elapsed,
       this.update
     );
 
-    const renderSub = this._state.subscribe((state) => {
-      const { r, g, b, a } = state.clearColor;
-      this.renderer.setClearColor(new Color(r, g, b), a);
-    });
-
     const resizeSub = Store.stage.subscribe((state) => {
       this.resize(state.width, state.height, state.pixelRatio);
     });
 
-    Store.subscriptions[this.namespace].push(
-      debugSub,
-      frameSub,
-      renderSub,
-      resizeSub
-    );
+    Store.subscriptions[this.namespace].push(debugSub, frameSub, resizeSub);
   }
 
   /* CALLBACKS */

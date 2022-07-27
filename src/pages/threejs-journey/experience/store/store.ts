@@ -1,5 +1,4 @@
 import {
-  RenderController,
   ResourceController,
   StageController,
   TimeController,
@@ -8,10 +7,6 @@ import { Subscription } from '../types/store';
 import { defaultDict } from '../utils/default-dict';
 
 export class Store {
-  public static get renderer() {
-    return RenderController.state;
-  }
-
   public static get resources() {
     return ResourceController.state;
   }
