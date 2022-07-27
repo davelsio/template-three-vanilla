@@ -12,7 +12,7 @@ import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
-import { debugStore, Store, worldStore } from '../store';
+import { debugStore, Store, timeStore, worldStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface ModelMeshes {
@@ -170,10 +170,7 @@ export class Portal extends Group implements WebGLView {
       }
     );
 
-    const frameSub = Store.time.subscribe(
-      (state) => state.elapsed,
-      this.update
-    );
+    const frameSub = timeStore.subscribe((state) => state.elapsed, this.update);
 
     Store.subscriptions[this.namespace].push(debugSub, frameSub);
   }

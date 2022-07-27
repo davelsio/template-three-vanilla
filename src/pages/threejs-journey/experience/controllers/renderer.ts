@@ -1,7 +1,7 @@
 import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
 
-import { debugStore, stageStore, Store } from '../store';
+import { debugStore, stageStore, Store, timeStore } from '../store';
 import { ColorRGBA } from '../types/debug';
 
 interface Options {
@@ -61,10 +61,7 @@ export class RenderController {
       }
     );
 
-    const frameSub = Store.time.subscribe(
-      (state) => state.elapsed,
-      this.update
-    );
+    const frameSub = timeStore.subscribe((state) => state.elapsed, this.update);
 
     const resizeSub = stageStore.subscribe(
       (state) => [state.width, state.height, state.pixelRatio],

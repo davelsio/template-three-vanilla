@@ -12,7 +12,7 @@ import {
   fireflyFragmentShader,
   fireflyVertexShader,
 } from '../shaders/fireflies';
-import { debugStore, stageStore, Store, worldStore } from '../store';
+import { debugStore, stageStore, Store, timeStore, worldStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface Props {
@@ -108,10 +108,7 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const frameSub = Store.time.subscribe(
-      (state) => state.elapsed,
-      this.update
-    );
+    const frameSub = timeStore.subscribe((state) => state.elapsed, this.update);
 
     const resizeSub = stageStore.subscribe(
       (state) => state.pixelRatio,

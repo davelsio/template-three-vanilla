@@ -2,7 +2,7 @@ import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
 import { FolderApi, Pane } from 'tweakpane';
 
-import { debugStore, Store, worldStore } from '../store';
+import { debugStore, Store, timeStore, worldStore } from '../store';
 import { InputConfig } from '../types/debug';
 
 export class DebugController {
@@ -49,7 +49,7 @@ export class DebugController {
       (panels) => this.addConfig(panels[panels.length - 1])
     );
 
-    const metaFrameSub = Store.time.subscribe(
+    const metaFrameSub = timeStore.subscribe(
       (state) => [state.beforeFrame, state.afterFrame],
       ([beforeFrame, afterFrame]) => {
         beforeFrame && this._fpsGraph.begin();
