@@ -12,7 +12,7 @@ import {
   fireflyFragmentShader,
   fireflyVertexShader,
 } from '../shaders/fireflies';
-import { debugStore, Store, worldStore } from '../store';
+import { debugStore, stageStore, Store, worldStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface Props {
@@ -93,8 +93,10 @@ export class Fireflies extends Group implements WebGLView {
       //
       uniforms: {
         uColor: { value: new Color(0xffffff) },
-        uSize: { value: this._props.baseSize * Store.stage.pixelRatio },
-        uScale: { value: Store.stage.height * 0.5 },
+        uSize: {
+          value: this._props.baseSize * stageStore.state.pixelRatio,
+        },
+        uScale: { value: stageStore.state.height * 0.5 },
         uTime: { value: 0 },
       },
     });
@@ -111,9 +113,10 @@ export class Fireflies extends Group implements WebGLView {
       this.update
     );
 
-    const resizeSub = Store.stage.subscribe((state) => {
-      this.resize(state.pixelRatio);
-    });
+    const resizeSub = stageStore.subscribe(
+      (state) => state.pixelRatio,
+      this.resize
+    );
 
     const debugSub = debugStore.subscribe(
       (state) => state.enabled,

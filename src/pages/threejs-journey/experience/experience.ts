@@ -41,17 +41,15 @@ export class Experience {
     WorldController.init();
 
     // WebGL camera
-    CameraController.init(
-      StageController.state.aspectRatio,
-      StageController.canvas,
-      { target: WorldController.scene.position }
-    );
+    CameraController.init(StageController.aspectRatio, StageController.canvas, {
+      target: WorldController.scene.position,
+    });
 
     // WebGL renderer
     RenderController.init(
       StageController.canvas,
-      StageController.state.width,
-      StageController.state.height,
+      StageController.width,
+      StageController.height,
       CameraController.camera,
       WorldController.scene
     );
