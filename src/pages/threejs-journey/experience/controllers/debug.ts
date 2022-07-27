@@ -89,8 +89,8 @@ export class DebugController {
   public static destroy() {
     Store.subscriptions[this.namespace].forEach((unsub) => unsub());
     this._state.destroy();
-    this._fpsGraph.dispose();
-    this._panel.dispose();
+    this._fpsGraph?.dispose();
+    this._panel?.dispose();
     this._folders = {};
   }
 
@@ -114,7 +114,7 @@ export class DebugController {
     );
 
     const worldSub = Store.world.subscribe((state) => {
-      if (state.worldReady) {
+      if (state.viewsReady) {
         this._panel.hidden = false;
       }
     });
