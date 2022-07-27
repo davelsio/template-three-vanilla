@@ -2,7 +2,7 @@ import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
 import { FolderApi, Pane } from 'tweakpane';
 
-import { debugStore, Store } from '../store';
+import { debugStore, Store, worldStore } from '../store';
 import { InputConfig } from '../types/debug';
 
 export class DebugController {
@@ -57,11 +57,12 @@ export class DebugController {
       }
     );
 
-    const worldSub = Store.world.subscribe((state) => {
-      if (state.viewsReady) {
-        this._panel.hidden = false;
+    const worldSub = worldStore.subscribe(
+      (state) => state.loadingReady,
+      (loadingReady) => {
+        if (loadingReady) this._panel.hidden = false;
       }
-    });
+    );
 
     Store.subscriptions[this.namespace].push(metaFrameSub, worldSub);
   }

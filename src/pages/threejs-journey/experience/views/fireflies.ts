@@ -12,7 +12,7 @@ import {
   fireflyFragmentShader,
   fireflyVertexShader,
 } from '../shaders/fireflies';
-import { debugStore, Store } from '../store';
+import { debugStore, Store, worldStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface Props {
@@ -41,7 +41,7 @@ export class Fireflies extends Group implements WebGLView {
     this.setupPoints();
     this.setupSubscriptions();
 
-    Store.world.addViewLoaded(this.namespace);
+    worldStore.addViewLoaded(this.namespace);
   }
 
   public destroy() {
@@ -115,9 +115,13 @@ export class Fireflies extends Group implements WebGLView {
       this.resize(state.pixelRatio);
     });
 
-    const debugSub = debugStore.subscribe((state) => state.enabled, this.debug, {
-      fireImmediately: true,
-    });
+    const debugSub = debugStore.subscribe(
+      (state) => state.enabled,
+      this.debug,
+      {
+        fireImmediately: true,
+      }
+    );
 
     Store.subscriptions[this.namespace].push(debugSub, frameSub, resizeSub);
   }

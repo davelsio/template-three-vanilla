@@ -12,7 +12,7 @@ import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
-import { debugStore, Store } from '../store';
+import { debugStore, Store, worldStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface ModelMeshes {
@@ -85,7 +85,7 @@ export class Portal extends Group implements WebGLView {
     this.setupModel();
     this.setupSubscriptions();
 
-    Store.world.addViewLoaded(this.namespace);
+    worldStore.addViewLoaded(this.namespace);
   }
 
   public destroy() {
@@ -162,9 +162,13 @@ export class Portal extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const debugSub = debugStore.subscribe((state) => state.enabled, this.debug, {
-      fireImmediately: true,
-    });
+    const debugSub = debugStore.subscribe(
+      (state) => state.enabled,
+      this.debug,
+      {
+        fireImmediately: true,
+      }
+    );
 
     const frameSub = Store.time.subscribe(
       (state) => state.elapsed,

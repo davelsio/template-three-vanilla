@@ -8,7 +8,7 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
-import { debugStore, Store } from './store';
+import { debugStore, Store, worldStore } from './store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
@@ -81,11 +81,12 @@ export class Experience {
    * @param callback callback function to execute
    */
   public static onLoad(callback: () => void) {
-    const worldSub = Store.world.subscribe((state) => {
-      if (state.viewsReady) {
-        callback();
+    const worldSub = worldStore.subscribe(
+      (state) => state.loadingReady,
+      (loadingReady) => {
+        if (loadingReady) callback();
       }
-    });
+    );
     Store.subscriptions[this.namespace].push(worldSub);
   }
 }

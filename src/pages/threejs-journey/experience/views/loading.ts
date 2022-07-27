@@ -7,7 +7,7 @@ import {
   overlayFragmentShader,
   overlayVertexShader,
 } from '../shaders/progress';
-import { Store } from '../store';
+import { Store, worldStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 export interface LoadingProps {
@@ -99,7 +99,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const worldSub = Store.world.subscribe(
+    const worldSub = worldStore.subscribe(
       (state) => state.viewsProgress,
       (progress) => {
         gsap
@@ -109,7 +109,7 @@ export class Loading extends Group implements WebGLView {
           })
           .then((res) => {
             if (res.vars.value === 1) {
-              Store.world.setLoadingReady();
+              worldStore.setLoadingReady();
             }
           });
       }
