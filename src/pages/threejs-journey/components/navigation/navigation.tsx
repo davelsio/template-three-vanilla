@@ -2,9 +2,10 @@ import './navigation.scss';
 
 import gsap from 'gsap';
 import React from 'react';
-import { Quaternion, Vector3 } from 'three';
+import { Link } from 'react-router-dom';
+// import { Quaternion, Vector3 } from 'three';
 
-import { CameraController } from '../../experience/controllers';
+// import { CameraController } from '../../experience/controllers';
 
 const Navigation: React.FC = () => {
   const navRef = React.useRef<HTMLElement>(null);
@@ -31,50 +32,42 @@ const Navigation: React.FC = () => {
   }, []);
 
   const showPortal = () => {
-    const nav = navRef.current;
-    const tl = portalTimeline.current;
-    if (!nav || !tl) return;
-
-    // API
-    const camera = CameraController.camera;
-
-    // Original coordinates
-    const position0 = camera.position.clone();
-    const rotation0 = camera.quaternion.clone();
-
-    const position1 = new Vector3(0, 0.7, 4);
-    const rotation1 = new Quaternion(0, 0, 0, 1).normalize();
-
-    const position2 = new Vector3(0, 1, 0.5);
-
-    const position3 = new Vector3(-0.6, 1.4, 0.5);
-    const rotation3 = new Quaternion(-0.1, -0.2, 0, 1).normalize();
-
-    // Animation
-    tl.to(nav, { duration: 0.2, opacity: 0 })
-      .to(camera.position, { duration: 2, ...position1 })
-      .to(camera.quaternion, { duration: 3, ...rotation1 }, '<')
-      .to(camera.position, { duration: 4, ...position2 }, '-=1')
-      .to(camera.position, { ...position3 })
-      .to(camera.quaternion, { ...rotation3 }, '<')
-      .to(camera.position, { ...position0 }, '+=1')
-      .to(camera.quaternion, { ...rotation0 }, '<')
-      .to(nav, { opacity: 1 });
+    // const nav = navRef.current;
+    // const tl = portalTimeline.current;
+    // if (!nav || !tl) return;
+    // // API
+    // const camera = CameraController.camera;
+    // // Original coordinates
+    // const position0 = camera.position.clone();
+    // const rotation0 = camera.quaternion.clone();
+    // const position1 = new Vector3(0, 0.7, 4);
+    // const rotation1 = new Quaternion(0, 0, 0, 1).normalize();
+    // const position2 = new Vector3(0, 1, 0.5);
+    // const position3 = new Vector3(-0.6, 1.4, 0.5);
+    // const rotation3 = new Quaternion(-0.1, -0.2, 0, 1).normalize();
+    // // Animation
+    // tl.to(nav, { duration: 0.2, opacity: 0 })
+    //   .to(camera.position, { duration: 2, ...position1 })
+    //   .to(camera.quaternion, { duration: 3, ...rotation1 }, '<')
+    //   .to(camera.position, { duration: 4, ...position2 }, '-=1')
+    //   .to(camera.position, { ...position3 })
+    //   .to(camera.quaternion, { ...rotation3 }, '<')
+    //   .to(camera.position, { ...position0 }, '+=1')
+    //   .to(camera.quaternion, { ...rotation0 }, '<')
+    //   .to(nav, { opacity: 1 });
   };
 
   const exploreScene = () => {
-    const nav = navRef.current;
-    const tl = exploreTimeline.current;
-    if (!nav || !tl) return;
-
-    const controls = CameraController.controls;
-
-    tl.to(nav, { pointerEvents: 'none' })
-      .to(nav, { opacity: 0 }, '<')
-      .to(controls, { duration: 0, enabled: true })
-      .to(controls, { duration: 0, enabled: false }, '+=1')
-      .to(nav, { opacity: 1 })
-      .to(nav, { pointerEvents: 'auto' });
+    // const nav = navRef.current;
+    // const tl = exploreTimeline.current;
+    // if (!nav || !tl) return;
+    // const controls = CameraController.controls;
+    // tl.to(nav, { pointerEvents: 'none' })
+    //   .to(nav, { opacity: 0 }, '<')
+    //   .to(controls, { duration: 0, enabled: true })
+    //   .to(controls, { duration: 0, enabled: false }, '+=1')
+    //   .to(nav, { opacity: 1 })
+    //   .to(nav, { pointerEvents: 'auto' });
   };
 
   return (
@@ -94,6 +87,8 @@ const Navigation: React.FC = () => {
         <li>
           <button type="button">Jagged Rocks</button>
         </li>
+
+        <Link to="/">Back</Link>
       </ul>
 
       <button type="button" className="explore" onClick={exploreScene}>

@@ -8,11 +8,11 @@ interface CameraOptions {
 }
 
 export class CameraController {
-  public static camera: PerspectiveCamera;
-  public static controls: OrbitControls;
-  public static namespace = 'CameraController';
+  public camera: PerspectiveCamera;
+  public controls: OrbitControls;
+  public namespace = 'CameraController';
 
-  public static init(
+  public constructor(
     aspectRatio: number,
     canvas: HTMLElement,
     options?: CameraOptions
@@ -32,14 +32,14 @@ export class CameraController {
     this.setupSubscriptions();
   }
 
-  public static destroy() {
+  public destroy() {
     subscriptions[this.namespace].forEach((unsub) => unsub());
     this.controls.dispose();
   }
 
   /* SETUP */
 
-  private static setupSubscriptions() {
+  private setupSubscriptions() {
     subscriptions[this.namespace].push(
       timeStore.subscribe((state) => state.elapsed, this.update),
       stageStore.subscribe((state) => state.aspectRatio, this.resize)
@@ -48,12 +48,12 @@ export class CameraController {
 
   /* CALLBACKS */
 
-  private static resize = (aspectRatio: number) => {
+  private resize = (aspectRatio: number) => {
     this.camera.aspect = aspectRatio;
     this.camera.updateProjectionMatrix();
   };
 
-  private static update = () => {
+  private update = () => {
     this.controls.enabled && this.controls.update();
   };
 }

@@ -6,13 +6,13 @@ import { debugStore, subscriptions, timeStore, worldStore } from '../store';
 import { InputConfig } from '../types/debug';
 
 export class DebugController {
-  private static _panel: Pane;
-  private static _folders: Record<string, FolderApi>;
-  private static _fpsGraph: FpsGraphBladeApi;
+  private _panel: Pane;
+  private _folders: Record<string, FolderApi>;
+  private _fpsGraph: FpsGraphBladeApi;
 
-  public static namespace = 'DebugController';
+  public namespace = 'DebugController';
 
-  public static init() {
+  public constructor() {
     const active = window.location.href.endsWith('#debug');
     if (!active) return;
     debugStore.enableDebug();
@@ -26,7 +26,7 @@ export class DebugController {
     this.setupSubscriptions();
   }
 
-  public static destroy() {
+  public destroy() {
     subscriptions[this.namespace].forEach((unsub) => unsub());
     this._fpsGraph?.dispose();
     this._panel?.dispose();
@@ -35,7 +35,7 @@ export class DebugController {
 
   /* SETUP */
 
-  private static setupBasePanel() {
+  private setupBasePanel() {
     this._fpsGraph = this._panel.addBlade({
       view: 'fpsgraph',
       label: 'FPS',
@@ -43,7 +43,7 @@ export class DebugController {
     }) as FpsGraphBladeApi;
   }
 
-  private static setupSubscriptions() {
+  private setupSubscriptions() {
     subscriptions[this.namespace].push(
       debugStore.subscribe(
         (state) => state.panels,
@@ -69,7 +69,7 @@ export class DebugController {
 
   /* CALLBACKS */
 
-  private static addConfig(config: InputConfig) {
+  private addConfig(config: InputConfig) {
     const { folder, inputs } = config;
 
     // Declare where to add the new config, to the base pane or a folder

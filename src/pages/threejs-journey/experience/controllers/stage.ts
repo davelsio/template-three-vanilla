@@ -5,16 +5,16 @@ interface StageOptions {
 }
 
 export class StageController {
-  public static app: HTMLDivElement;
-  public static canvas: HTMLCanvasElement;
-  public static root: HTMLElement;
+  public app: HTMLDivElement;
+  public canvas: HTMLCanvasElement;
+  public root: HTMLElement;
 
-  public static width: number;
-  public static height: number;
-  public static aspectRatio: number;
-  public static pixelRatio: number;
+  public width: number;
+  public height: number;
+  public aspectRatio: number;
+  public pixelRatio: number;
 
-  public static init(root: HTMLElement, options?: StageOptions) {
+  public constructor(root: HTMLElement, options?: StageOptions) {
     this.root = root;
 
     // Create a canvas element to render the scene
@@ -29,13 +29,13 @@ export class StageController {
     window.addEventListener('resize', this.updateStage);
   }
 
-  public static destroy() {
+  public destroy() {
     window.removeEventListener('resize', this.updateStage);
   }
 
   /*  CALLBACKS */
 
-  private static updateStage = () => {
+  private updateStage = () => {
     this.width = this.root.clientWidth;
     this.height = this.root.clientHeight;
     this.aspectRatio = this.width / this.height;

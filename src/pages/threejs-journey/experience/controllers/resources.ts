@@ -6,14 +6,14 @@ export class ResourceController {
   /**
    * Available _total_ assets.
    */
-  private static _sourceAssets: Assets;
+  private _sourceAssets: Assets;
 
   /**
    * Available assets _loaded_.
    */
-  private static _loadedAssets: LoadedAssets;
+  private _loadedAssets: LoadedAssets;
 
-  public static init(assets: Assets) {
+  constructor(assets: Assets) {
     this._sourceAssets = assets;
     this._loadedAssets = {
       cubeTexture: {},
@@ -28,7 +28,7 @@ export class ResourceController {
     ResourceLoader.init(this._sourceAssets, this._loadedAssets);
   }
 
-  public static destroy() {
+  public destroy() {
     //
   }
 }

@@ -5,7 +5,6 @@ import { subscribeWithSelector } from 'zustand/middleware';
  * API to access the component state.
  */
 interface StateProps {
-  viewsToLoad: string[];
   viewsLoaded: string[];
   viewsProgress: number;
   viewsReady: boolean;
@@ -36,13 +35,16 @@ interface StateActions {
 
 type State = StateProps & StateActions;
 
+const defaultState = {
+  viewsLoaded: [],
+  viewsProgress: 0,
+  viewsReady: false,
+  loadingReady: false,
+};
+
 const worldStore = createStore(
   subscribeWithSelector<State>((set) => ({
-    viewsToLoad: [],
-    viewsLoaded: [],
-    viewsProgress: 0,
-    viewsReady: false,
-    loadingReady: false,
+    ...defaultState,
 
     addViewLoaded: (name) => {
       set((state) => ({
@@ -65,4 +67,8 @@ const worldStore = createStore(
 export default {
   ...worldStore.getState(),
   subscribe: worldStore.subscribe,
+  destroy: () => {
+    worldStore.destroy();
+    worldStore.setState(defaultState);
+  },
 };

@@ -9,16 +9,16 @@ interface Options {
 }
 
 export class RenderController {
-  private static _camera: Camera;
-  private static _scene: Scene;
-  private static _options: Options = {
+  private _camera: Camera;
+  private _scene: Scene;
+  private _options: Options = {
     clearColor: 0x201919,
   };
 
-  public static namespace = 'RenderController';
-  public static renderer: WebGLRenderer;
+  public namespace = 'RenderController';
+  public renderer: WebGLRenderer;
 
-  public static init(
+  public constructor(
     canvas: HTMLCanvasElement,
     width: number,
     height: number,
@@ -45,14 +45,14 @@ export class RenderController {
     this.setupSubscriptions();
   }
 
-  public static destroy() {
+  public destroy() {
     subscriptions[this.namespace].forEach((unsub) => unsub());
     this.renderer.dispose();
   }
 
   /* SETUP */
 
-  private static setupSubscriptions() {
+  private setupSubscriptions() {
     subscriptions[this.namespace].push(
       debugStore.subscribe((state) => state.enabled, this.debug, {
         fireImmediately: true,
@@ -69,7 +69,7 @@ export class RenderController {
 
   /* CALLBACKS */
 
-  private static debug = (active?: boolean) => {
+  private debug = (active?: boolean) => {
     if (!active) return;
 
     const clearAlpha = this.renderer.getClearAlpha();
@@ -109,16 +109,12 @@ export class RenderController {
     });
   };
 
-  private static resize = (
-    width: number,
-    height: number,
-    pixelRatio: number
-  ) => {
+  private resize = (width: number, height: number, pixelRatio: number) => {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(pixelRatio);
   };
 
-  private static update = () => {
+  private update = () => {
     this.renderer.render(this._scene, this._camera);
   };
 }

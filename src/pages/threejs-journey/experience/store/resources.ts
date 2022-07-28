@@ -33,6 +33,7 @@ const resourceStore = createStore(
     assetsLoaded: 0,
     assetsTotal: 0,
     assetsProgress: 0,
+
     updateAssets: (loaded) =>
       set({
         assetsLoaded: loaded,

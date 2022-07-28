@@ -15,70 +15,77 @@ interface ExperienceOptions {
 }
 
 export class Experience {
-  public static isInit = false;
-  public static isLoaded = false;
-  public static namespace = 'Experience';
+  private _cameraController: CameraController;
+  private _debugController: DebugController;
+  private _renderController: RenderController;
+  private _resourceController: ResourceController;
+  private _stageController: StageController;
+  private _timeController: TimeController;
+  private _worldController: WorldController;
 
-  public static init(root: HTMLElement, options?: ExperienceOptions) {
+  public namespace = 'Experience';
+
+  public constructor(root: HTMLElement, options?: ExperienceOptions) {
     // Assets and resources
-    ResourceController.init(sources);
+    this._resourceController = new ResourceController(sources);
 
     // DOM interactive interface and render context
-    StageController.init(root, {
+    this._stageController = new StageController(root, {
       canvas: options?.canvas,
     });
 
     // DOM debug interface
-    DebugController.init();
+    this._debugController = new DebugController();
     if (debugStore.enabled) {
       window.experience = this;
     }
 
     // Frames and clock
-    TimeController.init();
+    this._timeController = new TimeController();
 
     // WebGL scene and views
-    WorldController.init();
+    this._worldController = new WorldController();
 
     // WebGL camera
-    CameraController.init(StageController.aspectRatio, StageController.canvas, {
-      target: WorldController.scene.position,
-    });
-
-    // WebGL renderer
-    RenderController.init(
-      StageController.canvas,
-      StageController.width,
-      StageController.height,
-      CameraController.camera,
-      WorldController.scene
+    this._cameraController = new CameraController(
+      this._stageController.aspectRatio,
+      this._stageController.canvas,
+      {
+        target: this._worldController.scene.position,
+      }
     );
 
-    this.isInit = true;
-    this.onLoad(() => (this.isLoaded = true));
+    // WebGL renderer
+    this._renderController = new RenderController(
+      this._stageController.canvas,
+      this._stageController.width,
+      this._stageController.height,
+      this._cameraController.camera,
+      this._worldController.scene
+    );
   }
 
   /**
    * Destroy all dependencies.
    */
-  public static destroy = () => {
+  public destroy = () => {
     subscriptions[this.namespace].forEach((sub) => sub());
 
-    RenderController.destroy();
-    CameraController.destroy();
-    WorldController.destroy();
+    this._renderController.destroy();
+    this._cameraController.destroy();
+    this._worldController.destroy();
 
-    DebugController.destroy();
-    TimeController.destroy();
-    StageController.destroy();
-    ResourceController.destroy();
+    this._debugController.destroy();
+    this._timeController.destroy();
+    this._stageController.destroy();
+    this._resourceController.destroy();
   };
 
   /**
    * Handler function to execute after the experience is loaded.
    * @param callback callback function to execute
    */
-  public static onLoad(callback: () => void) {
+  public onLoad(callback: () => void) {
     subscriptions[this.namespace].push(
       worldStore.subscribe(
         (state) => state.loadingReady,
