@@ -12,13 +12,7 @@ import {
   fireflyFragmentShader,
   fireflyVertexShader,
 } from '../shaders/fireflies';
-import {
-  debugStore,
-  stageStore,
-  Store,
-  subscriptions,
-  timeStore,
-} from '../store';
+import { stageStore, Store, subscriptions, timeStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface Props {
@@ -116,18 +110,20 @@ export class Fireflies extends Group implements WebGLView {
   private setupSubscriptions() {
     subscriptions[this.namespace].push(
       timeStore.subscribe((state) => state.elapsed, this.update),
-      stageStore.subscribe((state) => state.pixelRatio, this.resize),
-      debugStore.subscribe((state) => state.enabled, this.debug, {
-        fireImmediately: true,
-      })
+      stageStore.subscribe((state) => state.pixelRatio, this.resize)
     );
+
+    Store.debug.subscribe((state) => state.enabled, this.debug, {
+      fireImmediately: true,
+      namespace: this.namespace,
+    });
   }
 
   /* CALLBACKS */
 
   private debug = (active?: boolean) => {
     if (!active) return;
-    debugStore.addConfig({
+    Store.debug.addConfig({
       folder: {
         title: 'Fireflies',
       },

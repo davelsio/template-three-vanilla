@@ -2,7 +2,7 @@ import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
 import { FolderApi, Pane } from 'tweakpane';
 
-import { debugStore, Store, subscriptions, timeStore } from '../store';
+import { Store, subscriptions, timeStore } from '../store';
 import { InputConfig } from '../types/debug';
 
 export class DebugController {
@@ -15,7 +15,7 @@ export class DebugController {
   public constructor() {
     const active = window.location.href.endsWith('#debug');
     if (!active) return;
-    debugStore.enableDebug();
+    Store.debug.enableDebug();
 
     this._panel = new Pane({ title: 'Debug Options' });
     this._panel.hidden = true;
@@ -45,11 +45,6 @@ export class DebugController {
 
   private setupSubscriptions() {
     subscriptions[this.namespace].push(
-      debugStore.subscribe(
-        (state) => state.panels,
-        (panels) => this.addConfig(panels[panels.length - 1])
-      ),
-
       timeStore.subscribe(
         (state) => [state.beforeFrame, state.afterFrame],
         ([beforeFrame, afterFrame]) => {
@@ -57,6 +52,12 @@ export class DebugController {
           afterFrame && this._fpsGraph.end();
         }
       )
+    );
+
+    Store.debug.subscribe(
+      (state) => state.panels,
+      (panels) => this.addConfig(panels[panels.length - 1]),
+      { namespace: this.namespace }
     );
 
     Store.world.subscribe(

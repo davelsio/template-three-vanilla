@@ -8,7 +8,6 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
-import { debugStore, subscriptions } from './store';
 import { Store } from './store';
 
 interface ExperienceOptions {
@@ -39,7 +38,7 @@ export class Experience {
 
     // DOM debug interface
     this._debugController = new DebugController();
-    if (debugStore.enabled) {
+    if (Store.debug.state.enabled) {
       window.experience = this;
     }
 
@@ -72,8 +71,6 @@ export class Experience {
    * Destroy all dependencies.
    */
   public destroy = () => {
-    subscriptions[this.namespace].forEach((sub) => sub());
-
     this._renderController.destroy();
     this._cameraController.destroy();
     this._worldController.destroy();
