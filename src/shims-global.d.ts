@@ -1,4 +1,4 @@
-import { Experience } from './experience';
+import { Experience } from './pages/threejs-journey/experience/experience';
 
 declare global {
   interface Window {
