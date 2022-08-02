@@ -1,4 +1,5 @@
-import useEffectOnce from './useEffectOnce';
-import useRoot from './useRoot';
+import useEffectOnce from './use-effect-once';
+import useRoot from './use-root';
+import useToggle from './use-toggle';
 
-export { useEffectOnce, useRoot };
+export { useEffectOnce, useRoot, useToggle };
