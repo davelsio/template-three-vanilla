@@ -23,6 +23,13 @@ export class Experience {
   private _timeController: TimeController;
   private _worldController: WorldController;
 
+  public get api() {
+    return {
+      camera: this._cameraController.camera,
+      controls: this._cameraController.controls,
+    };
+  }
+
   public namespace = 'Experience';
 
   public constructor(root: HTMLElement, options?: ExperienceOptions) {
