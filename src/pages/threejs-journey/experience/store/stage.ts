@@ -1,10 +1,25 @@
 import StateInstance from '../helpers/state-instance';
 
 interface State {
-  width: number;
-  height: number;
+  /**
+   * Ratio of `width / height` of the root element.
+   */
   aspectRatio: number;
+
+  /**
+   * Height of the root element in `px`.
+   */
+  height: number;
+
+  /**
+   * Device pixel ratio, up to a maximum of 2.
+   */
   pixelRatio: number;
+
+  /**
+   * Width of the root element in `px`.
+   */
+  width: number;
 }
 
 export default class StageState extends StateInstance<State> {
