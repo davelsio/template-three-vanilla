@@ -1,16 +1,13 @@
 import { StateNotInitializedError } from '../helpers/error';
-import { Subscription } from '../types/store';
-import { defaultDict } from '../utils/default-dict';
 import DebugState from './debug';
-import resourceStore from './resources';
+import ResourceState from './resources';
 import StageState from './stage';
 import TimeState from './time';
 import WorldState from './world';
 
-const subscriptions = defaultDict<Subscription[]>(() => []);
-
 export class Store {
   private static _debug: DebugState | null;
+  private static _resources: ResourceState | null;
   private static _stage: StageState | null;
   private static _time: TimeState | null;
   private static _world: WorldState | null;
@@ -18,6 +15,11 @@ export class Store {
   public static get debug() {
     if (!this._debug) throw new StateNotInitializedError('debug');
     return this._debug;
+  }
+
+  public static get resources() {
+    if (!this._resources) throw new StateNotInitializedError('resources');
+    return this._resources;
   }
 
   public static get stage() {
@@ -37,6 +39,7 @@ export class Store {
 
   public static init() {
     this._debug = new DebugState();
+    this._resources = new ResourceState();
     this._stage = new StageState();
     this._time = new TimeState();
     this._world = new WorldState();
@@ -50,6 +53,9 @@ export class Store {
     this._debug?.destroy();
     this._debug = null;
 
+    this._resources?.destroy();
+    this._resources = null;
+
     this._stage?.destroy();
     this._debug = null;
 
@@ -60,12 +66,3 @@ export class Store {
     this._world = null;
   }
 }
-
-export {
-  // debugStore,
-  resourceStore,
-  // stageStore,
-  subscriptions,
-  // timeStore,
-  // worldStore,
-};

@@ -1,5 +1,5 @@
 import { ResourceLoader } from '../loaders';
-import { resourceStore } from '../store';
+import { Store } from '../store';
 import { Assets, LoadedAssets } from '../types/resources';
 
 export class ResourceController {
@@ -21,10 +21,7 @@ export class ResourceController {
       gltf: {},
     };
 
-    resourceStore.update({
-      assetsTotal: this._sourceAssets.length,
-    });
-
+    Store.resources.updateTotalAssets(this._sourceAssets.length);
     ResourceLoader.init(this._sourceAssets, this._loadedAssets);
   }
 

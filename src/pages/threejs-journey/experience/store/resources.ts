@@ -1,5 +1,4 @@
-import { subscribeWithSelector } from 'zustand/middleware';
-import createStore from 'zustand/vanilla';
+import StateInstance from '../helpers/state-instance';
 
 interface StateProps {
   /**
@@ -18,34 +17,30 @@ interface StateProps {
   assetsProgress: number;
 }
 
-interface StateActions {
+export default class ResourceState extends StateInstance<StateProps> {
+  constructor() {
+    super({
+      assetsLoaded: 0,
+      assetsTotal: 0,
+      assetsProgress: 0,
+    });
+  }
+
+  /**
+   * Update the number of total available assets.
+   * @param assetsTotal number of total available assets
+   */
+  public updateTotalAssets(assetsTotal: number) {
+    this._state.setState({ assetsTotal });
+  }
+
   /**
    * Update the number of loaded assets.
    * @param loaded number of assets loaded
    */
-  updateAssets: (loaded: number) => void;
+  public updateLoadedAssets = (loaded: number) =>
+    this._state.setState({
+      assetsLoaded: loaded,
+      assetsProgress: loaded / this._state.getState().assetsTotal,
+    });
 }
-
-type State = StateProps & StateActions;
-
-const resourceStore = createStore(
-  subscribeWithSelector<State>((set, get) => ({
-    assetsLoaded: 0,
-    assetsTotal: 0,
-    assetsProgress: 0,
-
-    updateAssets: (loaded) =>
-      set({
-        assetsLoaded: loaded,
-        assetsProgress: loaded / get().assetsTotal,
-      }),
-  }))
-);
-
-export default {
-  get state() {
-    return resourceStore.getState();
-  },
-  update: resourceStore.setState,
-  subscribe: resourceStore.subscribe,
-};
