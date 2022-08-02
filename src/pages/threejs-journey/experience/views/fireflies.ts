@@ -15,9 +15,9 @@ import {
 import {
   debugStore,
   stageStore,
+  Store,
   subscriptions,
   timeStore,
-  worldStore,
 } from '../store';
 import { WebGLView } from '../types/ui';
 
@@ -47,7 +47,7 @@ export class Fireflies extends Group implements WebGLView {
     this.setupPoints();
     this.setupSubscriptions();
 
-    worldStore.addViewLoaded(this.namespace);
+    Store.world.addViewLoaded(this.namespace);
   }
 
   public destroy() {

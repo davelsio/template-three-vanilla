@@ -1,6 +1,6 @@
 import { Scene } from 'three';
 
-import { subscriptions, worldStore } from '../store';
+import { Store } from '../store';
 import { Fireflies } from '../views/fireflies';
 import { Loading } from '../views/loading';
 import { Portal } from '../views/portal';
@@ -38,8 +38,8 @@ export class WorldController {
     this._portal.destroy();
     this.scene.remove(this._portal);
 
-    subscriptions[this.namespace].forEach((unsub) => unsub());
-    worldStore.destroy();
+    Store.world.unsubscribe(this.namespace);
+    Store.world.destroy();
   }
 
   private initViews() {
@@ -54,27 +54,29 @@ export class WorldController {
   }
 
   private setupSubscriptions() {
-    subscriptions[this.namespace].push(
-      worldStore.subscribe(
-        (state) => state.viewsLoaded,
-        (viewsLoaded) => {
-          const viewsProgress = viewsLoaded.length / this._viewsToLoad.length;
-          worldStore.updateProgress(viewsProgress);
-        },
-        {
-          fireImmediately: true,
-        }
-      ),
+    Store.world.subscribe(
+      (state) => state.viewsLoaded,
+      (viewsLoaded) => {
+        const viewsProgress = viewsLoaded.length / this._viewsToLoad.length;
+        Store.world.updateProgress(viewsProgress);
+      },
+      {
+        fireImmediately: true,
+        namespace: this.namespace,
+      }
+    );
 
-      worldStore.subscribe(
-        (state) => [state.loadingReady, state.viewsReady],
-        ([loadingReady, worldReady]) => {
-          if (loadingReady && worldReady) {
-            this._loading.destroy();
-            this.scene.remove(this._loading);
-          }
+    Store.world.subscribe(
+      (state) => [state.loadingReady, state.viewsReady],
+      ([loadingReady, worldReady]) => {
+        if (loadingReady && worldReady) {
+          this._loading.destroy();
+          this.scene.remove(this._loading);
         }
-      )
+      },
+      {
+        namespace: this.namespace,
+      }
     );
   }
 }

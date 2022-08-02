@@ -12,7 +12,7 @@ import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
-import { debugStore, subscriptions, timeStore, worldStore } from '../store';
+import { debugStore, Store, subscriptions, timeStore } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface ModelMeshes {
@@ -85,7 +85,7 @@ export class Portal extends Group implements WebGLView {
     this.setupModel();
     this.setupSubscriptions();
 
-    worldStore.addViewLoaded(this.namespace);
+    Store.world.addViewLoaded(this.namespace);
   }
 
   public destroy() {

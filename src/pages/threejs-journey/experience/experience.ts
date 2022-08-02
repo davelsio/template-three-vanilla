@@ -8,7 +8,8 @@ import {
   WorldController,
 } from './controllers';
 import sources from './sources';
-import { debugStore, subscriptions, worldStore } from './store';
+import { debugStore, subscriptions } from './store';
+import { Store } from './store';
 
 interface ExperienceOptions {
   canvas?: HTMLCanvasElement;
@@ -26,6 +27,8 @@ export class Experience {
   public namespace = 'Experience';
 
   public constructor(root: HTMLElement, options?: ExperienceOptions) {
+    Store.init();
+
     // Assets and resources
     this._resourceController = new ResourceController(sources);
 
@@ -79,6 +82,8 @@ export class Experience {
     this._timeController.destroy();
     this._stageController.destroy();
     this._resourceController.destroy();
+
+    Store.destroy();
   };
 
   /**
@@ -86,13 +91,10 @@ export class Experience {
    * @param callback callback function to execute
    */
   public onLoad(callback: () => void) {
-    subscriptions[this.namespace].push(
-      worldStore.subscribe(
-        (state) => state.loadingReady,
-        (loadingReady) => {
-          if (loadingReady) callback();
-        }
-      )
+    Store.world.subscribe(
+      (state) => state.loadingReady,
+      (loadingReady) => loadingReady && callback(),
+      { namespace: this.namespace }
     );
   }
 }

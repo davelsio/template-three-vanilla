@@ -7,7 +7,7 @@ import {
   overlayFragmentShader,
   overlayVertexShader,
 } from '../shaders/progress';
-import { subscriptions, worldStore } from '../store';
+import { Store } from '../store';
 import { WebGLView } from '../types/ui';
 
 export interface LoadingProps {
@@ -47,7 +47,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   public destroy() {
-    subscriptions[this.namespace].forEach((sub) => sub());
+    Store.world.unsubscribe(this.namespace);
     this._barGeometry.dispose();
     this._barMaterial.dispose();
     this._overlayGeometry.dispose();
@@ -99,22 +99,23 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    subscriptions[this.namespace].push(
-      worldStore.subscribe(
-        (state) => state.viewsProgress,
-        (progress) => {
-          gsap
-            .to(this._barMaterial.uniforms.uProgress, {
-              duration: 0.5,
-              value: progress,
-            })
-            .then((res) => {
-              if (res.vars.value === 1) {
-                worldStore.setLoadingReady();
-              }
-            });
-        }
-      )
+    Store.world.subscribe(
+      (state) => state.viewsProgress,
+      (progress) => {
+        gsap
+          .to(this._barMaterial.uniforms.uProgress, {
+            duration: 0.5,
+            value: progress,
+          })
+          .then((res) => {
+            if (res.vars.value === 1) {
+              Store.world.setLoadingReady();
+            }
+          });
+      },
+      {
+        namespace: this.namespace,
+      }
     );
   }
 }
