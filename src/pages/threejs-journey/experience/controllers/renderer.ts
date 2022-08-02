@@ -1,7 +1,7 @@
 import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
 
-import { stageStore, Store, subscriptions, timeStore } from '../store';
+import { Store, subscriptions, timeStore } from '../store';
 import { ColorRGBA } from '../types/debug';
 
 interface Options {
@@ -58,13 +58,13 @@ export class RenderController {
       namespace: this.namespace,
     });
 
-    subscriptions[this.namespace].push(
-      timeStore.subscribe((state) => state.elapsed, this.update),
+    Store.stage.subscribe(
+      (state) => [state.width, state.height, state.pixelRatio],
+      ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio)
+    );
 
-      stageStore.subscribe(
-        (state) => [state.width, state.height, state.pixelRatio],
-        ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio)
-      )
+    subscriptions[this.namespace].push(
+      timeStore.subscribe((state) => state.elapsed, this.update)
     );
   }
 

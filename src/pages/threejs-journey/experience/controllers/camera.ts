@@ -1,7 +1,7 @@
 import { PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
-import { stageStore, subscriptions, timeStore } from '../store';
+import { Store, subscriptions, timeStore } from '../store';
 
 interface CameraOptions {
   target: Vector3;
@@ -42,7 +42,7 @@ export class CameraController {
   private setupSubscriptions() {
     subscriptions[this.namespace].push(
       timeStore.subscribe((state) => state.elapsed, this.update),
-      stageStore.subscribe((state) => state.aspectRatio, this.resize)
+      Store.stage.subscribe((state) => state.aspectRatio, this.resize)
     );
   }
 

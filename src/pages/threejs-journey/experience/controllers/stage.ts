@@ -1,4 +1,5 @@
-import { stageStore } from '../store';
+import { Store } from '../store';
+
 interface StageOptions {
   canvas?: HTMLCanvasElement;
   app?: HTMLDivElement;
@@ -41,7 +42,7 @@ export class StageController {
     this.aspectRatio = this.width / this.height;
     this.pixelRatio = Math.min(window.devicePixelRatio, 2);
 
-    stageStore.state.update({
+    Store.stage.update({
       width: this.width,
       height: this.height,
       aspectRatio: this.aspectRatio,

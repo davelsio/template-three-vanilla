@@ -1,33 +1,23 @@
-import { subscribeWithSelector } from 'zustand/middleware';
-import createStore from 'zustand/vanilla';
+import StateInstance from '../helpers/state-instance';
 
-interface StateProps {
+interface State {
   width: number;
   height: number;
   aspectRatio: number;
   pixelRatio: number;
 }
 
-interface StateActions {
-  update: (state: Partial<StateProps>) => void;
+export default class StageState extends StateInstance<State> {
+  constructor() {
+    super({
+      width: 0,
+      height: 0,
+      aspectRatio: 0,
+      pixelRatio: 1,
+    });
+  }
+
+  public update(state: Partial<State>) {
+    this._state.setState({ ...state });
+  }
 }
-
-type State = StateProps & StateActions;
-
-const stageStore = createStore(
-  subscribeWithSelector<State>((set) => ({
-    width: 0,
-    height: 0,
-    aspectRatio: 0,
-    pixelRatio: 1,
-
-    update: (state: Partial<StateProps>) => set({ ...state }),
-  }))
-);
-
-export default {
-  get state() {
-    return stageStore.getState();
-  },
-  subscribe: stageStore.subscribe,
-};
