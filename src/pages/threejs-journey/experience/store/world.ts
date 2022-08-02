@@ -1,92 +1,35 @@
-import {
-  StoreSubscribeWithSelector,
-  subscribeWithSelector,
-  Write,
-} from 'zustand/middleware';
-import createStore, { StoreApi } from 'zustand/vanilla';
+import StateInstance from '../helpers/state-instance';
 
-import { Subscription } from '../types/store';
-import { defaultDict } from '../utils/default-dict';
-
-/**
- * API to access the component state.
- */
 interface State {
-  viewsLoaded: string[];
-  viewsProgress: number;
-  viewsReady: boolean;
+  /**
+   * Whether the loading bar has finished animating.
+   */
   loadingReady: boolean;
+
+  /**
+   * The WebGL views that have finished loading.
+   */
+  viewsLoaded: string[];
+
+  /**
+   * Ratio [0, 1] of viewsLoaded over viewsToLoad.
+   */
+  viewsProgress: number;
+
+  /**
+   * Whether all views have finished loading.
+   */
+  viewsReady: boolean;
 }
 
-export default class WorldState {
-  private _state: Write<StoreApi<State>, StoreSubscribeWithSelector<State>>;
-
-  private _subscriptions = defaultDict<Subscription[]>(() => []);
-
-  public get state() {
-    return this._state.getState();
-  }
-
+export default class WorldState extends StateInstance<State> {
   constructor() {
-    this._state = createStore(
-      subscribeWithSelector<State>(() => ({
-        viewsLoaded: [],
-        viewsProgress: 0,
-        viewsReady: false,
-        loadingReady: false,
-      }))
-    );
-  }
-
-  /* API */
-
-  /**
-   * Clear the store subscribers.
-   */
-  public destroy() {
-    this._state.destroy();
-  }
-
-  /**
-   * Subscribe to a slice of the world state.
-   * @param selector Slice of state to watch
-   * @param listener Callback function to execute when the slice changes
-   * @param options Subscription options
-   */
-  public subscribe<U>(
-    selector: (state: State) => U,
-    listener: (selectedState: U, previousSelectedState: U) => void,
-    options?: {
-      /**
-       * Function to use for slice comparison. Default is `Object.is`.
-       */
-      equalityFn?: (a: U, b: U) => boolean;
-
-      /**
-       * Do not batch multiple state changes into a single listener event.
-       */
-      fireImmediately?: boolean;
-
-      /**
-       * Define a namespace to associate the listener with. Calling the
-       * `unsubscribe` API will clear all listeners for the given namespace.
-       */
-      namespace?: string;
-    }
-  ) {
-    const unsub = this._state.subscribe(selector, listener, options);
-    if (options?.namespace) {
-      this._subscriptions[options.namespace].push(unsub);
-    }
-    return unsub;
-  }
-
-  /**
-   * Unsubscribe to all listeners from a specific namespace.
-   * @param namespace namespace listeners to remove
-   */
-  public unsubscribe(namespace: string) {
-    this._subscriptions[namespace].forEach((unsub) => unsub());
+    super({
+      viewsLoaded: [],
+      viewsProgress: 0,
+      viewsReady: false,
+      loadingReady: false,
+    });
   }
 
   /* ACTIONS */
