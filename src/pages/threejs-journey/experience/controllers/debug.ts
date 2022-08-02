@@ -2,7 +2,7 @@ import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
 import { FolderApi, Pane } from 'tweakpane';
 
-import { Store, subscriptions, timeStore } from '../store';
+import { Store } from '../store';
 import { InputConfig } from '../types/debug';
 
 export class DebugController {
@@ -27,7 +27,9 @@ export class DebugController {
   }
 
   public destroy() {
-    subscriptions[this.namespace].forEach((unsub) => unsub());
+    Store.debug.unsubscribe(this.namespace);
+    Store.time.unsubscribe(this.namespace);
+    Store.world.unsubscribe(this.namespace);
     this._fpsGraph?.dispose();
     this._panel?.dispose();
     this._folders = {};
@@ -44,16 +46,6 @@ export class DebugController {
   }
 
   private setupSubscriptions() {
-    subscriptions[this.namespace].push(
-      timeStore.subscribe(
-        (state) => [state.beforeFrame, state.afterFrame],
-        ([beforeFrame, afterFrame]) => {
-          beforeFrame && this._fpsGraph.begin();
-          afterFrame && this._fpsGraph.end();
-        }
-      )
-    );
-
     Store.debug.subscribe(
       (state) => state.panels,
       (panels) => this.addConfig(panels[panels.length - 1]),
@@ -68,6 +60,15 @@ export class DebugController {
       {
         namespace: this.namespace,
       }
+    );
+
+    Store.time.subscribe(
+      (state) => [state.beforeFrame, state.afterFrame],
+      ([beforeFrame, afterFrame]) => {
+        beforeFrame && this._fpsGraph.begin();
+        afterFrame && this._fpsGraph.end();
+      },
+      { namespace: this.namespace }
     );
   }
 

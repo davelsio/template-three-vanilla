@@ -1,6 +1,6 @@
 import { Clock } from 'three';
 
-import { timeStore } from '../store';
+import { Store } from '../store';
 
 export class TimeController {
   private _clock: Clock;
@@ -30,14 +30,14 @@ export class TimeController {
 
     this._current = newCurrent;
 
-    timeStore.state.update({ afterFrame: false, beforeFrame: true });
-    timeStore.state.update({
+    Store.time.update({ afterFrame: false, beforeFrame: true });
+    Store.time.update({
       delta,
       elapsed,
       afterFrame: false,
       beforeFrame: false,
     });
-    timeStore.state.update({ beforeFrame: false, afterFrame: true });
+    Store.time.update({ beforeFrame: false, afterFrame: true });
 
     this._animationHandle = window.requestAnimationFrame(this.tick);
   };

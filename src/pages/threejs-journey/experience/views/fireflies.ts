@@ -12,7 +12,7 @@ import {
   fireflyFragmentShader,
   fireflyVertexShader,
 } from '../shaders/fireflies';
-import { Store, subscriptions, timeStore } from '../store';
+import { Store } from '../store';
 import { WebGLView } from '../types/ui';
 
 interface Props {
@@ -45,7 +45,9 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   public destroy() {
-    subscriptions[this.namespace].forEach((unsub) => unsub());
+    Store.debug.unsubscribe(this.namespace);
+    Store.stage.unsubscribe(this.namespace);
+    Store.time.unsubscribe(this.namespace);
 
     this.geometry.dispose();
     this.material.dispose();
@@ -113,11 +115,13 @@ export class Fireflies extends Group implements WebGLView {
       namespace: this.namespace,
     });
 
-    Store.stage.subscribe((state) => state.pixelRatio, this.resize);
+    Store.stage.subscribe((state) => state.pixelRatio, this.resize, {
+      namespace: this.namespace,
+    });
 
-    subscriptions[this.namespace].push(
-      timeStore.subscribe((state) => state.elapsed, this.update)
-    );
+    Store.time.subscribe((state) => state.elapsed, this.update, {
+      namespace: this.namespace,
+    });
   }
 
   /* CALLBACKS */

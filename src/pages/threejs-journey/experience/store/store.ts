@@ -4,7 +4,7 @@ import { defaultDict } from '../utils/default-dict';
 import DebugState from './debug';
 import resourceStore from './resources';
 import StageState from './stage';
-import timeStore from './time';
+import TimeState from './time';
 import WorldState from './world';
 
 const subscriptions = defaultDict<Subscription[]>(() => []);
@@ -12,6 +12,7 @@ const subscriptions = defaultDict<Subscription[]>(() => []);
 export class Store {
   private static _debug: DebugState | null;
   private static _stage: StageState | null;
+  private static _time: TimeState | null;
   private static _world: WorldState | null;
 
   public static get debug() {
@@ -24,6 +25,11 @@ export class Store {
     return this._stage;
   }
 
+  public static get time() {
+    if (!this._time) throw new StateNotInitializedError('time');
+    return this._time;
+  }
+
   public static get world() {
     if (!this._world) throw new StateNotInitializedError('world');
     return this._world;
@@ -32,6 +38,7 @@ export class Store {
   public static init() {
     this._debug = new DebugState();
     this._stage = new StageState();
+    this._time = new TimeState();
     this._world = new WorldState();
   }
 
@@ -46,6 +53,9 @@ export class Store {
     this._stage?.destroy();
     this._debug = null;
 
+    this._time?.destroy();
+    this._time = null;
+
     this._world?.destroy();
     this._world = null;
   }
@@ -56,6 +66,6 @@ export {
   resourceStore,
   // stageStore,
   subscriptions,
-  timeStore,
+  // timeStore,
   // worldStore,
 };

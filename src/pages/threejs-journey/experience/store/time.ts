@@ -1,33 +1,23 @@
-import { subscribeWithSelector } from 'zustand/middleware';
-import createStore from 'zustand/vanilla';
+import StateInstance from '../helpers/state-instance';
 
-interface StateProps {
+interface State {
   beforeFrame: boolean;
   delta: number;
   elapsed: number;
   afterFrame: boolean;
 }
 
-interface StateActions {
-  update: (state: Partial<StateProps>) => void;
+export default class TimeState extends StateInstance<State> {
+  constructor() {
+    super({
+      beforeFrame: false,
+      delta: 16,
+      elapsed: 0,
+      afterFrame: false,
+    });
+  }
+
+  public update(state: Partial<State>) {
+    this._state.setState(state);
+  }
 }
-
-type State = StateProps & StateActions;
-
-const timeStore = createStore(
-  subscribeWithSelector<State>((set) => ({
-    beforeFrame: false,
-    delta: 16,
-    elapsed: 0,
-    afterFrame: false,
-
-    update: set,
-  }))
-);
-
-export default {
-  get state() {
-    return timeStore.getState();
-  },
-  subscribe: timeStore.subscribe,
-};
