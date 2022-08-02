@@ -45,7 +45,9 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   public destroy() {
-    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
+    Store.debug.unsubscribe(this.namespace);
+    Store.stage.unsubscribe(this.namespace);
+    Store.time.unsubscribe(this.namespace);
 
     this.geometry.dispose();
     this.material.dispose();
@@ -93,8 +95,10 @@ export class Fireflies extends Group implements WebGLView {
       //
       uniforms: {
         uColor: { value: new Color(0xffffff) },
-        uSize: { value: this._props.baseSize * Store.stage.pixelRatio },
-        uScale: { value: Store.stage.height * 0.5 },
+        uSize: {
+          value: this._props.baseSize * Store.stage.state.pixelRatio,
+        },
+        uScale: { value: Store.stage.state.height * 0.5 },
         uTime: { value: 0 },
       },
     });
@@ -106,29 +110,25 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const frameSub = Store.time.subscribe(
-      (state) => state.elapsed,
-      this.update
-    );
-
-    const resizeSub = Store.stage.subscribe((state) => {
-      this.resize(state.pixelRatio);
+    Store.debug.subscribe((state) => state.enabled, this.debug, {
+      fireImmediately: true,
+      namespace: this.namespace,
     });
 
-    const debugSub = Store.debug.subscribe(
-      (state) => state.active,
-      this.debug,
-      { fireImmediately: true }
-    );
+    Store.stage.subscribe((state) => state.pixelRatio, this.resize, {
+      namespace: this.namespace,
+    });
 
-    Store.subscriptions[this.namespace].push(debugSub, frameSub, resizeSub);
+    Store.time.subscribe((state) => state.elapsed, this.update, {
+      namespace: this.namespace,
+    });
   }
 
   /* CALLBACKS */
 
   private debug = (active?: boolean) => {
     if (!active) return;
-    Store.debug.addInputs({
+    Store.debug.addConfig({
       folder: {
         title: 'Fireflies',
       },

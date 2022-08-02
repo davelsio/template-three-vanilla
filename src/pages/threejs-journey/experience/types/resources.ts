@@ -27,6 +27,12 @@ export type Assets = Array<
   CubeTextureResource | TextureResource | GLTFModelResource
 >;
 
+export type AssetType = (
+  | CubeTextureResource
+  | TextureResource
+  | GLTFModelResource
+)['type'];
+
 export type LoadedAsset = Required<
   CubeTextureResource | TextureResource | GLTFModelResource
 >;

@@ -14,13 +14,14 @@ const Canvas: React.FC = () => {
 
   useEffectOnce(() => {
     const root = rootRef.current;
+    let experience: Experience;
     if (root) {
-      Experience.init(root);
-      Experience.onLoad(() => setLoaded(true));
+      experience = new Experience(root);
+      experience.onLoad(() => setLoaded(true));
     }
 
     return () => {
-      if (Experience.isInit) Experience.destroy();
+      if (experience) experience.destroy();
     };
   });
 

@@ -47,7 +47,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   public destroy() {
-    Store.subscriptions[this.namespace].forEach((sub) => sub());
+    Store.world.unsubscribe(this.namespace);
     this._barGeometry.dispose();
     this._barMaterial.dispose();
     this._overlayGeometry.dispose();
@@ -99,7 +99,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const worldSub = Store.world.subscribe(
+    Store.world.subscribe(
       (state) => state.viewsProgress,
       (progress) => {
         gsap
@@ -112,9 +112,10 @@ export class Loading extends Group implements WebGLView {
               Store.world.setLoadingReady();
             }
           });
+      },
+      {
+        namespace: this.namespace,
       }
     );
-
-    Store.subscriptions[this.namespace].push(worldSub);
   }
 }

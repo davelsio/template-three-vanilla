@@ -89,7 +89,9 @@ export class Portal extends Group implements WebGLView {
   }
 
   public destroy() {
-    Store.subscriptions[this.namespace].forEach((unsub) => unsub());
+    Store.debug.unsubscribe(this.namespace);
+    Store.time.unsubscribe(this.namespace);
+
     this.materials.baked.dispose();
     this.materials.poleLight.dispose();
     this.materials.portalLight.dispose();
@@ -162,18 +164,14 @@ export class Portal extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    const debugSub = Store.debug.subscribe(
-      (state) => state.active,
-      this.debug,
-      { fireImmediately: true }
-    );
+    Store.debug.subscribe((state) => state.enabled, this.debug, {
+      fireImmediately: true,
+      namespace: this.namespace,
+    });
 
-    const frameSub = Store.time.subscribe(
-      (state) => state.elapsed,
-      this.update
-    );
-
-    Store.subscriptions[this.namespace].push(debugSub, frameSub);
+    Store.time.subscribe((state) => state.elapsed, this.update, {
+      namespace: this.namespace,
+    });
   }
 
   /* CALLBACKS */
@@ -181,7 +179,7 @@ export class Portal extends Group implements WebGLView {
   private debug = (active?: boolean) => {
     if (!active) return;
 
-    Store.debug.addInputs({
+    Store.debug.addConfig({
       folder: {
         title: 'Portal',
       },
@@ -225,7 +223,10 @@ export class Portal extends Group implements WebGLView {
       ],
     });
 
-    Store.debug.addInputs({
+    Store.debug.addConfig({
+      folder: {
+        title: 'Environment',
+      },
       inputs: [
         {
           object: this.materials.poleLight,
@@ -236,9 +237,6 @@ export class Portal extends Group implements WebGLView {
           },
         },
       ],
-      folder: {
-        title: 'Environment',
-      },
     });
   };
 

@@ -15,77 +15,83 @@ interface ExperienceOptions {
 }
 
 export class Experience {
-  public static isInit = false;
-  public static isLoaded = false;
-  public static namespace = 'Experience';
+  private _cameraController: CameraController;
+  private _debugController: DebugController;
+  private _renderController: RenderController;
+  private _resourceController: ResourceController;
+  private _stageController: StageController;
+  private _timeController: TimeController;
+  private _worldController: WorldController;
 
-  public static init(root: HTMLElement, options?: ExperienceOptions) {
+  public namespace = 'Experience';
+
+  public constructor(root: HTMLElement, options?: ExperienceOptions) {
+    Store.init();
+
     // Assets and resources
-    ResourceController.init(sources);
+    this._resourceController = new ResourceController(sources);
 
     // DOM interactive interface and render context
-    StageController.init(root, {
+    this._stageController = new StageController(root, {
       canvas: options?.canvas,
     });
 
     // DOM debug interface
-    DebugController.init();
-    if (DebugController.state.active) {
+    this._debugController = new DebugController();
+    if (Store.debug.state.enabled) {
       window.experience = this;
     }
 
     // Frames and clock
-    TimeController.init();
+    this._timeController = new TimeController();
 
     // WebGL scene and views
-    WorldController.init();
+    this._worldController = new WorldController();
 
     // WebGL camera
-    CameraController.init(
-      StageController.state.aspectRatio,
-      StageController.canvas,
-      { target: WorldController.scene.position }
+    this._cameraController = new CameraController(
+      this._stageController.aspectRatio,
+      this._stageController.canvas,
+      {
+        target: this._worldController.scene.position,
+      }
     );
 
     // WebGL renderer
-    RenderController.init(
-      StageController.canvas,
-      StageController.state.width,
-      StageController.state.height,
-      CameraController.camera,
-      WorldController.scene
+    this._renderController = new RenderController(
+      this._stageController.canvas,
+      this._stageController.width,
+      this._stageController.height,
+      this._cameraController.camera,
+      this._worldController.scene
     );
-
-    this.isInit = true;
-    this.onLoad(() => (this.isLoaded = true));
   }
 
   /**
    * Destroy all dependencies.
    */
-  public static destroy = () => {
-    Store.subscriptions[this.namespace].forEach((sub) => sub());
+  public destroy = () => {
+    this._renderController.destroy();
+    this._cameraController.destroy();
+    this._worldController.destroy();
 
-    RenderController.destroy();
-    CameraController.destroy();
-    WorldController.destroy();
+    this._debugController.destroy();
+    this._timeController.destroy();
+    this._stageController.destroy();
+    this._resourceController.destroy();
 
-    DebugController.destroy();
-    TimeController.destroy();
-    StageController.destroy();
-    ResourceController.destroy();
+    Store.destroy();
   };
 
   /**
    * Handler function to execute after the experience is loaded.
    * @param callback callback function to execute
    */
-  public static onLoad(callback: () => void) {
-    const worldSub = Store.world.subscribe((state) => {
-      if (state.viewsReady) {
-        callback();
-      }
-    });
-    Store.subscriptions[this.namespace].push(worldSub);
+  public onLoad(callback: () => void) {
+    Store.world.subscribe(
+      (state) => state.loadingReady,
+      (loadingReady) => loadingReady && callback(),
+      { namespace: this.namespace }
+    );
   }
 }

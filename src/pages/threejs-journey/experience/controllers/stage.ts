@@ -1,4 +1,4 @@
-import createStore from 'zustand/vanilla';
+import { Store } from '../store';
 
 interface StageOptions {
   canvas?: HTMLCanvasElement;
@@ -6,25 +6,16 @@ interface StageOptions {
 }
 
 export class StageController {
-  private static _state = createStore(() => ({
-    width: 0,
-    height: 0,
-    aspectRatio: 0,
-    pixelRatio: 1,
-  }));
+  public app: HTMLDivElement;
+  public canvas: HTMLCanvasElement;
+  public root: HTMLElement;
 
-  public static app: HTMLDivElement;
-  public static canvas: HTMLCanvasElement;
-  public static root: HTMLElement;
+  public width: number;
+  public height: number;
+  public aspectRatio: number;
+  public pixelRatio: number;
 
-  public static get state() {
-    return {
-      ...this._state.getState(),
-      subscribe: this._state.subscribe.bind(this._state),
-    };
-  }
-
-  public static init(root: HTMLElement, options?: StageOptions) {
+  public constructor(root: HTMLElement, options?: StageOptions) {
     this.root = root;
 
     // Create a canvas element to render the scene
@@ -35,28 +26,27 @@ export class StageController {
     }
 
     // Update the controller state
-    this.updateSize();
-    window.addEventListener('resize', this.updateSize);
+    this.updateStage();
+    window.addEventListener('resize', this.updateStage);
   }
 
-  public static destroy() {
-    window.removeEventListener('resize', this.updateSize);
-    this._state.destroy();
+  public destroy() {
+    window.removeEventListener('resize', this.updateStage);
   }
 
   /*  CALLBACKS */
 
-  private static updateSize = () => {
-    const width = this.root.clientWidth;
-    const height = this.root.clientHeight;
-    const aspectRatio = width / height;
-    const pixelRatio = Math.min(window.devicePixelRatio, 2);
+  private updateStage = () => {
+    this.width = this.root.clientWidth;
+    this.height = this.root.clientHeight;
+    this.aspectRatio = this.width / this.height;
+    this.pixelRatio = Math.min(window.devicePixelRatio, 2);
 
-    this._state.setState({
-      width,
-      height,
-      aspectRatio,
-      pixelRatio,
+    Store.stage.update({
+      width: this.width,
+      height: this.height,
+      aspectRatio: this.aspectRatio,
+      pixelRatio: this.pixelRatio,
     });
   };
 }
