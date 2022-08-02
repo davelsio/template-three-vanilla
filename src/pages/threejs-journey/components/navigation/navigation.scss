@@ -1,13 +1,14 @@
 .nav {
-  z-index: 9999;
-
-  position: relative;
+  z-index: var(--z-high);
+  position: fixed;
   padding: 0.5rem;
   height: 100%;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  background-color: transparent;
 
   @media (min-width: 1024px) {
     padding: 2.5rem;
@@ -18,75 +19,159 @@
   list-style-type: none;
 
   li {
+    display: flex;
+    align-items: center;
     padding: 0.5rem;
+    color: var(--color-white);
 
-    button {
-      background-color: transparent;
-      color: rgba(255, 251, 235, 1);
+    &:hover {
+      color: var(--color-orange);
+    }
+
+    a, button {
+      display: flex;
+      align-items: center;
       cursor: pointer;
+    }
 
-      &:hover {
-        color: rgba(217, 119, 6, 1);
-      }
+    svg {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 1rem;
+    }
 
-      @media (min-width: 1024px) {
+    @media (min-width: 1024px) {
+      a, button {
         font-size: 1.875rem; /* 30px */
         line-height: 2.25rem; /* 36px */
       }
+
+      svg {
+        width: 2rem;
+        height: 2rem;
+      }
     }
   }
 }
 
-.explore {
+a, a:visited {
+  color: inherit;
+}
+
+.float-info {
   position: absolute;
-  bottom: 0;
-  left: 50%;
+  z-index: var(--z-modal);
 
   display: flex;
-  align-items: center;
+  justify-content: center;
 
-  background-color: transparent;
-  color: rgba(255, 251, 235, 1);
+  margin-top: 1rem;
+  width: 100%;
 
-  font-size: 0.875rem; /* 14px */
-  line-height: 1.25rem; /* 20px */
-
-  cursor: pointer;
-  pointer-events: auto;
-
-  svg {
-    width: 2rem;
-    height: 2rem;
-    margin-right: 0.5rem;
-  }
+  color: var(--color-white);
 
   span {
-    max-width: 0px;
-    overflow: hidden;
-    transition: all ease-in-out 200ms;
-  }
+    padding: 1rem;
+    border: solid;
+    border-width: 2px;
+    border-color: var(--color-white);
+    background-color: var(--color-background);
 
-  &:hover {
-    color: rgba(217, 119, 6, 1);
-  }
-
-  &:hover span {
-    max-width: 100%;
-  }
-
-  @media (min-width: 640px) {
-    span {
-      max-width: 100%;
+    @media (min-width: 1024px) {
+      font-size: 1.875rem; /* 30px */
+      line-height: 2.25rem; /* 36px */
     }
   }
 
-  @media (min-width: 768px) {
-    font-size: 1.875rem; /* 30px */
-    line-height: 2.25rem; /* 36px */
+  animation-duration: 3s;
+  animation-name: hidefloat;
+  animation-fill-mode: forwards;
+}
+
+@keyframes hidefloat {
+  from {
+    opacity: 0.9;
   }
 
-  @media (min-width: 1024px) {
-    bottom: 1.5rem; /* 24px */
-    left: 45%;
+  75% {
+    opacity: 0.9;
+  }
+
+  to {
+    opacity: 0;
   }
 }
+
+.slidein {
+  animation-duration: 3s;
+  animation-name: slidein;
+  animation-iteration-count: 3;
+  animation-direction: alternate;
+}
+
+@keyframes slidein {
+  from {
+    margin-left:100%;
+    width:300%
+  }
+
+  to {
+    margin-left:0%;
+    width:100%;
+  }
+}
+
+
+// .explore {
+//   // position: absolute;
+//   bottom: 0;
+//   left: 50%;
+
+//   display: flex;
+//   align-items: center;
+
+//   background-color: transparent;
+//   color: rgba(255, 251, 235, 1);
+
+//   font-size: 0.875rem; /* 14px */
+//   line-height: 1.25rem; /* 20px */
+
+//   cursor: pointer;
+//   pointer-events: auto;
+
+//   svg {
+//     width: 2rem;
+//     height: 2rem;
+//     margin-right: 0.5rem;
+//   }
+
+//   span {
+//     max-width: 0px;
+//     overflow: hidden;
+//     transition: all ease-in-out 200ms;
+//   }
+
+//   &:hover {
+//     color: rgba(217, 119, 6, 1);
+//   }
+
+//   &:hover span {
+//     max-width: 100%;
+//   }
+
+//   @media (min-width: 640px) {
+//     span {
+//       max-width: 100%;
+//     }
+//   }
+
+//   @media (min-width: 768px) {
+//     font-size: 1.875rem; /* 30px */
+//     line-height: 2.25rem; /* 36px */
+//   }
+
+//   @media (min-width: 1024px) {
+//     bottom: 1.5rem; /* 24px */
+//     left: 45%;
+//   }
+// }
