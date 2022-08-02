@@ -1,5 +1,7 @@
 import './styles/reset.scss';
 import './styles/default.scss';
+import './styles/vars.scss';
+import './app.scss';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
