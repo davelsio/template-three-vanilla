@@ -1,5 +1,5 @@
-import { createStore } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import createStore from 'zustand/vanilla';
 
 interface StateProps {
   /**
