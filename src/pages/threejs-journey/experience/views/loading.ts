@@ -99,7 +99,8 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    Store.world.subscribe(
+    Store.world.subscribeNs(
+      this.namespace,
       (state) => state.viewsProgress,
       (progress) => {
         gsap
@@ -112,9 +113,6 @@ export class Loading extends Group implements WebGLView {
               Store.world.setLoadingReady();
             }
           });
-      },
-      {
-        namespace: this.namespace,
       }
     );
   }

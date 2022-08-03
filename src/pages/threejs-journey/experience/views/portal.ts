@@ -164,14 +164,18 @@ export class Portal extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribe((state) => state.enabled, this.debug, {
-      fireImmediately: true,
-      namespace: this.namespace,
-    });
+    Store.debug.subscribeNs(
+      this.namespace,
+      (state) => state.enabled,
+      this.debug,
+      { fireImmediately: true }
+    );
 
-    Store.time.subscribe((state) => state.elapsed, this.update, {
-      namespace: this.namespace,
-    });
+    Store.time.subscribeNs(
+      this.namespace,
+      (state) => state.elapsed,
+      this.update
+    );
   }
 
   /* CALLBACKS */

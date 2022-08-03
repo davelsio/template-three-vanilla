@@ -1,15 +1,13 @@
-import {
-  StoreSubscribeWithSelector,
-  subscribeWithSelector,
-  Write,
-} from 'zustand/middleware';
-import createStore, { StoreApi } from 'zustand/vanilla';
+import { subscribeWithSelector } from 'zustand/middleware';
+import createStore from 'zustand/vanilla';
 
 import { Subscription } from '../types/store';
 import { defaultDict } from '../utils/default-dict';
 
 export default abstract class StateInstance<T extends object> {
-  protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
+  protected _state: ReturnType<
+    typeof createStore<T, [['zustand/subscribeWithSelector', never]]>
+  >;
 
   protected _subscriptions = defaultDict<Subscription[]>(() => []);
 
@@ -21,10 +19,7 @@ export default abstract class StateInstance<T extends object> {
   }
 
   constructor(state: T) {
-    this._state = createStore(subscribeWithSelector<T>(() => state)) as Write<
-      StoreApi<T>,
-      StoreSubscribeWithSelector<T>
-    >;
+    this._state = createStore(subscribeWithSelector<T>(() => state));
   }
 
   /* API */
@@ -38,36 +33,40 @@ export default abstract class StateInstance<T extends object> {
 
   /**
    * Subscribe to a slice of the world state.
-   * @param selector Slice of state to watch
-   * @param listener Callback function to execute when the slice changes
-   * @param options Subscription options
+   * @param subscription subscription selector, listener, and options
    */
   public subscribe<U>(
-    selector: (state: T) => U,
-    listener: (selectedState: U, previousSelectedState: U) => void,
-    options?: {
-      /**
-       * Function to use for slice comparison. Default is `Object.is`.
-       */
-      equalityFn?: (a: U, b: U) => boolean;
-
-      /**
-       * Do not batch multiple state changes into a single listener event.
-       */
-      fireImmediately?: boolean;
-
-      /**
-       * Define a namespace to associate the listener with. Calling the
-       * `unsubscribe` API will clear all listeners for the given namespace.
-       */
-      namespace?: string;
-    }
+    ...subscription: Parameters<typeof this._state.subscribe<U>>
   ) {
-    const unsub = this._state.subscribe(selector, listener, options);
-    if (options?.namespace) {
-      this._subscriptions[options.namespace].push(unsub);
-    }
+    return this._state.subscribe<U>(...subscription);
+  }
+
+  /**
+   * Subscribe to a namespaced slice of the state. Namespaced subscriptions
+   * can be selectively removed using the `unsubscribe` method.
+   * @param namespace namespace to associate with the listener
+   * @param subscription subscription selector, listener, and options
+   */
+  public subscribeNs<U>(
+    namespace: string,
+    ...subscription: Parameters<typeof this._state.subscribe<U>>
+  ) {
+    const unsub = this.subscribe(...subscription);
+    this._subscriptions[namespace].push(unsub);
     return unsub;
+  }
+
+  /**
+   * Get a namespaced subscriber for a slice of the state. Namespaced
+   * subscriptions can be selectively removed using the `unsubscribe` method.
+   * @param namespace namespace to associate with the listener
+   */
+  public subscriberFactory(namespace: string) {
+    return <U>(
+      ...subscription: Parameters<typeof this._state.subscribe<U>>
+    ) => {
+      return this.subscribeNs(namespace, ...subscription);
+    };
   }
 
   /**

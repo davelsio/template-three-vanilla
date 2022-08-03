@@ -55,20 +55,24 @@ export class RenderController {
   /* SETUP */
 
   private setupSubscriptions() {
-    Store.debug.subscribe((state) => state.enabled, this.debug, {
-      fireImmediately: true,
-      namespace: this.namespace,
-    });
-
-    Store.stage.subscribe(
-      (state) => [state.width, state.height, state.pixelRatio],
-      ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio),
-      { namespace: this.namespace }
+    Store.debug.subscribeNs(
+      this.namespace,
+      (state) => state.enabled,
+      this.debug,
+      { fireImmediately: true }
     );
 
-    Store.time.subscribe((state) => state.elapsed, this.update, {
-      namespace: this.namespace,
-    });
+    Store.stage.subscribeNs(
+      this.namespace,
+      (state) => [state.width, state.height, state.pixelRatio],
+      ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio)
+    );
+
+    Store.time.subscribeNs(
+      this.namespace,
+      (state) => state.elapsed,
+      this.update
+    );
   }
 
   /* CALLBACKS */

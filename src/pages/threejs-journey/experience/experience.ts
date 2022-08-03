@@ -95,10 +95,10 @@ export class Experience {
    * @param callback callback function to execute
    */
   public onLoad(callback: () => void) {
-    Store.world.subscribe(
+    Store.world.subscribeNs(
+      this.namespace,
       (state) => state.loadingReady,
-      (loadingReady) => loadingReady && callback(),
-      { namespace: this.namespace }
+      (loadingReady) => loadingReady && callback()
     );
   }
 }

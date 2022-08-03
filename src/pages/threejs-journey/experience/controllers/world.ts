@@ -54,28 +54,24 @@ export class WorldController {
   }
 
   private setupSubscriptions() {
-    Store.world.subscribe(
+    const worldSubscription = Store.world.subscriberFactory(this.namespace);
+
+    worldSubscription(
       (state) => state.viewsLoaded,
       (viewsLoaded) => {
         const viewsProgress = viewsLoaded.length / this._viewsToLoad.length;
         Store.world.updateProgress(viewsProgress);
       },
-      {
-        fireImmediately: true,
-        namespace: this.namespace,
-      }
+      { fireImmediately: true }
     );
 
-    Store.world.subscribe(
+    worldSubscription(
       (state) => [state.loadingReady, state.viewsReady],
       ([loadingReady, worldReady]) => {
         if (loadingReady && worldReady) {
           this._loading.destroy();
           this.scene.remove(this._loading);
         }
-      },
-      {
-        namespace: this.namespace,
       }
     );
   }

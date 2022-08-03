@@ -46,29 +46,27 @@ export class DebugController {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribe(
+    Store.debug.subscribeNs(
+      this.namespace,
       (state) => state.panels,
-      (panels) => this.addConfig(panels[panels.length - 1]),
-      { namespace: this.namespace }
+      (panels) => this.addConfig(panels[panels.length - 1])
     );
 
-    Store.world.subscribe(
+    Store.world.subscribeNs(
+      this.namespace,
       (state) => state.loadingReady,
       (loadingReady) => {
         if (loadingReady) this._panel.hidden = false;
-      },
-      {
-        namespace: this.namespace,
       }
     );
 
-    Store.time.subscribe(
+    Store.time.subscribeNs(
+      this.namespace,
       (state) => [state.beforeFrame, state.afterFrame],
       ([beforeFrame, afterFrame]) => {
         beforeFrame && this._fpsGraph.begin();
         afterFrame && this._fpsGraph.end();
-      },
-      { namespace: this.namespace }
+      }
     );
   }
 
