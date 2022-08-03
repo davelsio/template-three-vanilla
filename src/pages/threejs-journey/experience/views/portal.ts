@@ -7,8 +7,8 @@ import {
   sRGBEncoding,
   Texture,
 } from 'three';
+// import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { GLTF } from 'three-stdlib';
-import createStore from 'zustand/vanilla';
 
 import { ResourceLoader } from '../loaders';
 import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
@@ -28,18 +28,12 @@ interface ModelMaterials {
   portalLight: ShaderMaterial;
 }
 
-interface StateProps {
+interface Props {
   portalColorStart: Color;
   portalColorEnd: Color;
   uvDisplacementOffset: number;
   uvStrengthOffset: number;
 }
-
-interface StateActions {
-  setColorStart: (color: Color) => void;
-}
-
-type State = StateProps & StateActions;
 
 export class Portal extends Group implements WebGLView {
   private portalBakedTexture: Texture;
@@ -49,34 +43,18 @@ export class Portal extends Group implements WebGLView {
   private meshes: ModelMeshes;
   private materials: ModelMaterials;
 
-  private _state = createStore<State>((set) => ({
+  private _props: Props = {
     portalColorStart: new Color(0x000000),
     portalColorEnd: new Color(0xffffff),
     uvDisplacementOffset: 5.0,
     uvStrengthOffset: 5.0,
-    // Mutations
-    setColorStart: (color) =>
-      set(() => {
-        console.log(color);
-        return {
-          portalColorStart: color,
-        };
-      }),
-  }));
+  };
 
-  public get state() {
-    return {
-      ...this._state.getState(),
-      subscribe: this._state.subscribe,
-    };
-  }
   public namespace = 'Portal';
 
-  constructor(props?: Partial<StateProps>) {
+  constructor(props?: Partial<Props>) {
     super();
-    if (props) {
-      this._state.setState(props);
-    }
+    Object.assign(this._props, props);
   }
 
   public async init() {
@@ -107,7 +85,6 @@ export class Portal extends Group implements WebGLView {
     this.portalBakedTexture = portalBakedTexture;
     this.portalBakedTexture.flipY = false;
     this.portalBakedTexture.encoding = sRGBEncoding;
-
     const portalModel = await ResourceLoader.loadGltfModel('portalModel');
     this.portalScene = portalModel;
   }
@@ -125,10 +102,10 @@ export class Portal extends Group implements WebGLView {
       fragmentShader: portalFragmentShader,
       vertexShader: portalVertexShader,
       uniforms: {
-        uColorEnd: { value: this.state.portalColorEnd },
-        uColorStart: { value: this.state.portalColorStart },
-        uOffsetDisplacementUv: { value: this.state.uvDisplacementOffset },
-        uOffsetStrengthUv: { value: this.state.uvStrengthOffset },
+        uColorEnd: { value: this._props.portalColorEnd },
+        uColorStart: { value: this._props.portalColorStart },
+        uOffsetDisplacementUv: { value: this._props.uvDisplacementOffset },
+        uOffsetStrengthUv: { value: this._props.uvStrengthOffset },
         uTime: { value: 0 },
       },
     });
@@ -151,14 +128,18 @@ export class Portal extends Group implements WebGLView {
         })
       ) as unknown as ModelMeshes;
 
+      console.log(this.meshes);
+
       this.meshes.baked.material = this.materials.baked;
       this.meshes.poleLightL.material = this.materials.poleLight;
       this.meshes.poleLightR.material = this.materials.poleLight;
       this.meshes.portalLight.material = this.materials.portalLight;
-    } catch (_error) {
-      const error = _error as Error;
-      const meshName = error.message.match(/(?<=modelMeshes\.)\w+/);
-      console.error(`Mesh not found in the Portal scene: ${meshName}`);
+    } catch (error) {
+      console.error(
+        'One or more of the model meshes in the Portal',
+        'scene could not be assigned a material.',
+        error
+      );
     }
     this.add(this.model);
   }
