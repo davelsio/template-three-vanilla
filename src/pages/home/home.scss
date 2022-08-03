@@ -25,7 +25,13 @@
   -webkit-text-size-adjust: 100%;
 
   h1 {
-    font-size: 3.2em;
+    font-size: 1.7rem;
+  }
+
+  @media (min-width: 1024px) {
+    h1 {
+      font-size: 4rem;
+    }
   }
 
   @media (prefers-color-scheme: light) {
