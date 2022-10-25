@@ -7,7 +7,6 @@ import {
   sRGBEncoding,
   Texture,
 } from 'three';
-// import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { GLTF } from 'three-stdlib';
 
 import { ResourceLoader } from '../loaders';
@@ -127,8 +126,6 @@ export class Portal extends Group implements WebGLView {
           return [child.name, child];
         })
       ) as unknown as ModelMeshes;
-
-      console.log(this.meshes);
 
       this.meshes.baked.material = this.materials.baked;
       this.meshes.poleLightL.material = this.materials.poleLight;
