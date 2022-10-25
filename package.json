@@ -14,7 +14,9 @@
     "gsap": "^3.10.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-is": "^18.2.0",
     "react-router-dom": "^6.3.0",
+    "styled-components": "^5.3.6",
     "three": "^0.142.0",
     "three-stdlib": "^2.12.1",
     "tweakpane": "^3.1.0",
@@ -27,6 +29,7 @@
     "@types/node": "^18.0.5",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
+    "@types/styled-components": "^5.1.26",
     "@types/three": "^0.141.0",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
@@ -44,6 +47,7 @@
     "typescript": "^4.6.4",
     "vite": "^3.0.0",
     "vite-plugin-glsl": "^0.3.0",
+    "vite-plugin-svgr": "^2.2.2",
     "vite-tsconfig-paths": "^3.5.0"
   }
 }
