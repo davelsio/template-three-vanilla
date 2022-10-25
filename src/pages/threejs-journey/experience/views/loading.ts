@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { Group, Mesh, PlaneBufferGeometry, ShaderMaterial } from 'three';
+import { Group, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
 
 import {
   barFragmentShader,
@@ -19,11 +19,11 @@ export class Loading extends Group implements WebGLView {
     loadAnimDuration: 0.5,
   };
 
-  private _barGeometry: PlaneBufferGeometry;
+  private _barGeometry: PlaneGeometry;
   private _barMaterial: ShaderMaterial;
   private _barMesh: Mesh;
 
-  private _overlayGeometry: PlaneBufferGeometry;
+  private _overlayGeometry: PlaneGeometry;
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
@@ -58,7 +58,7 @@ export class Loading extends Group implements WebGLView {
   /* SETUP */
 
   private setupBarGeometry() {
-    this._barGeometry = new PlaneBufferGeometry(1.0, 0.04, 1, 1);
+    this._barGeometry = new PlaneGeometry(1.0, 0.04, 1, 1);
   }
 
   private setupBarMaterial() {
@@ -79,7 +79,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupOverlayGeometry() {
-    this._overlayGeometry = new PlaneBufferGeometry(2, 2, 1, 1);
+    this._overlayGeometry = new PlaneGeometry(2, 2, 1, 1);
   }
 
   private setupOverlayMaterial() {
