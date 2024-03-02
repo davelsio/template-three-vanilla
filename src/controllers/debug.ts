@@ -1,9 +1,9 @@
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
-import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials/dist/types/fps-graph/api/fps-graph';
+import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials';
 import { FolderApi, Pane } from 'tweakpane';
 
 import { Store } from '../store';
-import { InputConfig } from '../types/debug';
+import { BaseOnChange, BindingConfig } from '../types/debug';
 
 export class DebugController {
   private _panel: Pane;
@@ -72,7 +72,7 @@ export class DebugController {
 
   /* CALLBACKS */
 
-  private addConfig(config: InputConfig) {
+  private addConfig(config: BindingConfig) {
     const { folder, inputs } = config;
 
     // Declare where to add the new config, to the base pane or a folder
@@ -87,9 +87,9 @@ export class DebugController {
 
     // Add each input using the pane API
     inputs.forEach((input) => {
-      ui.addInput(input.object, input.key, input.options);
+      ui.addBinding(input.object, input.key, input.options);
       if (input.onChange) {
-        ui.on('change', input.onChange);
+        ui.on('change', input.onChange as unknown as BaseOnChange);
       }
     });
   }

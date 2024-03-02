@@ -23,6 +23,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "three/addons/controls/*": ["node_modules/@types/three/examples/jsm/controls/*"],
+      "three/addons/loaders/*": ["node_modules/@types/three/examples/jsm/loaders/*"]
     }
   },
 }

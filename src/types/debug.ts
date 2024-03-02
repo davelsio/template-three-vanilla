@@ -1,9 +1,15 @@
 import {
   Bindable,
+  BindingParams,
+  BladeApi,
+  BladeController,
   FolderParams,
-  InputParams,
   TpChangeEvent,
+  View,
 } from '@tweakpane/core';
+import { BindingApi } from '@tweakpane/core/src/blade/binding/api/binding';
+import { FolderApiEvents } from '@tweakpane/core/src/blade/folder/api/folder';
+import { Pane } from 'tweakpane';
 
 /* INPUT TYPES */
 export type ColorRGBA = {
@@ -14,14 +20,21 @@ export type ColorRGBA = {
 };
 
 export type FolderArgs = FolderParams;
-export type InputChangeEvent = TpChangeEvent<any>;
-export type InputItem = {
+export type InputChangeEvent<T> = TpChangeEvent<
+  T,
+  BladeApi<BladeController<View>>
+>;
+export type BindingItem = {
   object: Bindable;
-  key: string;
-  options?: InputParams;
-  onChange?: (event: InputChangeEvent) => void;
+  key: keyof Bindable;
+  options?: BindingParams;
+  onChange?: Parameters<BindingApi<unknown, Bindable[keyof Bindable]>['on']>[1];
 };
-export type InputConfig = {
-  inputs: InputItem[];
+export type BindingConfig = {
+  inputs: BindingItem[];
   folder?: FolderParams;
 };
+
+export type BaseOnChange = (
+  ev: TpChangeEvent<unknown, BladeApi<BladeController<View>>>
+) => void;

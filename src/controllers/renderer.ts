@@ -1,8 +1,8 @@
 import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
-import { TpChangeEvent } from 'tweakpane';
+import { BindingApiEvents, TpChangeEvent } from 'tweakpane';
 
 import { Store } from '../store';
-import { ColorRGBA } from '../types/debug';
+import { BindingItem, ColorRGBA, InputChangeEvent } from '../types/debug';
 
 interface Options {
   clearColor: number;
@@ -100,8 +100,8 @@ export class RenderController {
           options: {
             color: { type: 'float' },
           },
-          onChange: (event: TpChangeEvent<ColorRGBA>) => {
-            if (event.presetKey === 'clearColor') {
+          onChange: (event) => {
+            if (event.target.key === 'clearColor') {
               this.renderer.setClearColor(
                 new Color(event.value.r, event.value.g, event.value.b),
                 event.value.a
