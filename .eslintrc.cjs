@@ -11,69 +11,45 @@ module.exports = {
     '!.prettierrc.js',
     '!.prettierrc.cjs',
   ],
+  env: {
+    browser: true,
+    node: true,
+    es6: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2019,
+    sourceType: 'module',
+    requireConfigFile: false,
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:prettier/recommended',
+  ],
+  plugins: ['simple-import-sort'],
+  rules: {
+    // Override prettier/recommended to show errors as warnings
+    'prettier/prettier': ['warn'],
+
+    // Sort imports
+    'simple-import-sort/imports': 'warn',
+    'simple-import-sort/exports': 'warn',
+  },
   overrides: [
     {
       files: ['**/*.[c]js'],
       parser: '@babel/eslint-parser',
-      parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
-        requireConfigFile: false,
-      },
-      env: {
-        browser: true,
-        node: true,
-        es6: true,
-      },
-      extends: [
-        'eslint:recommended',
-        'plugin:prettier/recommended',
-        'plugin:react/recommended',
-        'plugin:react/jsx-runtime',
-        'plugin:react-hooks/recommended',
-        'plugin:jsx-a11y/recommended',
-      ],
-      plugins: ['simple-import-sort'],
       rules: {
         // Warn about unused variables
         'no-unused-vars': 'warn',
-
-        // Override prettier/recommended to show errors as warnings
-        'prettier/prettier': ['warn'],
-
-        // Sort imports
-        'simple-import-sort/imports': 'warn',
-        'simple-import-sort/exports': 'warn',
       },
     },
     {
       files: ['**/*.{ts,tsx}', '**/*.d.ts'],
       parser: '@typescript-eslint/parser',
-      settings: { react: { version: 'detect' } },
-      env: {
-        browser: true,
-        node: true,
-        es6: true,
-      },
-      parserOptions: { ecmaVersion: 2019 },
       extends: [
-        'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
-        'plugin:prettier/recommended',
-        'plugin:react/recommended',
-        'plugin:react/jsx-runtime',
-        'plugin:react-hooks/recommended',
-        'plugin:jsx-a11y/recommended',
       ],
-      plugins: ['simple-import-sort'],
       rules: {
-        // Override prettier/recommended to show errors as warnings
-        'prettier/prettier': ['warn'],
-
-        // Sort imports
-        'simple-import-sort/imports': 'warn',
-        'simple-import-sort/exports': 'warn',
-
         // Probably not the best practice
         '@typescript-eslint/ban-types': [
           'error',
@@ -86,8 +62,8 @@ module.exports = {
           },
         ],
 
-        // Require return types on functions only where useful
-        // Alternatively, disable this rule and specify only input contracts
+        // Disable this rule and specify only input contracts
+        // Alternatively, require return types on functions only where useful
         '@typescript-eslint/explicit-function-return-type': [
           'off', // warn
           {

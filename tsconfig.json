@@ -8,7 +8,6 @@
     // type checking
     "allowJs": false,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
@@ -16,8 +15,7 @@
 
     // modules
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
-    "isolatedModules": true,
+    "esModuleInterop": true,
     "moduleResolution": "Node",
     "resolveJsonModule": true,
 
@@ -25,9 +23,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "hooks/*": ["./src/hooks/*"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
 }
