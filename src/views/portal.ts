@@ -6,6 +6,7 @@ import {
   ShaderMaterial,
   SRGBColorSpace,
   Texture,
+  Uniform,
 } from 'three';
 import { GLTF } from 'three-stdlib';
 
@@ -28,6 +29,7 @@ interface ModelMaterials {
 }
 
 interface Props {
+  poleLightColor: Color;
   portalColorStart: Color;
   portalColorEnd: Color;
   uvDisplacementOffset: number;
@@ -43,6 +45,7 @@ export class Portal extends Group implements WebGLView {
   private materials: ModelMaterials;
 
   private _props: Props = {
+    poleLightColor: new Color(0xffffff),
     portalColorStart: new Color(0x000000),
     portalColorEnd: new Color(0xffffff),
     uvDisplacementOffset: 5.0,
@@ -78,13 +81,11 @@ export class Portal extends Group implements WebGLView {
   /* SETUP */
 
   private async setupAssets() {
-    const portalBakedTexture =
+    this.portalBakedTexture =
       await ResourceLoader.loadTexture('portalBakedTexture');
-    this.portalBakedTexture = portalBakedTexture;
     this.portalBakedTexture.flipY = false;
     this.portalBakedTexture.colorSpace = SRGBColorSpace;
-    const portalModel = await ResourceLoader.loadGltfModel('portalModel');
-    this.portalScene = portalModel;
+    this.portalScene = await ResourceLoader.loadGltfModel('portalModel');
   }
 
   private setupMaterial() {
@@ -93,18 +94,18 @@ export class Portal extends Group implements WebGLView {
     });
 
     const poleLightMaterial = new MeshBasicMaterial({
-      color: 0xffffe5,
+      color: this._props.poleLightColor,
     });
 
     const portalLightMaterial = new ShaderMaterial({
       fragmentShader: portalFragmentShader,
       vertexShader: portalVertexShader,
       uniforms: {
-        uColorEnd: { value: this._props.portalColorEnd },
-        uColorStart: { value: this._props.portalColorStart },
-        uOffsetDisplacementUv: { value: this._props.uvDisplacementOffset },
-        uOffsetStrengthUv: { value: this._props.uvStrengthOffset },
-        uTime: { value: 0 },
+        uColorEnd: new Uniform(this._props.portalColorEnd),
+        uColorStart: new Uniform(this._props.portalColorStart),
+        uOffsetDisplacementUv: new Uniform(this._props.uvDisplacementOffset),
+        uOffsetStrengthUv: new Uniform(this._props.uvStrengthOffset),
+        uTime: new Uniform(0),
       },
     });
 
@@ -162,24 +163,24 @@ export class Portal extends Group implements WebGLView {
       },
       bindings: [
         {
-          object: this.materials.portalLight.uniforms.uColorStart,
-          key: 'value',
+          object: this._props,
+          key: 'portalColorStart',
           options: {
             label: 'uColorStart',
             color: { type: 'float' },
           },
         },
         {
-          object: this.materials.portalLight.uniforms.uColorEnd,
-          key: 'value',
+          object: this._props,
+          key: 'portalColorEnd',
           options: {
             label: 'uColorEnd',
             color: { type: 'float' },
           },
         },
         {
-          object: this.materials.portalLight.uniforms.uOffsetDisplacementUv,
-          key: 'value',
+          object: this._props,
+          key: 'uvDisplacementOffset',
           options: {
             label: 'uDisplacement',
             min: 0,
@@ -188,8 +189,8 @@ export class Portal extends Group implements WebGLView {
           },
         },
         {
-          object: this.materials.portalLight.uniforms.uOffsetStrengthUv,
-          key: 'value',
+          object: this._props,
+          key: 'uvStrengthOffset',
           options: {
             label: 'uStrength',
             min: 0,
@@ -206,11 +207,14 @@ export class Portal extends Group implements WebGLView {
       },
       bindings: [
         {
-          object: this.materials.poleLight,
-          key: 'color',
+          object: this._props,
+          key: 'poleLightColor',
           options: {
             label: 'poleLightColor',
             color: { type: 'float' },
+          },
+          onChange: (ev) => {
+            this.materials.poleLight.color.set(ev.value);
           },
         },
       ],

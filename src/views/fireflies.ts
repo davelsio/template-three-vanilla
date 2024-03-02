@@ -6,6 +6,7 @@ import {
   Group,
   Points,
   ShaderMaterial,
+  Uniform,
 } from 'three';
 
 import {
@@ -22,6 +23,7 @@ interface Props {
 export class Fireflies extends Group implements WebGLView {
   private _props = {
     baseSize: 0.75,
+    color: new Color(0xffffff),
   };
 
   private geometry: BufferGeometry;
@@ -90,16 +92,14 @@ export class Fireflies extends Group implements WebGLView {
       vertexShader: fireflyVertexShader,
       //
       blending: AdditiveBlending, // Blend the material color with the background color
-      depthWrite: false, // Prevent particles to hide particles behind
+      depthWrite: false, // Prevent particles to hide other particles
       transparent: true,
       //
       uniforms: {
-        uColor: { value: new Color(0xffffff) },
-        uSize: {
-          value: this._props.baseSize * Store.stage.state.pixelRatio,
-        },
-        uScale: { value: Store.stage.state.height * 0.5 },
-        uTime: { value: 0 },
+        uColor: new Uniform(this._props.color),
+        uSize: new Uniform(this._props.baseSize),
+        uScale: new Uniform(Store.stage.state.height * 0.5),
+        uTime: new Uniform(0),
       },
     });
   }
@@ -136,8 +136,8 @@ export class Fireflies extends Group implements WebGLView {
       },
       bindings: [
         {
-          object: this.material.uniforms.uSize,
-          key: 'value',
+          object: this._props,
+          key: 'baseSize',
           options: {
             label: 'baseSize',
             min: 0.01,
@@ -146,8 +146,8 @@ export class Fireflies extends Group implements WebGLView {
           },
         },
         {
-          object: this.material.uniforms.uColor,
-          key: 'value',
+          object: this._props,
+          key: 'color',
           options: {
             label: 'uColor',
             color: { type: 'float' },
@@ -159,12 +159,8 @@ export class Fireflies extends Group implements WebGLView {
 
   private resize = (pixelRatio: number) => {
     /**
-     * This is a hack to ensure that the fireflies are correctly sized
-     * if the user moves the browser window to another screen with a
-     * different pixel ratio.
-     *
-     * The assumption made is that the browser window will be resized
-     * when moved to the other device.
+     * Ensure that the fireflies are correctly sized if the user moves the
+     * browser window to another screen with a different pixel ratio.
      */
     this.material.uniforms.uSize.value = this._props.baseSize * pixelRatio;
   };

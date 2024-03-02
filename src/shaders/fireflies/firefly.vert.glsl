@@ -41,7 +41,7 @@ void main() {
    *     aScale: random value from [0.5, 1.0]
    *
    *   The final scaling ensures particles will be slightly smaller when
-   *   zooming in and larger when zooming out. The idea is not to preserve
+   *   zooming out and larger when zooming in. The idea is not to preserve
    *   their relative size regardless of the zoom level, but to have a more
    *   natural scaling behavior.
    *

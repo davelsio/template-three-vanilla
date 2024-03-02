@@ -28,7 +28,9 @@ export default abstract class StateInstance<T extends object> {
    * Clear the store subscribers.
    */
   public destroy() {
-    this._state.destroy();
+    Object.values(this._subscriptions).forEach((sub) =>
+      sub.forEach((unsub) => unsub())
+    );
   }
 
   /**

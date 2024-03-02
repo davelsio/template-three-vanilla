@@ -1,6 +1,8 @@
 import { Store } from '../store';
 
 export class StageController {
+  private _media: MediaQueryList | undefined;
+
   public root: HTMLDivElement;
   public canvas: HTMLCanvasElement;
 
@@ -34,14 +36,24 @@ export class StageController {
 
     // Update the controller state
     this.updateStage();
+    this.updatePixelRatio();
     window.addEventListener('resize', this.updateStage);
   }
 
   public destroy() {
     window.removeEventListener('resize', this.updateStage);
+    this._media?.removeEventListener('change', this.updatePixelRatio);
   }
 
   /*  CALLBACKS */
+
+  private updatePixelRatio() {
+    const mqString = `(resolution: ${window.devicePixelRatio}dppx)`;
+    const media = matchMedia(mqString);
+    Store.stage.update({ pixelRatio: Math.min(window.devicePixelRatio, 2) });
+    media.addEventListener('change', this.updatePixelRatio, { once: true });
+    this._media = media;
+  }
 
   private updateStage = () => {
     const width = this.root.clientWidth;
@@ -51,7 +63,6 @@ export class StageController {
       width,
       height,
       aspectRatio: width / height,
-      pixelRatio: Math.min(window.devicePixelRatio, 2),
     });
   };
 }
