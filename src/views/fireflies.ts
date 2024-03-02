@@ -1,3 +1,6 @@
+import { WebGLView } from '@helpers/ui';
+import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
+import { Store } from '@state/store';
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -8,13 +11,6 @@ import {
   ShaderMaterial,
   Uniform,
 } from 'three';
-
-import {
-  fireflyFragmentShader,
-  fireflyVertexShader,
-} from '../shaders/fireflies';
-import { Store } from '../store';
-import { WebGLView } from '../types/ui';
 
 interface Props {
   baseSize: number;

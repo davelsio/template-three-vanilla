@@ -1,14 +1,13 @@
-import gsap from 'gsap';
-import { Group, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
-
+import { WebGLView } from '@helpers/ui';
 import {
   barFragmentShader,
   barVertexShader,
   overlayFragmentShader,
   overlayVertexShader,
-} from '../shaders/progress';
-import { Store } from '../store';
-import { WebGLView } from '../types/ui';
+} from '@shaders/progress';
+import { Store } from '@state/store';
+import gsap from 'gsap';
+import { Group, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
 
 export interface LoadingProps {
   loadingDelay: number;

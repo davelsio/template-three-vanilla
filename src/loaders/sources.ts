@@ -1,5 +1,12 @@
-import { Assets } from './types/resources';
+import {
+  CubeTextureResource,
+  GLTFModelResource,
+  TextureResource,
+} from '@loaders/resources';
 
+export type Assets = Array<
+  CubeTextureResource | TextureResource | GLTFModelResource
+>;
 export const portalAssets: Assets = [
   {
     name: 'portalBakedTexture',

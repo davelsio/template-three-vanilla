@@ -1,3 +1,4 @@
+import { isThreeMesh, isThreeMeshStandardMaterial } from '@helpers/type-guards';
 import {
   AmbientLight,
   CubeTexture,
@@ -5,8 +6,6 @@ import {
   Scene,
   SRGBColorSpace,
 } from 'three';
-
-import { isThreeMesh, isThreeMeshStandardMaterial } from '../utils/type-guards';
 
 interface Assets {
   environmentMap: CubeTexture;

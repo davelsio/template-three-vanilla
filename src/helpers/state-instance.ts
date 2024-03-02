@@ -1,13 +1,16 @@
-import { subscribeWithSelector } from 'zustand/middleware';
+import { defaultDict } from '@utils/default-dict';
+import { StoreApi } from 'zustand';
+import {
+  StoreSubscribeWithSelector,
+  subscribeWithSelector,
+  Write,
+} from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
-import { Subscription } from '../types/store';
-import { defaultDict } from '../utils/default-dict';
+export type Subscription = () => void;
 
 export default abstract class StateInstance<T extends object> {
-  protected _state: ReturnType<
-    typeof createStore<T, [['zustand/subscribeWithSelector', never]]>
-  >;
+  protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
 
   protected _subscriptions = defaultDict<Subscription[]>(() => []);
 

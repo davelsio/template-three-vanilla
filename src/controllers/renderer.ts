@@ -1,8 +1,5 @@
+import { Store } from '@state/store';
 import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
-import { BindingApiEvents, TpChangeEvent } from 'tweakpane';
-
-import { Store } from '../store';
-import { BindingItem, ColorRGBA, InputChangeEvent } from '../types/debug';
 
 interface Options {
   clearColor: number;

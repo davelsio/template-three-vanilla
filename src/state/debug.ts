@@ -1,5 +1,5 @@
-import StateInstance from '../helpers/state-instance';
-import { BindingConfig } from '../types/debug';
+import { BindingConfig } from '@controllers/debug';
+import StateInstance from '@helpers/state-instance';
 
 interface State {
   /**

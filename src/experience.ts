@@ -1,14 +1,12 @@
-import {
-  CameraController,
-  DebugController,
-  RenderController,
-  ResourceController,
-  StageController,
-  TimeController,
-  WorldController,
-} from './controllers';
-import sources from './sources';
-import { Store } from './store';
+import { CameraController } from '@controllers/camera';
+import { DebugController } from '@controllers/debug';
+import { RenderController } from '@controllers/renderer';
+import { ResourceController } from '@controllers/resources';
+import { StageController } from '@controllers/stage';
+import { TimeController } from '@controllers/time';
+import { WorldController } from '@controllers/world';
+import sources from '@loaders/sources';
+import { Store } from '@state/store';
 
 export class Experience {
   private _cameraController: CameraController;

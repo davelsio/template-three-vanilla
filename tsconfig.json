@@ -22,7 +22,15 @@
     // paths
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@debug/*": ["./src/debug/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@loaders/*": ["./src/loaders/*"],
+      "@shaders/*": ["./src/shaders/*"],
+      "@state/*": ["./src/state/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@views/*": ["./src/views/*"],
       "three/addons/controls/*": ["node_modules/@types/three/examples/jsm/controls/*"],
       "three/addons/loaders/*": ["node_modules/@types/three/examples/jsm/loaders/*"]
     }

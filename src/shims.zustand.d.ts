@@ -1,7 +1,7 @@
 import _zustand from 'zustand';
 
 declare module 'zustand/middleware' {
-  type StoreSubscribeWithSelector<T extends object> = {
+  type StoreSubscribeWithSelector<T> = {
     subscribe: {
       (
         listener: (selectedState: T, previousSelectedState: T) => void
@@ -17,5 +17,5 @@ declare module 'zustand/middleware' {
     };
   };
 
-  type Write<T extends object, U extends object> = Omit<T, keyof U> & U;
+  type Write<T, U> = Omit<T, keyof U> & U;
 }

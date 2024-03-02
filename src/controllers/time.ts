@@ -1,6 +1,5 @@
+import { Store } from '@state/store';
 import { Clock } from 'three';
-
-import { Store } from '../store';
 
 export class TimeController {
   private _clock: Clock;

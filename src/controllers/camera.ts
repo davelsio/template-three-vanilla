@@ -1,7 +1,6 @@
+import { Store } from '@state/store';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three-stdlib';
-
-import { Store } from '../store';
 
 interface CameraOptions {
   target: Vector3;

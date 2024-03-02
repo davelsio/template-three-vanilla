@@ -1,9 +1,8 @@
+import { Store } from '@state/store';
+import { Fireflies } from '@views/fireflies';
+import { Loading } from '@views/loading';
+import { Portal } from '@views/portal';
 import { Scene } from 'three';
-
-import { Store } from '../store';
-import { Fireflies } from '../views/fireflies';
-import { Loading } from '../views/loading';
-import { Portal } from '../views/portal';
 
 export class WorldController {
   private _loading: Loading;

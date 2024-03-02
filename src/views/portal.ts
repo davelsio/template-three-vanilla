@@ -1,3 +1,7 @@
+import { WebGLView } from '@helpers/ui';
+import { ResourceLoader } from '@loaders/resources';
+import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
+import { Store } from '@state/store';
 import {
   Color,
   Group,
@@ -9,11 +13,6 @@ import {
   Uniform,
 } from 'three';
 import { GLTF } from 'three-stdlib';
-
-import { ResourceLoader } from '../loaders';
-import { portalFragmentShader, portalVertexShader } from '../shaders/portal';
-import { Store } from '../store';
-import { WebGLView } from '../types/ui';
 
 interface ModelMeshes {
   baked: Mesh;

@@ -1,9 +1,33 @@
+import { Store } from '@state/store';
+import {
+  Bindable,
+  BindingParams,
+  BladeApi,
+  BladeController,
+  FolderParams,
+  TpChangeEvent,
+  View,
+} from '@tweakpane/core';
+import { BindingApi } from '@tweakpane/core/src/blade/binding/api/binding';
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials';
 import { FolderApi, Pane } from 'tweakpane';
 
-import { Store } from '../store';
-import { BaseOnChange, BindingConfig } from '../types/debug';
+export type BindingItem = {
+  object: Bindable;
+  key: keyof Bindable;
+  options?: BindingParams;
+  onChange?: Parameters<BindingApi<unknown, Bindable[keyof Bindable]>['on']>[1];
+};
+
+export type BindingConfig = {
+  bindings: BindingItem[];
+  folder?: FolderParams;
+};
+
+export type BaseOnChange = (
+  ev: TpChangeEvent<unknown, BladeApi<BladeController<View>>>
+) => void;
 
 export class DebugController {
   private _panel: Pane;

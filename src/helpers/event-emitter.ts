@@ -227,7 +227,7 @@ export class EventEmitter {
 
     // Keep only the correctly resolved event listener names.
     const filteredNames = resolvedNames.filter(
-      (x): x is ResolvedName => typeof x !== null
+      (x): x is ResolvedName => x !== null
     );
 
     return filteredNames;

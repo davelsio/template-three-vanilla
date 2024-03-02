@@ -1,6 +1,6 @@
-import { ResourceLoader } from '../loaders';
-import { Store } from '../store';
-import { Assets, LoadedAssets } from '../types/resources';
+import { LoadedAssets, ResourceLoader } from '@loaders/resources';
+import { Assets } from '@loaders/sources';
+import { Store } from '@state/store';
 
 export class ResourceController {
   /**
