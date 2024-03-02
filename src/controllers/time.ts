@@ -27,17 +27,9 @@ export class TimeController {
     const newCurrent = this._clock.getElapsedTime();
     const delta = newCurrent - this._current;
     const elapsed = newCurrent - this._start;
-
     this._current = newCurrent;
 
-    Store.time.update({ afterFrame: false, beforeFrame: true });
-    Store.time.update({
-      delta,
-      elapsed,
-      afterFrame: false,
-      beforeFrame: false,
-    });
-    Store.time.update({ beforeFrame: false, afterFrame: true });
+    Store.time.update({ delta, elapsed });
 
     this._animationHandle = window.requestAnimationFrame(this.tick);
   };

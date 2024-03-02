@@ -8,8 +8,6 @@ import {
   View,
 } from '@tweakpane/core';
 import { BindingApi } from '@tweakpane/core/src/blade/binding/api/binding';
-import { FolderApiEvents } from '@tweakpane/core/src/blade/folder/api/folder';
-import { Pane } from 'tweakpane';
 
 /* INPUT TYPES */
 export type ColorRGBA = {
@@ -31,7 +29,7 @@ export type BindingItem = {
   onChange?: Parameters<BindingApi<unknown, Bindable[keyof Bindable]>['on']>[1];
 };
 export type BindingConfig = {
-  inputs: BindingItem[];
+  bindings: BindingItem[];
   folder?: FolderParams;
 };
 

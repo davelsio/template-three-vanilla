@@ -9,6 +9,7 @@ export class DebugController {
   private _panel: Pane;
   private _folders: Record<string, FolderApi>;
   private _fpsGraph: FpsGraphBladeApi;
+  private _fpsRunning = false;
 
   public namespace = 'DebugController';
 
@@ -31,6 +32,7 @@ export class DebugController {
     Store.time.unsubscribe(this.namespace);
     Store.world.unsubscribe(this.namespace);
     this._fpsGraph?.dispose();
+    this._fpsRunning = false;
     this._panel?.dispose();
     this._folders = {};
   }
@@ -46,13 +48,13 @@ export class DebugController {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribeNs(
+    Store.debug.subscribe(
       this.namespace,
       (state) => state.panels,
       (panels) => this.addConfig(panels[panels.length - 1])
     );
 
-    Store.world.subscribeNs(
+    Store.world.subscribe(
       this.namespace,
       (state) => state.loadingReady,
       (loadingReady) => {
@@ -60,12 +62,15 @@ export class DebugController {
       }
     );
 
-    Store.time.subscribeNs(
+    Store.time.subscribe(
       this.namespace,
-      (state) => [state.beforeFrame, state.afterFrame],
-      ([beforeFrame, afterFrame]) => {
-        beforeFrame && this._fpsGraph.begin();
-        afterFrame && this._fpsGraph.end();
+      (state) => state.elapsed,
+      (_) => {
+        this._fpsRunning && this._fpsGraph.end();
+        this._fpsGraph.begin();
+        if (!this._fpsRunning) {
+          this._fpsRunning = true;
+        }
       }
     );
   }
@@ -73,7 +78,7 @@ export class DebugController {
   /* CALLBACKS */
 
   private addConfig(config: BindingConfig) {
-    const { folder, inputs } = config;
+    const { folder, bindings } = config;
 
     // Declare where to add the new config, to the base pane or a folder
     let ui: Pane | FolderApi = this._panel;
@@ -85,8 +90,8 @@ export class DebugController {
       ui = this._folders[title];
     }
 
-    // Add each input using the pane API
-    inputs.forEach((input) => {
+    // Add each binding using the appropriate API
+    bindings.forEach((input) => {
       ui.addBinding(input.object, input.key, input.options);
       if (input.onChange) {
         ui.on('change', input.onChange as unknown as BaseOnChange);

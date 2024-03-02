@@ -99,7 +99,7 @@ export class Loading extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    Store.world.subscribeNs(
+    Store.world.subscribe(
       this.namespace,
       (state) => state.viewsProgress,
       (progress) => {

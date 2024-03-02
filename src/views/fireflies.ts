@@ -110,24 +110,20 @@ export class Fireflies extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribeNs(
+    Store.debug.subscribe(
       this.namespace,
       (state) => state.enabled,
       this.debug,
       { fireImmediately: true }
     );
 
-    Store.stage.subscribeNs(
+    Store.stage.subscribe(
       this.namespace,
       (state) => state.pixelRatio,
       this.resize
     );
 
-    Store.time.subscribeNs(
-      this.namespace,
-      (state) => state.elapsed,
-      this.update
-    );
+    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
   }
 
   /* CALLBACKS */
@@ -138,7 +134,7 @@ export class Fireflies extends Group implements WebGLView {
       folder: {
         title: 'Fireflies',
       },
-      inputs: [
+      bindings: [
         {
           object: this.material.uniforms.uSize,
           key: 'value',

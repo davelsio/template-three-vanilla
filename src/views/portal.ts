@@ -141,18 +141,14 @@ export class Portal extends Group implements WebGLView {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribeNs(
+    Store.debug.subscribe(
       this.namespace,
       (state) => state.enabled,
       this.debug,
       { fireImmediately: true }
     );
 
-    Store.time.subscribeNs(
-      this.namespace,
-      (state) => state.elapsed,
-      this.update
-    );
+    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
   }
 
   /* CALLBACKS */
@@ -164,7 +160,7 @@ export class Portal extends Group implements WebGLView {
       folder: {
         title: 'Portal',
       },
-      inputs: [
+      bindings: [
         {
           object: this.materials.portalLight.uniforms.uColorStart,
           key: 'value',
@@ -208,7 +204,7 @@ export class Portal extends Group implements WebGLView {
       folder: {
         title: 'Environment',
       },
-      inputs: [
+      bindings: [
         {
           object: this.materials.poleLight,
           key: 'color',

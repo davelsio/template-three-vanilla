@@ -41,16 +41,12 @@ export class CameraController {
   /* SETUP */
 
   private setupSubscriptions() {
-    Store.stage.subscribeNs(
+    Store.stage.subscribe(
       this.namespace,
       (state) => state.aspectRatio,
       this.resize
     );
-    Store.time.subscribeNs(
-      this.namespace,
-      (state) => state.elapsed,
-      this.update
-    );
+    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
   }
 
   /* CALLBACKS */

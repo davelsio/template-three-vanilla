@@ -32,26 +32,16 @@ export default abstract class StateInstance<T extends object> {
   }
 
   /**
-   * Subscribe to a slice of the world state.
-   * @param subscription subscription selector, listener, and options
-   */
-  public subscribe<U>(
-    ...subscription: Parameters<typeof this._state.subscribe<U>>
-  ) {
-    return this._state.subscribe<U>(...subscription);
-  }
-
-  /**
    * Subscribe to a namespaced slice of the state. Namespaced subscriptions
    * can be selectively removed using the `unsubscribe` method.
    * @param namespace namespace to associate with the listener
    * @param subscription subscription selector, listener, and options
    */
-  public subscribeNs<U>(
+  public subscribe<U>(
     namespace: string,
     ...subscription: Parameters<typeof this._state.subscribe<U>>
   ) {
-    const unsub = this.subscribe(...subscription);
+    const unsub = this._state.subscribe<U>(...subscription);
     this._subscriptions[namespace].push(unsub);
     return unsub;
   }
@@ -65,7 +55,7 @@ export default abstract class StateInstance<T extends object> {
     return <U>(
       ...subscription: Parameters<typeof this._state.subscribe<U>>
     ) => {
-      return this.subscribeNs(namespace, ...subscription);
+      return this.subscribe(namespace, ...subscription);
     };
   }
 
