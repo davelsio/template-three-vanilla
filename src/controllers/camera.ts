@@ -27,7 +27,7 @@ export class CameraController {
 
     // Controls
     this.controls = new OrbitControls(this.camera, canvas);
-    this.controls.enabled = false;
+    this.controls.enabled = true;
 
     this.setupSubscriptions();
   }

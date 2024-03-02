@@ -1,4 +1,4 @@
-import { Camera, Color, Scene, sRGBEncoding, WebGLRenderer } from 'three';
+import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 import { TpChangeEvent } from 'tweakpane';
 
 import { Store } from '../store';
@@ -36,7 +36,7 @@ export class RenderController {
       powerPreference: 'high-performance',
       antialias: true,
     });
-    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.outputColorSpace = SRGBColorSpace;
 
     this.renderer.setClearColor(this._options.clearColor);
     this.renderer.setSize(width, height);

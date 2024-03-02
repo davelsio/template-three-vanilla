@@ -1,5 +1,5 @@
 import { subscribeWithSelector } from 'zustand/middleware';
-import createStore from 'zustand/vanilla';
+import { createStore } from 'zustand/vanilla';
 
 import { Subscription } from '../types/store';
 import { defaultDict } from '../utils/default-dict';

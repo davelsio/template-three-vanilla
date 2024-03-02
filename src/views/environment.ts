@@ -3,7 +3,7 @@ import {
   CubeTexture,
   PointLight,
   Scene,
-  sRGBEncoding,
+  SRGBColorSpace,
 } from 'three';
 
 import { isThreeMesh, isThreeMeshStandardMaterial } from '../utils/type-guards';
@@ -49,7 +49,7 @@ export default class Environment {
   /* SETUP */
 
   private setupEnvironmentMap() {
-    this.assets.environmentMap.encoding = sRGBEncoding;
+    this.assets.environmentMap.colorSpace = SRGBColorSpace;
     this.scene.background = this.assets.environmentMap;
     this.scene.environment = this.assets.environmentMap;
     this.updateMaterials();

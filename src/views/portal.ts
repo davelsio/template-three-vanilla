@@ -4,7 +4,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   ShaderMaterial,
-  sRGBEncoding,
+  SRGBColorSpace,
   Texture,
 } from 'three';
 import { GLTF } from 'three-stdlib';
@@ -78,12 +78,11 @@ export class Portal extends Group implements WebGLView {
   /* SETUP */
 
   private async setupAssets() {
-    const portalBakedTexture = await ResourceLoader.loadTexture(
-      'portalBakedTexture'
-    );
+    const portalBakedTexture =
+      await ResourceLoader.loadTexture('portalBakedTexture');
     this.portalBakedTexture = portalBakedTexture;
     this.portalBakedTexture.flipY = false;
-    this.portalBakedTexture.encoding = sRGBEncoding;
+    this.portalBakedTexture.colorSpace = SRGBColorSpace;
     const portalModel = await ResourceLoader.loadGltfModel('portalModel');
     this.portalScene = portalModel;
   }
