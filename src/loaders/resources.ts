@@ -1,4 +1,4 @@
-import { Assets } from '@loaders/sources';
+import { Asset } from '@loaders/sources';
 import {
   CubeTexture,
   CubeTextureLoader,
@@ -61,7 +61,7 @@ export interface LoadedAssets {
 }
 
 export class ResourceLoader {
-  private static _assets: Assets;
+  private static _assets: Asset[];
   private static _cache: LoadedAssets;
 
   private static _loadingManager?: LoadingManager;
@@ -70,7 +70,7 @@ export class ResourceLoader {
   private static _gltfLoader: GLTFLoader;
 
   public static init(
-    assets: Assets,
+    assets: Asset[],
     cache: LoadedAssets,
     options?: InitOptions
   ) {

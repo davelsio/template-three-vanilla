@@ -1,19 +1,19 @@
 import { LoadedAssets, ResourceLoader } from '@loaders/resources';
-import { Assets } from '@loaders/sources';
+import { Asset } from '@loaders/sources';
 import { Store } from '@state/store';
 
 export class ResourceController {
   /**
    * Available _total_ assets.
    */
-  private _sourceAssets: Assets;
+  private _sourceAssets: Asset[];
 
   /**
    * Available assets _loaded_.
    */
   private _loadedAssets: LoadedAssets;
 
-  constructor(assets: Assets) {
+  constructor(assets: Asset[]) {
     this._sourceAssets = assets;
     this._loadedAssets = {
       cubeTexture: {},

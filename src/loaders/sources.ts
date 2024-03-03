@@ -4,10 +4,9 @@ import {
   TextureResource,
 } from '@loaders/resources';
 
-export type Assets = Array<
-  CubeTextureResource | TextureResource | GLTFModelResource
->;
-export const portalAssets: Assets = [
+export type Asset = CubeTextureResource | TextureResource | GLTFModelResource;
+
+export const portalAssets: Asset[] = [
   {
     name: 'portalBakedTexture',
     type: 'texture',
@@ -20,6 +19,6 @@ export const portalAssets: Assets = [
   },
 ];
 
-const sources: Assets = [...portalAssets];
+const sources: Asset[] = [...portalAssets];
 
 export default sources;
