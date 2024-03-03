@@ -1,5 +1,6 @@
 import './src/styles/reset.css';
 import './src/styles/webgl.css';
+import './src/styles/tweak-pane.css';
 
 import { Experience } from './src/experience';
 
