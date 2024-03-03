@@ -6,7 +6,7 @@ import {
 
 export type Asset = CubeTextureResource | TextureResource | GLTFModelResource;
 
-export const portalAssets: Asset[] = [
+export const assets: Asset[] = [
   {
     name: 'portalBakedTexture',
     type: 'texture',
@@ -18,7 +18,3 @@ export const portalAssets: Asset[] = [
     path: 'portal.glb',
   },
 ];
-
-const sources: Asset[] = [...portalAssets];
-
-export default sources;

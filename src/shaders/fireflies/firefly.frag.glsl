@@ -25,8 +25,10 @@ void main() {
 
   // Compute the alpha value of the fragment depending on its firefly position.
   float strength = (0.05 / distanceToCenter) - 0.1;
-  // float strength = (uSize / distanceToCenter) - uSize * 2.0;
-  // float strength = (vPointSize / distanceToCenter) - vPointSize * 2.0;
+  //float strength = (uSize / distanceToCenter) - uSize * 2.0;
+  //float strength = (vPointSize / distanceToCenter) - vPointSize * 2.0;
 
   gl_FragColor = vec4(uColor, strength);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
 }

@@ -1,4 +1,4 @@
-import { WebGLView } from '@helpers/ui';
+import { WebGLView } from '@helpers/webgl-view';
 import {
   barFragmentShader,
   barVertexShader,
@@ -7,17 +7,13 @@ import {
 } from '@shaders/progress';
 import { Store } from '@state/store';
 import gsap from 'gsap';
-import { Group, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
+import { Mesh, PlaneGeometry, Scene, ShaderMaterial } from 'three';
 
 export interface LoadingProps {
   loadingDelay: number;
 }
 
-export class Loading extends Group implements WebGLView {
-  private _props = {
-    loadAnimDuration: 0.5,
-  };
-
+export class Loading extends WebGLView<LoadingProps> {
   private _barGeometry: PlaneGeometry;
   private _barMaterial: ShaderMaterial;
   private _barMesh: Mesh;
@@ -28,9 +24,12 @@ export class Loading extends Group implements WebGLView {
 
   public namespace = 'Loading';
 
-  constructor(props?: Partial<LoadingProps>) {
-    super();
-    this._props = Object.assign(this._props, props);
+  constructor(scene: Scene, props?: Partial<LoadingProps>) {
+    super(scene, {
+      loadingDelay: 0.5,
+      ...props,
+    });
+    this.init();
   }
 
   public async init() {
@@ -52,6 +51,7 @@ export class Loading extends Group implements WebGLView {
     this._overlayGeometry.dispose();
     this._overlayMaterial.dispose();
     this.remove(this._barMesh, this._overlayMesh);
+    this._scene.remove(this);
   }
 
   /* SETUP */
@@ -104,12 +104,12 @@ export class Loading extends Group implements WebGLView {
       (progress) => {
         gsap
           .to(this._barMaterial.uniforms.uProgress, {
-            duration: 0.5,
+            duration: this._props.loadingDelay,
             value: progress,
           })
           .then((res) => {
             if (res.vars.value === 1) {
-              Store.world.setLoadingReady();
+              this.destroy();
             }
           });
       }

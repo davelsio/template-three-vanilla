@@ -1,4 +1,4 @@
-import { WebGLView } from '@helpers/ui';
+import { WebGLView } from '@helpers/webgl-view';
 import { ResourceLoader } from '@loaders/resources';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 import { Store } from '@state/store';
@@ -7,6 +7,7 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
+  Scene,
   ShaderMaterial,
   SRGBColorSpace,
   Texture,
@@ -35,7 +36,7 @@ interface Props {
   uvStrengthOffset: number;
 }
 
-export class Portal extends Group implements WebGLView {
+export class Portal extends WebGLView<Props> {
   private portalBakedTexture: Texture;
   private portalScene: GLTF;
 
@@ -43,19 +44,19 @@ export class Portal extends Group implements WebGLView {
   private meshes: ModelMeshes;
   private materials: ModelMaterials;
 
-  private _props: Props = {
-    poleLightColor: new Color(0xffffff),
-    portalColorStart: new Color(0x000000),
-    portalColorEnd: new Color(0xffffff),
-    uvDisplacementOffset: 5.0,
-    uvStrengthOffset: 5.0,
-  };
-
   public namespace = 'Portal';
 
-  constructor(props?: Partial<Props>) {
-    super();
-    Object.assign(this._props, props);
+  constructor(scene: Scene, props?: Partial<Props>) {
+    super(scene, {
+      poleLightColor: new Color(0xffffff),
+      portalColorStart: new Color(0x000000),
+      portalColorEnd: new Color(0xffffff),
+      uvDisplacementOffset: 5.0,
+      uvStrengthOffset: 5.0,
+      ...props,
+    });
+    super.flagAsLoading();
+    this.init();
   }
 
   public async init() {
@@ -63,8 +64,7 @@ export class Portal extends Group implements WebGLView {
     this.setupMaterial();
     this.setupModel();
     this.setupSubscriptions();
-
-    Store.world.addViewLoaded(this.namespace);
+    super.flagAsLoaded();
   }
 
   public destroy() {
@@ -75,6 +75,7 @@ export class Portal extends Group implements WebGLView {
     this.materials.poleLight.dispose();
     this.materials.portalLight.dispose();
     this.remove(this.model);
+    this._scene.remove(this);
   }
 
   /* SETUP */
@@ -186,6 +187,9 @@ export class Portal extends Group implements WebGLView {
             max: 50,
             step: 0.1,
           },
+          onChange: ({ value }) =>
+            (this.materials.portalLight.uniforms.uOffsetDisplacementUv.value =
+              value),
         },
         {
           object: this._props,
@@ -196,6 +200,9 @@ export class Portal extends Group implements WebGLView {
             max: 50,
             step: 0.1,
           },
+          onChange: ({ value }) =>
+            (this.materials.portalLight.uniforms.uOffsetStrengthUv.value =
+              value),
         },
       ],
     });

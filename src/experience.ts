@@ -5,7 +5,7 @@ import { ResourceController } from '@controllers/resources';
 import { StageController } from '@controllers/stage';
 import { TimeController } from '@controllers/time';
 import { WorldController } from '@controllers/world';
-import sources from '@loaders/sources';
+import { assets } from '@loaders/assets';
 import { Store } from '@state/store';
 
 export class Experience {
@@ -30,7 +30,7 @@ export class Experience {
     Store.init();
 
     // Assets and resources
-    this._resourceController = new ResourceController(sources);
+    this._resourceController = new ResourceController(assets);
 
     // DOM interactive interface and render context
     this._stageController = new StageController(root, canvas);
@@ -44,16 +44,10 @@ export class Experience {
     // Frames and clock
     this._timeController = new TimeController();
 
-    // WebGL scene and views
-    this._worldController = new WorldController();
-
     // WebGL camera
     this._cameraController = new CameraController(
       this._stageController.aspectRatio,
-      this._stageController.canvas,
-      {
-        target: this._worldController.scene.position,
-      }
+      this._stageController.canvas
     );
 
     // WebGL renderer
@@ -61,9 +55,11 @@ export class Experience {
       this._stageController.canvas,
       this._stageController.width,
       this._stageController.height,
-      this._cameraController.camera,
-      this._worldController.scene
+      this._cameraController.camera
     );
+
+    // WebGL views
+    this._worldController = new WorldController(this._renderController.scene);
   }
 
   /**
@@ -89,8 +85,8 @@ export class Experience {
   public onLoad(callback: () => void) {
     Store.world.subscribe(
       this.namespace,
-      (state) => state.loadingReady,
-      (loadingReady) => loadingReady && callback()
+      (state) => state.viewsProgress,
+      (progress) => progress === 1 && callback()
     );
   }
 }

@@ -7,7 +7,7 @@ interface StateProps {
   assetsLoaded: number;
 
   /**
-   * Total number assets available in the sources pack.
+   * Total number assets available in the assets pack.
    */
   assetsTotal: number;
 

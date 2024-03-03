@@ -1,4 +1,6 @@
 import { isThreeMesh, isThreeMeshStandardMaterial } from '@helpers/type-guards';
+import { WebGLView } from '@helpers/webgl-view';
+import { ResourceLoader } from '@loaders/resources';
 import {
   AmbientLight,
   CubeTexture,
@@ -7,34 +9,29 @@ import {
   SRGBColorSpace,
 } from 'three';
 
-interface Assets {
-  environmentMap: CubeTexture;
-}
-
 interface Props {
   envMapIntensity: number;
 }
 
-export default class Environment {
-  private _props: Props = {
-    envMapIntensity: 2.5,
-  };
+export class Environment extends WebGLView<Props> {
+  private _environmentMap: CubeTexture;
+  private _ambientLight: AmbientLight;
+  private _pointLight: PointLight;
 
-  private assets: Assets;
-  private scene: Scene;
+  constructor(scene: Scene, props?: Partial<Props>) {
+    super(scene, {
+      envMapIntensity: 2.5,
+      ...props,
+    });
+    this._scene = scene;
+    super.flagAsLoading();
+    this.init();
+  }
 
-  private ambientLight: AmbientLight;
-  private pointLight: PointLight;
-
-  constructor(scene: Scene, assets: Assets, props?: Partial<Props>) {
-    this.scene = scene;
-    this.assets = assets;
-
-    this._props = Object.assign(this._props, props);
-
-    // Setup
+  public async init() {
+    await this.setupEnvironmentMap();
     this.setupLights();
-    // this.setupEnvironmentMap();
+    super.flagAsLoaded();
   }
 
   public destroy() {
@@ -47,29 +44,29 @@ export default class Environment {
 
   /* SETUP */
 
-  private setupEnvironmentMap() {
-    this.assets.environmentMap.colorSpace = SRGBColorSpace;
-    this.scene.background = this.assets.environmentMap;
-    this.scene.environment = this.assets.environmentMap;
-    this.updateMaterials();
-  }
+  private async setupEnvironmentMap() {
+    this._environmentMap = await ResourceLoader.loadCubeTexture(
+      'environmentMapTexture'
+    );
+    this._environmentMap.colorSpace = SRGBColorSpace;
+    this._scene.background = this._environmentMap;
+    this._scene.environment = this._environmentMap;
 
-  private setupLights() {
-    this.ambientLight = new AmbientLight(0xffffff, 0.5);
-
-    this.pointLight = new PointLight(0xffffff, 0.5);
-    this.pointLight.position.set(2, 3, 4);
-    this.scene.add(this.ambientLight);
-  }
-
-  private updateMaterials() {
-    this.scene.traverse((child) => {
+    // Update materials
+    this._scene.traverse((child) => {
       if (isThreeMesh(child) && isThreeMeshStandardMaterial(child.material)) {
-        child.material.envMap = this.assets.environmentMap;
+        child.material.envMap = this._environmentMap;
         child.material.envMapIntensity = this._props.envMapIntensity;
         child.material.needsUpdate = true;
       }
     });
+  }
+
+  private setupLights() {
+    this._ambientLight = new AmbientLight(0xffffff, 0.5);
+    this._pointLight = new PointLight(0xffffff, 0.5);
+    this._pointLight.position.set(2, 3, 4);
+    this._scene.add(this._ambientLight);
   }
 
   /* CALLBACKS */

@@ -2,14 +2,14 @@ import { StateNotInitializedError } from '@helpers/error';
 
 import DebugState from './debug';
 import ResourceState from './resources';
-import StageState from './stage';
+import StageStore from './stage';
 import TimeState from './time';
 import WorldState from './world';
 
 export class Store {
   private static _debug: DebugState | null;
   private static _resources: ResourceState | null;
-  private static _stage: StageState | null;
+  private static _stage: StageStore | null;
   private static _time: TimeState | null;
   private static _world: WorldState | null;
 
@@ -41,7 +41,7 @@ export class Store {
   public static init() {
     this._debug = new DebugState();
     this._resources = new ResourceState();
-    this._stage = new StageState();
+    this._stage = new StageStore();
     this._time = new TimeState();
     this._world = new WorldState();
   }

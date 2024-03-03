@@ -7,24 +7,23 @@ interface Options {
 
 export class RenderController {
   private _camera: Camera;
-  private _scene: Scene;
   private _options: Options = {
     clearColor: 0x201919,
   };
 
   public namespace = 'RenderController';
   public renderer: WebGLRenderer;
+  public scene: Scene;
 
   public constructor(
     canvas: HTMLCanvasElement,
     width: number,
     height: number,
     camera: Camera,
-    scene: Scene,
     options?: Partial<Options>
   ) {
     this._camera = camera;
-    this._scene = scene;
+    this.scene = new Scene();
 
     if (options) Object.assign(this._options, options);
 
@@ -37,7 +36,7 @@ export class RenderController {
 
     this.renderer.setClearColor(this._options.clearColor);
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(1);
+    this.renderer.setPixelRatio(Store.stage.state.pixelRatio);
 
     this.setupSubscriptions();
   }
@@ -116,6 +115,6 @@ export class RenderController {
   };
 
   private update = () => {
-    this.renderer.render(this._scene, this._camera);
+    this.renderer.render(this.scene, this._camera);
   };
 }

@@ -1,36 +1,45 @@
-import { WebGLView } from '@helpers/ui';
+import { WebGLView } from '@helpers/webgl-view';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
+import { StageState } from '@state/stage';
 import { Store } from '@state/store';
 import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
   Color,
-  Group,
   Points,
+  Scene,
   ShaderMaterial,
   Uniform,
+  Vector2,
 } from 'three';
 
 interface Props {
   baseSize: number;
+  resolution: Vector2;
+  color: Color;
 }
 
-export class Fireflies extends Group implements WebGLView {
-  private _props = {
-    baseSize: 0.75,
-    color: new Color(0xffffff),
-  };
-
+export class Fireflies extends WebGLView<Props> {
   private geometry: BufferGeometry;
   private material: ShaderMaterial;
   private fireflies: Points;
 
   public namespace = 'Fireflies';
 
-  constructor(props?: Partial<Props>) {
-    super();
+  constructor(scene: Scene, props?: Partial<Props>) {
+    super(scene, {
+      baseSize: 0.75,
+      resolution: new Vector2(
+        Store.stage.state.width * Store.stage.state.pixelRatio,
+        Store.stage.state.height * Store.stage.state.pixelRatio
+      ),
+      color: new Color(0xffffff),
+      ...props,
+    });
     this._props = Object.assign(this._props, props);
+    super.flagAsLoading();
+    this.init();
   }
 
   public async init() {
@@ -38,8 +47,7 @@ export class Fireflies extends Group implements WebGLView {
     this.setupMaterial();
     this.setupPoints();
     this.setupSubscriptions();
-
-    Store.world.addViewLoaded(this.namespace);
+    super.flagAsLoaded();
   }
 
   public destroy() {
@@ -50,6 +58,7 @@ export class Fireflies extends Group implements WebGLView {
     this.geometry.dispose();
     this.material.dispose();
     this.remove(this.fireflies);
+    this._scene.remove(this);
   }
 
   /* SETUP */
@@ -93,8 +102,8 @@ export class Fireflies extends Group implements WebGLView {
       //
       uniforms: {
         uColor: new Uniform(this._props.color),
+        uResolution: new Uniform(this._props.resolution),
         uSize: new Uniform(this._props.baseSize),
-        uScale: new Uniform(Store.stage.state.height * 0.5),
         uTime: new Uniform(0),
       },
     });
@@ -113,11 +122,7 @@ export class Fireflies extends Group implements WebGLView {
       { fireImmediately: true }
     );
 
-    Store.stage.subscribe(
-      this.namespace,
-      (state) => state.pixelRatio,
-      this.resize
-    );
+    Store.stage.subscribe(this.namespace, (state) => state, this.resize);
 
     Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
   }
@@ -140,6 +145,7 @@ export class Fireflies extends Group implements WebGLView {
             max: 2.0,
             step: 0.01,
           },
+          onChange: ({ value }) => (this.material.uniforms.uSize.value = value),
         },
         {
           object: this._props,
@@ -153,12 +159,14 @@ export class Fireflies extends Group implements WebGLView {
     });
   };
 
-  private resize = (pixelRatio: number) => {
+  private resize = (state: StageState) => {
     /**
      * Ensure that the fireflies are correctly sized if the user moves the
      * browser window to another screen with a different pixel ratio.
      */
-    this.material.uniforms.uSize.value = this._props.baseSize * pixelRatio;
+    const width = state.width * state.pixelRatio;
+    const height = state.height * state.pixelRatio;
+    this.material.uniforms.uResolution.value.set(width, height);
   };
 
   private update = (elapsed: number) => {

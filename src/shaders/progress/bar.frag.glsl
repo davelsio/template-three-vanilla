@@ -25,4 +25,6 @@ void main() {
    */
   vec3 color = clamp(vec3(1.0 - loc), vec3(0.3), vec3(1.0));
   gl_FragColor = vec4(color, uAlpha);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
 }

@@ -1,4 +1,4 @@
-import { Asset } from '@loaders/sources';
+import { Asset } from '@loaders/assets';
 import {
   CubeTexture,
   CubeTextureLoader,
@@ -105,19 +105,17 @@ export class ResourceLoader {
       throw new Error(`Cube texture resource "${name}" not found`);
     }
 
-    return new Promise<Required<CubeTextureResource>>((resolve, reject) => {
-      this._cubeTextureLoader.load(
-        source.path,
-        (texture) => {
-          resolve({
-            ...source,
-            file: texture,
-          });
-        },
-        options?.onProgress,
-        reject
-      );
-    });
+    const texture = await this._cubeTextureLoader.loadAsync(
+      source.path,
+      options?.onProgress
+    );
+
+    this._cache.cubeTexture[name] = {
+      ...source,
+      file: texture,
+    };
+
+    return texture;
   }
 
   public static async loadTexture(name: string, options?: LoaderOptions) {
@@ -145,6 +143,14 @@ export class ResourceLoader {
     };
 
     return texture;
+  }
+
+  public static async loadAllTextures(options?: LoaderOptions) {
+    const texturePromises = this._assets
+      .filter((source): source is TextureResource => source.type === 'texture')
+      .map((source) => this.loadTexture(source.name, options));
+
+    return Promise.all(texturePromises);
   }
 
   public static async loadGltfModel(name: string, options?: LoaderOptions) {

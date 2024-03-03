@@ -1,6 +1,6 @@
 import StateInstance from '@helpers/state-instance';
 
-interface State {
+export interface StageState {
   /**
    * Ratio of `width / height` of the root element.
    */
@@ -22,7 +22,7 @@ interface State {
   width: number;
 }
 
-export default class StageState extends StateInstance<State> {
+export default class StageStore extends StateInstance<StageState> {
   constructor() {
     super({
       width: 0,
@@ -32,7 +32,7 @@ export default class StageState extends StateInstance<State> {
     });
   }
 
-  public update(state: Partial<State>) {
+  public update(state: Partial<StageState>) {
     this._state.setState({ ...state });
   }
 }

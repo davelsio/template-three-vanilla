@@ -2,63 +2,48 @@ import StateInstance from '@helpers/state-instance';
 
 interface State {
   /**
-   * Whether the loading bar has finished animating.
+   * The WebGL views that need to be loaded.
    */
-  loadingReady: boolean;
-
+  viewsToLoad: string[];
   /**
    * The WebGL views that have finished loading.
    */
   viewsLoaded: string[];
-
   /**
    * Ratio [0, 1] of viewsLoaded over viewsToLoad.
    */
   viewsProgress: number;
-
-  /**
-   * Whether all views have finished loading.
-   */
-  viewsReady: boolean;
 }
 
 export default class WorldState extends StateInstance<State> {
   constructor() {
     super({
+      viewsToLoad: [],
       viewsLoaded: [],
       viewsProgress: 0,
-      viewsReady: false,
-      loadingReady: false,
     });
   }
 
   /* ACTIONS */
+
+  public addViewsToLoad(name: string) {
+    this._state.setState((state) => ({
+      viewsToLoad: [...state.viewsToLoad, name],
+    }));
+  }
 
   /**
    * Set a WebGL view as loaded.
    * @param name namespace of the loaded view
    */
   public addViewLoaded(name: string) {
-    this._state.setState((state) => ({
-      viewsLoaded: [...state.viewsLoaded, name],
-    }));
-  }
-
-  /**
-   * Set the loading view and animation as completed.
-   */
-  public setLoadingReady() {
-    this._state.setState({ loadingReady: true });
-  }
-
-  /**
-   * Update progress
-   * @param viewsProgress unit percent of views loaded
-   */
-  public updateProgress(viewsProgress: number) {
-    this._state.setState({
-      viewsProgress,
-      viewsReady: viewsProgress === 1,
+    this._state.setState((state) => {
+      const viewsLoaded = [...state.viewsLoaded, name];
+      const viewsProgress = state.viewsToLoad.length / viewsLoaded.length;
+      return {
+        viewsLoaded,
+        viewsProgress,
+      };
     });
   }
 }

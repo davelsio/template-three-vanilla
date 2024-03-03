@@ -1,4 +1,4 @@
-uniform float uScale;
+uniform vec2 uResolution;
 uniform float uSize;
 uniform float uTime;
 
@@ -7,11 +7,6 @@ attribute float aScale;
 varying float vPointSize;
 
 void main() {
-
-  /**
-   * Firefly position
-   */
-
   vec4 modelPosition = modelMatrix * vec4(position, 1.0);
 
   // Randomize y-axis offset
@@ -26,7 +21,6 @@ void main() {
 
   gl_Position = projectionPosition;
 
-
   /**
    * Firefly size adjusted by pixel ratio and distance from camera. Emulates
    * the `sizeAttenuation` of THREE.PointsMaterial.
@@ -34,7 +28,7 @@ void main() {
    *   Adjusting to the device pixel ratio ensures the particle will have
    *   the same size regardless of the device's pixel density.
    *
-   *     uSize:  <const> * pixelRatio
+   *     uSize:  <const> * uResolution.y
    *
    *   Scaling each particle randomly creates a more natural feeling.
    *
@@ -47,8 +41,8 @@ void main() {
    *
    *     uScale: second scale factor -> half the scene height.
    */
-  gl_PointSize = uSize * aScale;
-  gl_PointSize *= (uScale / -viewPosition.z);
+  gl_PointSize = uSize * uResolution.y * aScale;
+  gl_PointSize *= 1.0 / -viewPosition.z;
 
   vPointSize = gl_PointSize;
 }

@@ -38,7 +38,7 @@ export class DebugController {
   public namespace = 'DebugController';
 
   public constructor() {
-    const active = window.location.href.endsWith('#debug');
+    const active = window.location.href.endsWith('/debug');
     if (!active) return;
     Store.debug.enableDebug();
 
@@ -80,9 +80,9 @@ export class DebugController {
 
     Store.world.subscribe(
       this.namespace,
-      (state) => state.loadingReady,
-      (loadingReady) => {
-        if (loadingReady) this._panel.hidden = false;
+      (state) => state.viewsProgress,
+      (progress) => {
+        if (progress === 1) this._panel.hidden = false;
       }
     );
 
