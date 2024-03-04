@@ -1,7 +1,7 @@
 import { WebGLView } from '@helpers/WebGLView';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
-import { StageState } from '@state/stage';
-import { Store } from '@state/store';
+import { StageState } from '@state/Stage';
+import { Store } from '@state/Store';
 import {
   AdditiveBlending,
   BufferAttribute,

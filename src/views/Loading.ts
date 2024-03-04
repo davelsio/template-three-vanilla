@@ -5,7 +5,7 @@ import {
   overlayFragmentShader,
   overlayVertexShader,
 } from '@shaders/progress';
-import { Store } from '@state/store';
+import { Store } from '@state/Store';
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, Scene, ShaderMaterial } from 'three';
 

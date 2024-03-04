@@ -4,7 +4,7 @@ import {
   TextureAssets,
 } from '@loaders/assets';
 import { ResourceLoader } from '@loaders/ResourceLoader';
-import { Store } from '@state/store';
+import { Store } from '@state/Store';
 import { TypedObject } from '@utils/typedObject';
 import { CubeTexture, Texture } from 'three';
 import { GLTF } from 'three-stdlib';

@@ -1,8 +1,8 @@
 import { WebGLView } from '@helpers/WebGLView';
-import { Store } from '@state/store';
-import { Fireflies } from '@views/fireflies';
-import { Loading } from '@views/loading';
-import { Portal } from '@views/portal';
+import { Store } from '@state/Store';
+import { Fireflies } from '@views/Fireflies';
+import { Loading } from '@views/Loading';
+import { Portal } from '@views/Portal';
 import { Scene } from 'three';
 
 type WorldOptions = {

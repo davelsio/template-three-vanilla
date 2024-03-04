@@ -1,10 +1,10 @@
 import { StateNotInitializedError } from '@errors/StateNotInitializedError';
 
-import DebugStore from './debug';
-import ResourceStore from './resources';
-import StageStore from './stage';
-import TimeStore from './time';
-import WorldStore from './world';
+import DebugStore from './Debug';
+import ResourceStore from './Resources';
+import StageStore from './Stage';
+import TimeStore from './Time';
+import WorldStore from './World';
 
 export class Store {
   private static _debug: DebugStore | null;

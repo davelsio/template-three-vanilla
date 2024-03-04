@@ -1,4 +1,4 @@
-import { Store } from '@state/store';
+import { Store } from '@state/Store';
 import { Group, Scene } from 'three';
 
 export abstract class WebGLView<T extends {} = {}> extends Group {

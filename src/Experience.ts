@@ -6,7 +6,7 @@ import { StageController } from '@controllers/Stage';
 import { TimeController } from '@controllers/Time';
 import { WorldController } from '@controllers/World';
 import { CubeTextures, GLTFModels, Textures } from '@loaders/assets';
-import { Store } from '@state/store';
+import { Store } from '@state/Store';
 
 export class Experience {
   private _cameraController: CameraController;

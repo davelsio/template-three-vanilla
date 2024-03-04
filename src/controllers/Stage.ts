@@ -1,4 +1,4 @@
-import { Store } from '@state/store';
+import { Store } from '@state/Store';
 
 export class StageController {
   private _media: MediaQueryList | undefined;

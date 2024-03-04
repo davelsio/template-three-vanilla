@@ -2,7 +2,7 @@ import './src/styles/reset.css';
 import './src/styles/webgl.css';
 import './src/styles/tweak-pane.css';
 
-import { Experience } from './src/experience';
+import { Experience } from './src/Experience';
 
 const root = document.querySelector<HTMLDivElement>('#root');
 
