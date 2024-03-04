@@ -24,11 +24,13 @@
     "paths": {
       "@controllers/*": ["./src/controllers/*"],
       "@debug/*": ["./src/debug/*"],
+      "@errors/*": ["./src/errors/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@loaders/*": ["./src/loaders/*"],
       "@shaders/*": ["./src/shaders/*"],
       "@state/*": ["./src/state/*"],
       "@styles/*": ["./src/styles/*"],
+      "@type-guards/*": ["./src/type-guards/*"],
       "@utils/*": ["./src/utils/*"],
       "@views/*": ["./src/views/*"],
       "three/addons/controls/*": ["node_modules/@types/three/examples/jsm/controls/*"],

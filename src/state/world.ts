@@ -1,6 +1,6 @@
-import StateInstance from '@helpers/StateInstance';
+import { StoreInstance } from '@helpers/StoreInstance';
 
-interface State {
+interface WorldState {
   /**
    * The WebGL views that need to be loaded.
    */
@@ -15,7 +15,7 @@ interface State {
   viewsProgress: number;
 }
 
-export default class WorldState extends StateInstance<State> {
+export default class WorldStore extends StoreInstance<WorldState> {
   constructor() {
     super({
       viewsToLoad: [],

@@ -1,6 +1,6 @@
-import StateInstance from '@helpers/StateInstance';
+import { StoreInstance } from '@helpers/StoreInstance';
 
-interface State {
+interface TimeState {
   /**
    * Time elapsed in milliseconds since the previous frame.
    */
@@ -11,7 +11,7 @@ interface State {
   elapsed: number;
 }
 
-export default class TimeState extends StateInstance<State> {
+export default class TimeStore extends StoreInstance<TimeState> {
   constructor() {
     super({
       delta: 16,
@@ -19,7 +19,7 @@ export default class TimeState extends StateInstance<State> {
     });
   }
 
-  public update(state: Partial<State>) {
+  public update(state: Partial<TimeState>) {
     this._state.setState(state);
   }
 }

@@ -1,19 +1,18 @@
 import { BindingConfig } from '@controllers/Debug';
-import StateInstance from '@helpers/StateInstance';
+import { StoreInstance } from '@helpers/StoreInstance';
 
-interface State {
+interface DebugState {
   /**
    * Whether debug mode is enabled or not.
    */
   enabled: boolean;
-
   /**
    * Currently active input configuration of panels.
    */
   panels: BindingConfig[];
 }
 
-export default class DebugState extends StateInstance<State> {
+export default class DebugStore extends StoreInstance<DebugState> {
   constructor() {
     super({
       enabled: false,

@@ -9,7 +9,7 @@ import { createStore } from 'zustand/vanilla';
 
 export type Subscription = () => void;
 
-export default abstract class StateInstance<T extends object> {
+export abstract class StoreInstance<T extends object> {
   protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
 
   protected _subscriptions = defaultDict<Subscription[]>(() => []);

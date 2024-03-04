@@ -1,23 +1,21 @@
-import StateInstance from '@helpers/StateInstance';
+import { StoreInstance } from '@helpers/StoreInstance';
 
 interface StateProps {
   /**
    * Number of assets already loaded.
    */
   assetsLoaded: number;
-
   /**
    * Total number assets available in the assets pack.
    */
   assetsTotal: number;
-
   /**
    * Progress ([0,1]) of the asset loading process.
    */
   assetsProgress: number;
 }
 
-export default class ResourceState extends StateInstance<StateProps> {
+export default class ResourceStore extends StoreInstance<StateProps> {
   constructor() {
     super({
       assetsLoaded: 0,

@@ -1,16 +1,17 @@
-import { StateNotInitializedError } from '../errors/StateNotInitializedError';
-import DebugState from './debug';
-import ResourceState from './resources';
+import { StateNotInitializedError } from '@errors/StateNotInitializedError';
+
+import DebugStore from './debug';
+import ResourceStore from './resources';
 import StageStore from './stage';
-import TimeState from './time';
-import WorldState from './world';
+import TimeStore from './time';
+import WorldStore from './world';
 
 export class Store {
-  private static _debug: DebugState | null;
-  private static _resources: ResourceState | null;
+  private static _debug: DebugStore | null;
+  private static _resources: ResourceStore | null;
   private static _stage: StageStore | null;
-  private static _time: TimeState | null;
-  private static _world: WorldState | null;
+  private static _time: TimeStore | null;
+  private static _world: WorldStore | null;
 
   public static get debug() {
     if (!this._debug) throw new StateNotInitializedError('debug');
@@ -38,11 +39,11 @@ export class Store {
   }
 
   public static init() {
-    this._debug = new DebugState();
-    this._resources = new ResourceState();
+    this._debug = new DebugStore();
+    this._resources = new ResourceStore();
     this._stage = new StageStore();
-    this._time = new TimeState();
-    this._world = new WorldState();
+    this._time = new TimeStore();
+    this._world = new WorldStore();
   }
 
   /**
