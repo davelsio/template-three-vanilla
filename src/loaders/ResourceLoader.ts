@@ -1,25 +1,49 @@
-import { LoadedAssets, SourceAssets } from '@controllers/Resources';
+import { AssetNotFoundError } from '@errors/AssetNotFoundError';
 import {
+  AssetType,
   CubeTextureAssets,
   GLTFModelAssets,
   TextureAssets,
 } from '@loaders/assets';
+import { Store } from '@state/Store';
 import { TypedObject } from '@utils/typedObject';
-import { CubeTextureLoader, LoadingManager, TextureLoader } from 'three';
-import { DRACOLoader, GLTFLoader } from 'three-stdlib';
+import {
+  CubeTexture,
+  CubeTextureLoader,
+  LoadingManager,
+  Texture,
+  TextureLoader,
+} from 'three';
+import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib';
 
-interface LoaderOptions {
+type LoaderOptions = {
   onProgress?: (event: ProgressEvent) => void;
-}
+};
 
-interface InitOptions {
+type InitOptions = {
   loadingManager: LoadingManager;
   draco?: boolean;
-}
+};
+
+type Sources = {
+  cubeTextures: CubeTextureAssets;
+  textures: TextureAssets;
+  gltfs: GLTFModelAssets;
+};
+
+type CubeTextureCache = Record<string, CubeTexture>;
+type TextureCache = Record<string, Texture>;
+type GLTFCache = Record<string, GLTF>;
+
+type Cache = {
+  cubeTexture: CubeTextureCache;
+  texture: TextureCache;
+  gltf: GLTFCache;
+};
 
 export class ResourceLoader {
-  private static _assets: SourceAssets;
-  private static _cache: LoadedAssets;
+  private static _assets: Sources;
+  private static _cache: Cache;
 
   private static _loadingManager?: LoadingManager;
   private static _cubeTextureLoader: CubeTextureLoader;
@@ -27,12 +51,21 @@ export class ResourceLoader {
   private static _gltfLoader: GLTFLoader;
 
   public static init(
-    assets: SourceAssets,
-    cache: LoadedAssets,
+    cubeTextures: CubeTextureAssets,
+    textures: TextureAssets,
+    gltfs: GLTFModelAssets,
     options?: InitOptions
   ) {
-    this._assets = assets;
-    this._cache = cache;
+    this._assets = {
+      cubeTextures,
+      textures,
+      gltfs,
+    };
+    this._cache = {
+      cubeTexture: {},
+      texture: {},
+      gltf: {},
+    };
 
     this._loadingManager = options?.loadingManager;
     this._cubeTextureLoader = new CubeTextureLoader(this._loadingManager);
@@ -43,6 +76,12 @@ export class ResourceLoader {
       const dracoLoader = new DRACOLoader();
       this._gltfLoader.setDRACOLoader(dracoLoader);
     }
+
+    const cubeTextureCount = TypedObject.keys(cubeTextures).length;
+    const textureCount = TypedObject.keys(textures).length;
+    const gltfCount = TypedObject.keys(gltfs).length;
+    const totalAssets = cubeTextureCount + textureCount + gltfCount;
+    Store.resources.updateTotalAssets(totalAssets);
   }
 
   /* LOADERS */
@@ -57,7 +96,7 @@ export class ResourceLoader {
 
     const source = this._assets.cubeTextures[name];
     if (!source) {
-      throw new Error(`Cube texture resource "${name}" not found`);
+      throw new AssetNotFoundError(name, AssetType.CubeTexture);
     }
 
     const texture = await this._cubeTextureLoader.loadAsync(
@@ -66,6 +105,7 @@ export class ResourceLoader {
     );
 
     this._cache.cubeTexture[name] = texture;
+    Store.resources.notifyAssetLoaded();
     return texture;
   }
 
@@ -79,7 +119,7 @@ export class ResourceLoader {
 
     const source = this._assets.textures[name];
     if (!source) {
-      throw new Error(`Texture "${name}" not found`);
+      throw new AssetNotFoundError(name, AssetType.Texture);
     }
 
     const texture = await this._textureLoader.loadAsync(
@@ -89,6 +129,7 @@ export class ResourceLoader {
     texture.name = name as string;
 
     this._cache.texture[name] = texture;
+    Store.resources.notifyAssetLoaded();
     return texture;
   }
 
@@ -110,12 +151,13 @@ export class ResourceLoader {
 
     const source = this._assets.gltfs[name];
     if (!source) {
-      throw new Error(`GLTF resource "${name}" not found`);
+      throw new AssetNotFoundError(name, AssetType.GLTF);
     }
 
     const gltf = await this._gltfLoader.loadAsync(source, options?.onProgress);
 
     this._cache.gltf[name] = gltf;
+    Store.resources.notifyAssetLoaded();
     return gltf;
   }
 }

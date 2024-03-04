@@ -23,3 +23,9 @@ export const Textures = {
 export type CubeTextureAssets = typeof CubeTextures;
 export type GLTFModelAssets = typeof GLTFModels;
 export type TextureAssets = typeof Textures;
+
+export enum AssetType {
+  CubeTexture = 'cubeTexture',
+  GLTF = 'gltf',
+  Texture = 'texture',
+}

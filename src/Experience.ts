@@ -1,18 +1,17 @@
 import { CameraController } from '@controllers/Camera';
 import { DebugController } from '@controllers/Debug';
 import { RenderController } from '@controllers/Renderer';
-import { ResourceController } from '@controllers/Resources';
 import { StageController } from '@controllers/Stage';
 import { TimeController } from '@controllers/Time';
 import { WorldController } from '@controllers/World';
 import { CubeTextures, GLTFModels, Textures } from '@loaders/assets';
+import { ResourceLoader } from '@loaders/ResourceLoader';
 import { Store } from '@state/Store';
 
 export class Experience {
   private _cameraController: CameraController;
   private _debugController: DebugController;
   private _renderController: RenderController;
-  private _resourceController: ResourceController;
   private _stageController: StageController;
   private _timeController: TimeController;
   private _worldController: WorldController;
@@ -30,11 +29,7 @@ export class Experience {
     Store.init();
 
     // Assets and resources
-    this._resourceController = new ResourceController(
-      CubeTextures,
-      Textures,
-      GLTFModels
-    );
+    ResourceLoader.init(CubeTextures, Textures, GLTFModels);
 
     // DOM interactive interface and render context
     this._stageController = new StageController(root, canvas);
@@ -77,7 +72,6 @@ export class Experience {
     this._debugController.destroy();
     this._timeController.destroy();
     this._stageController.destroy();
-    this._resourceController.destroy();
 
     Store.destroy();
   };
