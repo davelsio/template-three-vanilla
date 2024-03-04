@@ -1,5 +1,5 @@
-import { WebGLView } from '@helpers/webgl-view';
-import { ResourceLoader } from '@loaders/resources';
+import { WebGLView } from '@helpers/WebGLView';
+import { ResourceLoader } from '@loaders/ResourceLoader';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 import { Store } from '@state/store';
 import {

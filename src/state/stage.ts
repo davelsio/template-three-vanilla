@@ -1,4 +1,4 @@
-import StateInstance from '@helpers/state-instance';
+import StateInstance from '@helpers/StateInstance';
 
 export interface StageState {
   /**

@@ -1,11 +1,11 @@
-import { CameraController } from '@controllers/camera';
-import { DebugController } from '@controllers/debug';
-import { RenderController } from '@controllers/renderer';
-import { ResourceController } from '@controllers/resources';
-import { StageController } from '@controllers/stage';
-import { TimeController } from '@controllers/time';
-import { WorldController } from '@controllers/world';
-import { assets } from '@loaders/assets';
+import { CameraController } from '@controllers/Camera';
+import { DebugController } from '@controllers/Debug';
+import { RenderController } from '@controllers/Renderer';
+import { ResourceController } from '@controllers/Resources';
+import { StageController } from '@controllers/Stage';
+import { TimeController } from '@controllers/Time';
+import { WorldController } from '@controllers/World';
+import { CubeTextures, GLTFModels, Textures } from '@loaders/assets';
 import { Store } from '@state/store';
 
 export class Experience {
@@ -30,7 +30,11 @@ export class Experience {
     Store.init();
 
     // Assets and resources
-    this._resourceController = new ResourceController(assets);
+    this._resourceController = new ResourceController(
+      CubeTextures,
+      Textures,
+      GLTFModels
+    );
 
     // DOM interactive interface and render context
     this._stageController = new StageController(root, canvas);

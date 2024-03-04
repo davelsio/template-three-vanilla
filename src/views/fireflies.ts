@@ -1,4 +1,4 @@
-import { WebGLView } from '@helpers/webgl-view';
+import { WebGLView } from '@helpers/WebGLView';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 import { StageState } from '@state/stage';
 import { Store } from '@state/store';

@@ -1,4 +1,4 @@
-import { defaultDict } from '@utils/default-dict';
+import { defaultDict } from '@utils/defaultDict';
 import { StoreApi } from 'zustand';
 import {
   StoreSubscribeWithSelector,

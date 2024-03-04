@@ -1,4 +1,4 @@
-import { WebGLView } from '@helpers/webgl-view';
+import { WebGLView } from '@helpers/WebGLView';
 import {
   barFragmentShader,
   barVertexShader,

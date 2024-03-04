@@ -1,5 +1,4 @@
-import { StateNotInitializedError } from '@helpers/error';
-
+import { StateNotInitializedError } from '../errors/StateNotInitializedError';
 import DebugState from './debug';
 import ResourceState from './resources';
 import StageStore from './stage';

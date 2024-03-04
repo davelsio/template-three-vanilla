@@ -1,4 +1,4 @@
-import { WebGLView } from '@helpers/webgl-view';
+import { WebGLView } from '@helpers/WebGLView';
 import { Store } from '@state/store';
 import { Fireflies } from '@views/fireflies';
 import { Loading } from '@views/loading';
