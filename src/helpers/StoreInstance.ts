@@ -46,6 +46,10 @@ export abstract class StoreInstance<T extends object> {
     namespace: string,
     ...subscription: Parameters<typeof this._state.subscribe<U>>
   ) {
+    const options = subscription[2];
+    if (options?.unique && this._subscriptions[namespace].length > 0) {
+      return () => {};
+    }
     const unsub = this._state.subscribe<U>(...subscription);
     this._subscriptions[namespace].push(unsub);
     return unsub;

@@ -12,6 +12,7 @@ declare module 'zustand/middleware' {
         options?: {
           equalityFn?: (a: U, b: U) => boolean;
           fireImmediately?: boolean;
+          unique?: boolean; // custom
         }
       ): () => void;
     };
