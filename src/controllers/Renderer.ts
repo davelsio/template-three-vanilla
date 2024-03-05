@@ -42,9 +42,7 @@ export class RenderController extends BaseController {
   }
 
   public destroy() {
-    Store.debug.unsubscribe(this.namespace);
-    Store.time.unsubscribe(this.namespace);
-    Store.world.unsubscribe(this.namespace);
+    Store.unsubscribe(this.namespace);
     this.renderer.dispose();
   }
 

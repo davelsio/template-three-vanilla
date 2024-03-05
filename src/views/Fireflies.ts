@@ -34,10 +34,7 @@ export class Fireflies extends WebGLView {
   }
 
   public destroy() {
-    Store.debug.unsubscribe(this.namespace);
-    Store.stage.unsubscribe(this.namespace);
-    Store.time.unsubscribe(this.namespace);
-
+    Store.unsubscribe(this.namespace);
     this.geometry.dispose();
     this.material.dispose();
     this.remove(this.fireflies);

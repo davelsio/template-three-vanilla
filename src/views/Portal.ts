@@ -52,7 +52,6 @@ export class Portal extends WebGLView {
 
   public destroy() {
     Store.unsubscribe(this.namespace);
-
     this.materials.baked.dispose();
     this.materials.poleLight.dispose();
     this.materials.portalLight.dispose();

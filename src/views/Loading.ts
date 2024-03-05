@@ -42,7 +42,7 @@ export class Loading extends WebGLView<LoadingProps> {
   }
 
   public destroy() {
-    Store.world.unsubscribe(this.namespace);
+    Store.unsubscribe(this.namespace);
     this._barGeometry.dispose();
     this._barMaterial.dispose();
     this._overlayGeometry.dispose();

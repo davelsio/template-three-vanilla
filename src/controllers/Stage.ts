@@ -46,6 +46,7 @@ export class StageController extends BaseController {
   public destroy = () => {
     window.removeEventListener('resize', this.updateStage);
     this._media?.removeEventListener('change', this.updatePixelRatio);
+    Store.stage.destroy();
   };
 
   /*  CALLBACKS */

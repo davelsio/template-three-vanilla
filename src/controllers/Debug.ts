@@ -54,6 +54,7 @@ export class DebugController extends BaseController {
 
   public destroy() {
     Store.unsubscribe(this.namespace);
+    Store.debug.destroy();
     this._fpsGraph?.dispose();
     this._fpsRunning = false;
     this._panel?.dispose();

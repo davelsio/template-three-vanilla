@@ -33,7 +33,7 @@ export class WorldController extends BaseController<Props> {
 
   public destroy() {
     this._views.forEach((view) => view.destroy());
-    Store.world.unsubscribe(this.namespace);
+    Store.unsubscribe(this.namespace);
     Store.world.destroy();
   }
 }

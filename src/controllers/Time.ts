@@ -19,6 +19,7 @@ export class TimeController extends BaseController {
 
   public destroy() {
     window.cancelAnimationFrame(this._animationHandle);
+    Store.time.destroy();
   }
 
   /*  CALLBACKS */

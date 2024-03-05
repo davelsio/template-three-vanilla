@@ -46,6 +46,10 @@ export class Store {
     this._world = new WorldStore();
   }
 
+  /**
+   * Unsubscribe from all state listeners for a given namespace.
+   * @param namespace the namespace to unsubscribe
+   */
   public static unsubscribe(namespace: string) {
     this._debug?.unsubscribe(namespace);
     this._resources?.unsubscribe(namespace);
