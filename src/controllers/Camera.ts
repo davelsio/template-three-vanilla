@@ -22,8 +22,7 @@ export class CameraController extends BaseController {
   }
 
   public destroy() {
-    Store.stage.unsubscribe(this.namespace);
-    Store.time.unsubscribe(this.namespace);
+    Store.unsubscribe(this.namespace);
     this.controls.dispose();
   }
 

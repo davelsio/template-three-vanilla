@@ -31,20 +31,18 @@ export type BaseOnChange = (
   ev: TpChangeEvent<unknown, BladeApi<BladeController<View>>>
 ) => void;
 
-type Props = {
-  fpsGraph?: FpsGraphBladeApi;
-  fpsRunning: boolean;
-  folders: Record<string, FolderApi>;
-  panel: Pane;
-};
+export class DebugController extends BaseController {
+  private _fpsGraph?: FpsGraphBladeApi;
+  private _fpsRunning: boolean;
+  private _folders: Record<string, FolderApi>;
+  private _panel: Pane;
 
-export class DebugController extends BaseController<Props> {
   public constructor() {
-    super('DebugController', {
-      panel: new Pane({ title: 'Debug Options' }),
-      folders: {},
-      fpsRunning: false,
-    });
+    super('DebugController');
+
+    this._panel = new Pane({ title: 'Debug Options' });
+    this._folders = {};
+    this._fpsRunning = false;
 
     const active = window.location.href.endsWith('/debug');
     if (!active) return;
@@ -55,24 +53,22 @@ export class DebugController extends BaseController<Props> {
   }
 
   public destroy() {
-    Store.debug.unsubscribe(this.namespace);
-    Store.time.unsubscribe(this.namespace);
-    Store.world.unsubscribe(this.namespace);
-    this._props.fpsGraph?.dispose();
-    this._props.fpsRunning = false;
-    this._props.panel?.dispose();
-    this._props.folders = {};
+    Store.unsubscribe(this.namespace);
+    this._fpsGraph?.dispose();
+    this._fpsRunning = false;
+    this._panel?.dispose();
+    this._folders = {};
   }
 
   /* SETUP */
 
   private setupPanels() {
-    this._props.panel.hidden = true;
-    this._props.panel.expanded = false;
-    this._props.panel.registerPlugin(EssentialsPlugin);
-    this._props.folders = {};
+    this._panel.hidden = true;
+    this._panel.expanded = false;
+    this._panel.registerPlugin(EssentialsPlugin);
+    this._folders = {};
 
-    this._props.fpsGraph = this._props.panel.addBlade({
+    this._fpsGraph = this._panel.addBlade({
       view: 'fpsgraph',
       label: 'FPS',
       lineCount: 2,
@@ -95,7 +91,7 @@ export class DebugController extends BaseController<Props> {
       this.namespace,
       (state) => state.viewsProgress,
       (progress) => {
-        if (progress === 1) this._props.panel.hidden = false;
+        if (progress === 1) this._panel.hidden = false;
       }
     );
 
@@ -103,10 +99,10 @@ export class DebugController extends BaseController<Props> {
       this.namespace,
       (state) => state.elapsed,
       (_) => {
-        this._props.fpsRunning && this._props.fpsGraph?.end();
-        this._props.fpsGraph?.begin();
-        if (!this._props.fpsRunning) {
-          this._props.fpsRunning = true;
+        this._fpsRunning && this._fpsGraph?.end();
+        this._fpsGraph?.begin();
+        if (!this._fpsRunning) {
+          this._fpsRunning = true;
         }
       }
     );
@@ -121,13 +117,13 @@ export class DebugController extends BaseController<Props> {
    */
   private addConfig = ({ folder, bindings }: BindingPanel) => {
     // Declare where to add the new config, to the base pane or a folder
-    let ui: Pane | FolderApi = this._props.panel;
+    let ui: Pane | FolderApi = this._panel;
     if (folder) {
       const title = folder.title;
-      if (!this._props.folders[title]) {
-        this._props.folders[title] = this._props.panel.addFolder(folder);
+      if (!this._folders[title]) {
+        this._folders[title] = this._panel.addFolder(folder);
       }
-      ui = this._props.folders[title];
+      ui = this._folders[title];
     }
 
     // Add each binding using the appropriate API

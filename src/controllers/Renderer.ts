@@ -9,11 +9,9 @@ export type ClearColor = {
   a: number;
 };
 
-type Props = {
-  camera: Camera;
-};
+export class RenderController extends BaseController {
+  private _camera: Camera;
 
-export class RenderController extends BaseController<Props> {
   public renderer: WebGLRenderer;
   public scene: Scene;
 
@@ -25,7 +23,7 @@ export class RenderController extends BaseController<Props> {
   ) {
     super('RenderController');
 
-    this._props.camera = camera;
+    this._camera = camera;
     this.scene = new Scene();
 
     this.renderer = new WebGLRenderer({
@@ -80,6 +78,6 @@ export class RenderController extends BaseController<Props> {
   };
 
   private update = () => {
-    this.renderer.render(this.scene, this._props.camera);
+    this.renderer.render(this.scene, this._camera);
   };
 }

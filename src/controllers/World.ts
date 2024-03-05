@@ -6,11 +6,11 @@ import { Loading } from '@views/Loading';
 import { Portal } from '@views/Portal';
 import { Scene } from 'three';
 
-type WorldOptions = {
+type Props = {
   loader?: boolean;
 };
 
-export class WorldController extends BaseController<WorldOptions> {
+export class WorldController extends BaseController<Props> {
   public scene: Scene;
 
   private _views: WebGLView[] = [];
