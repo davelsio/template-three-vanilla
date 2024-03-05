@@ -15,7 +15,7 @@ interface WorldState {
   viewsProgress: number;
 }
 
-export default class WorldStore extends StoreInstance<WorldState> {
+export class WorldStore extends StoreInstance<WorldState> {
   constructor() {
     super({
       viewsToLoad: [],

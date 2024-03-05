@@ -60,7 +60,7 @@ export abstract class StoreInstance<T extends object> {
    * subscriptions can be selectively removed using the `unsubscribe` method.
    * @param namespace namespace to associate with the listener
    */
-  public subscriberFactory(namespace: string) {
+  public getSubscriber(namespace: string) {
     return <U>(
       ...subscription: Parameters<typeof this._state.subscribe<U>>
     ) => {

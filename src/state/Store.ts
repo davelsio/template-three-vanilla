@@ -1,10 +1,10 @@
 import { StateNotInitializedError } from '@errors/StateNotInitializedError';
 
-import DebugStore from './Debug';
-import ResourceStore from './Resources';
-import StageStore from './Stage';
-import TimeStore from './Time';
-import WorldStore from './World';
+import { DebugStore } from './Debug';
+import { ResourceStore } from './Resources';
+import { StageStore } from './Stage';
+import { TimeStore } from './Time';
+import { WorldStore } from './World';
 
 export class Store {
   private static _debug: DebugStore | null;
@@ -44,6 +44,14 @@ export class Store {
     this._stage = new StageStore();
     this._time = new TimeStore();
     this._world = new WorldStore();
+  }
+
+  public static unsubscribe(namespace: string) {
+    this._debug?.unsubscribe(namespace);
+    this._resources?.unsubscribe(namespace);
+    this._stage?.unsubscribe(namespace);
+    this._time?.unsubscribe(namespace);
+    this._world?.unsubscribe(namespace);
   }
 
   /**

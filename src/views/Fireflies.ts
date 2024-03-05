@@ -14,30 +14,13 @@ import {
   Vector2,
 } from 'three';
 
-interface Props {
-  baseSize: number;
-  resolution: Vector2;
-  color: Color;
-}
-
-export class Fireflies extends WebGLView<Props> {
+export class Fireflies extends WebGLView {
   private geometry: BufferGeometry;
   private material: ShaderMaterial;
   private fireflies: Points;
 
-  public namespace = 'Fireflies';
-
-  constructor(scene: Scene, props?: Partial<Props>) {
-    super(scene, {
-      baseSize: 0.75,
-      resolution: new Vector2(
-        Store.stage.state.width * Store.stage.state.pixelRatio,
-        Store.stage.state.height * Store.stage.state.pixelRatio
-      ),
-      color: new Color(0xffffff),
-      ...props,
-    });
-    this._props = Object.assign(this._props, props);
+  constructor(scene: Scene) {
+    super('Fireflies', scene);
     super.flagAsLoading();
     this.init();
   }
@@ -101,9 +84,14 @@ export class Fireflies extends WebGLView<Props> {
       transparent: true,
       //
       uniforms: {
-        uColor: new Uniform(this._props.color),
-        uResolution: new Uniform(this._props.resolution),
-        uSize: new Uniform(this._props.baseSize),
+        uColor: new Uniform(Store.debug.state.color),
+        uResolution: new Uniform(
+          new Vector2(
+            Store.stage.state.width * Store.stage.state.pixelRatio,
+            Store.stage.state.height * Store.stage.state.pixelRatio
+          )
+        ),
+        uSize: new Uniform(Store.debug.state.baseSize),
         uTime: new Uniform(0),
       },
     });
@@ -115,49 +103,18 @@ export class Fireflies extends WebGLView<Props> {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribe(
-      this.namespace,
-      (state) => state.enabled,
-      this.debug,
-      { fireImmediately: true }
-    );
-
+    const debugSub = Store.debug.getSubscriber(this.namespace);
+    debugSub((state) => state.baseSize, this.updateSize);
+    debugSub((state) => state.color, this.updateColor);
     Store.stage.subscribe(this.namespace, (state) => state, this.resize);
-
-    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
+    Store.time.subscribe(
+      this.namespace,
+      (state) => state.elapsed,
+      this.updateTime
+    );
   }
 
   /* CALLBACKS */
-
-  private debug = (active?: boolean) => {
-    if (!active) return;
-    Store.debug.addConfig({
-      folder: {
-        title: 'Fireflies',
-      },
-      bindings: [
-        {
-          object: this._props,
-          key: 'baseSize',
-          options: {
-            label: 'baseSize',
-            min: 0.01,
-            max: 2.0,
-            step: 0.01,
-          },
-          onChange: ({ value }) => (this.material.uniforms.uSize.value = value),
-        },
-        {
-          object: this._props,
-          key: 'color',
-          options: {
-            label: 'uColor',
-            color: { type: 'float' },
-          },
-        },
-      ],
-    });
-  };
 
   private resize = (state: StageState) => {
     /**
@@ -169,7 +126,15 @@ export class Fireflies extends WebGLView<Props> {
     this.material.uniforms.uResolution.value.set(width, height);
   };
 
-  private update = (elapsed: number) => {
+  private updateSize = (size: number) => {
+    this.material.uniforms.uSize.value = size;
+  };
+
+  private updateColor = (color: Color) => {
+    this.material.uniforms.uColor.value = color;
+  };
+
+  private updateTime = (elapsed: number) => {
     this.material.uniforms.uTime.value = elapsed;
   };
 }

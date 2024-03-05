@@ -28,15 +28,7 @@ interface ModelMaterials {
   portalLight: ShaderMaterial;
 }
 
-interface Props {
-  poleLightColor: Color;
-  portalColorStart: Color;
-  portalColorEnd: Color;
-  uvDisplacementOffset: number;
-  uvStrengthOffset: number;
-}
-
-export class Portal extends WebGLView<Props> {
+export class Portal extends WebGLView {
   private portalBakedTexture: Texture;
   private portalScene: GLTF;
 
@@ -44,17 +36,8 @@ export class Portal extends WebGLView<Props> {
   private meshes: ModelMeshes;
   private materials: ModelMaterials;
 
-  public namespace = 'Portal';
-
-  constructor(scene: Scene, props?: Partial<Props>) {
-    super(scene, {
-      poleLightColor: new Color(0xffffff),
-      portalColorStart: new Color(0x000000),
-      portalColorEnd: new Color(0xffffff),
-      uvDisplacementOffset: 5.0,
-      uvStrengthOffset: 5.0,
-      ...props,
-    });
+  constructor(scene: Scene) {
+    super('Portal', scene);
     super.flagAsLoading();
     this.init();
   }
@@ -68,8 +51,7 @@ export class Portal extends WebGLView<Props> {
   }
 
   public destroy() {
-    Store.debug.unsubscribe(this.namespace);
-    Store.time.unsubscribe(this.namespace);
+    Store.unsubscribe(this.namespace);
 
     this.materials.baked.dispose();
     this.materials.poleLight.dispose();
@@ -94,17 +76,19 @@ export class Portal extends WebGLView<Props> {
     });
 
     const poleLightMaterial = new MeshBasicMaterial({
-      color: this._props.poleLightColor,
+      color: Store.debug.state.poleLightColor,
     });
 
     const portalLightMaterial = new ShaderMaterial({
       fragmentShader: portalFragmentShader,
       vertexShader: portalVertexShader,
       uniforms: {
-        uColorEnd: new Uniform(this._props.portalColorEnd),
-        uColorStart: new Uniform(this._props.portalColorStart),
-        uOffsetDisplacementUv: new Uniform(this._props.uvDisplacementOffset),
-        uOffsetStrengthUv: new Uniform(this._props.uvStrengthOffset),
+        uColorEnd: new Uniform(Store.debug.state.portalColorEnd),
+        uColorStart: new Uniform(Store.debug.state.portalColorStart),
+        uOffsetDisplacementUv: new Uniform(
+          Store.debug.state.uvDisplacementOffset
+        ),
+        uOffsetStrengthUv: new Uniform(Store.debug.state.uvStrengthOffset),
         uTime: new Uniform(0),
       },
     });
@@ -142,92 +126,57 @@ export class Portal extends WebGLView<Props> {
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribe(
-      this.namespace,
-      (state) => state.enabled,
-      this.debug,
-      { fireImmediately: true }
+    const debugSubscriber = Store.debug.getSubscriber(this.namespace);
+
+    debugSubscriber(
+      (state) => state.portalColorStart,
+      this.updatePortalStartColor
     );
 
-    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
+    debugSubscriber((state) => state.portalColorEnd, this.updatePortalEndColor);
+
+    debugSubscriber(
+      (state) => state.uvDisplacementOffset,
+      this.updatePortalDisplacement
+    );
+
+    debugSubscriber(
+      (state) => state.uvStrengthOffset,
+      this.updatePortalStrength
+    );
+
+    debugSubscriber((state) => state.poleLightColor, this.updatePoleLightColor);
+
+    Store.time.subscribe(
+      this.namespace,
+      (state) => state.elapsed,
+      this.updateTime
+    );
   }
 
   /* CALLBACKS */
 
-  private debug = (active?: boolean) => {
-    if (!active) return;
-
-    Store.debug.addConfig({
-      folder: {
-        title: 'Portal',
-      },
-      bindings: [
-        {
-          object: this._props,
-          key: 'portalColorStart',
-          options: {
-            label: 'uColorStart',
-            color: { type: 'float' },
-          },
-        },
-        {
-          object: this._props,
-          key: 'portalColorEnd',
-          options: {
-            label: 'uColorEnd',
-            color: { type: 'float' },
-          },
-        },
-        {
-          object: this._props,
-          key: 'uvDisplacementOffset',
-          options: {
-            label: 'uDisplacement',
-            min: 0,
-            max: 50,
-            step: 0.1,
-          },
-          onChange: ({ value }) =>
-            (this.materials.portalLight.uniforms.uOffsetDisplacementUv.value =
-              value),
-        },
-        {
-          object: this._props,
-          key: 'uvStrengthOffset',
-          options: {
-            label: 'uStrength',
-            min: 0,
-            max: 50,
-            step: 0.1,
-          },
-          onChange: ({ value }) =>
-            (this.materials.portalLight.uniforms.uOffsetStrengthUv.value =
-              value),
-        },
-      ],
-    });
-
-    Store.debug.addConfig({
-      folder: {
-        title: 'Environment',
-      },
-      bindings: [
-        {
-          object: this._props,
-          key: 'poleLightColor',
-          options: {
-            label: 'poleLightColor',
-            color: { type: 'float' },
-          },
-          onChange: (ev) => {
-            this.materials.poleLight.color.set(ev.value);
-          },
-        },
-      ],
-    });
+  private updatePortalStartColor = (color: Color) => {
+    this.materials.portalLight.uniforms.uColorStart.value = color;
   };
 
-  private update = (elapsed: number) => {
+  private updatePortalEndColor = (color: Color) => {
+    this.materials.portalLight.uniforms.uColorEnd.value = color;
+  };
+
+  private updatePortalDisplacement = (value: number) => {
+    this.materials.portalLight.uniforms.uOffsetDisplacementUv.value = value;
+  };
+
+  private updatePortalStrength = (value: number) => {
+    this.materials.portalLight.uniforms.uOffsetStrengthUv.value = value;
+  };
+
+  private updatePoleLightColor = (color: Color) => {
+    this.materials.poleLight.color.set(color);
+  };
+
+  private updateTime = (elapsed: number) => {
     this.materials.portalLight.uniforms.uTime.value = elapsed;
   };
 }

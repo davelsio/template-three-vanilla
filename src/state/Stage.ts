@@ -19,7 +19,7 @@ export interface StageState {
   width: number;
 }
 
-export default class StageStore extends StoreInstance<StageState> {
+export class StageStore extends StoreInstance<StageState> {
   constructor() {
     super({
       width: 0,

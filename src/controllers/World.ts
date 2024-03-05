@@ -1,3 +1,4 @@
+import { BaseController } from '@helpers/BaseController';
 import { WebGLView } from '@helpers/WebGLView';
 import { Store } from '@state/Store';
 import { Fireflies } from '@views/Fireflies';
@@ -6,27 +7,24 @@ import { Portal } from '@views/Portal';
 import { Scene } from 'three';
 
 type WorldOptions = {
-  loading?: boolean;
+  loader?: boolean;
 };
 
-export class WorldController {
-  private _views: WebGLView[] = [];
-
-  private _options: WorldOptions = {
-    loading: true,
-  };
-
-  public namespace = 'WorldController';
+export class WorldController extends BaseController<WorldOptions> {
   public scene: Scene;
 
-  public constructor(scene: Scene, options?: WorldOptions) {
-    this._options = Object.assign({}, this._options, options);
+  private _views: WebGLView[] = [];
+
+  public constructor(scene: Scene) {
+    super('WorldController', {
+      loader: true,
+    });
 
     // Create world scene
     this.scene = scene;
 
     // Create view instances
-    if (this._options.loading) {
+    if (this._props.loader) {
       this._views.push(new Loading(this.scene));
     }
     this._views.push(new Portal(this.scene));

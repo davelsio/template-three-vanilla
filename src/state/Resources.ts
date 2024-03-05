@@ -15,7 +15,7 @@ interface StateProps {
   totalAssets: number;
 }
 
-export default class ResourceStore extends StoreInstance<StateProps> {
+export class ResourceStore extends StoreInstance<StateProps> {
   constructor() {
     super({
       loadedAssets: 0,

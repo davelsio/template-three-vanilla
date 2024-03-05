@@ -1,8 +1,11 @@
+import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
 
-export class StageController {
-  private _media: MediaQueryList | undefined;
+type Props = {
+  media: MediaQueryList | undefined;
+};
 
+export class StageController extends BaseController<Props> {
   public root: HTMLDivElement;
   public canvas: HTMLCanvasElement;
 
@@ -23,6 +26,8 @@ export class StageController {
   }
 
   public constructor(root: HTMLDivElement, canvas?: HTMLCanvasElement) {
+    super('StageController');
+
     this.root = root;
     let _canvas: HTMLCanvasElement | undefined = canvas;
 
@@ -42,7 +47,7 @@ export class StageController {
 
   public destroy = () => {
     window.removeEventListener('resize', this.updateStage);
-    this._media?.removeEventListener('change', this.updatePixelRatio);
+    this._props.media?.removeEventListener('change', this.updatePixelRatio);
   };
 
   /*  CALLBACKS */
@@ -52,7 +57,7 @@ export class StageController {
     const media = matchMedia(mqString);
     Store.stage.update({ pixelRatio: Math.min(window.devicePixelRatio, 2) });
     media.addEventListener('change', this.updatePixelRatio, { once: true });
-    this._media = media;
+    this._props.media = media;
   };
 
   private updateStage = () => {

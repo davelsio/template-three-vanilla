@@ -22,12 +22,9 @@ export class Loading extends WebGLView<LoadingProps> {
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
-  public namespace = 'Loading';
-
-  constructor(scene: Scene, props?: Partial<LoadingProps>) {
-    super(scene, {
+  constructor(scene: Scene) {
+    super('Loading', scene, {
       loadingDelay: 0.5,
-      ...props,
     });
     this.init();
   }

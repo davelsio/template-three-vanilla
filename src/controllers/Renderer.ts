@@ -1,17 +1,19 @@
+import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
 import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 
-interface Options {
-  clearColor: number;
-}
+export type ClearColor = {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+};
 
-export class RenderController {
-  private _camera: Camera;
-  private _options: Options = {
-    clearColor: 0x201919,
-  };
+type Props = {
+  camera: Camera;
+};
 
-  public namespace = 'RenderController';
+export class RenderController extends BaseController<Props> {
   public renderer: WebGLRenderer;
   public scene: Scene;
 
@@ -19,13 +21,12 @@ export class RenderController {
     canvas: HTMLCanvasElement,
     width: number,
     height: number,
-    camera: Camera,
-    options?: Partial<Options>
+    camera: Camera
   ) {
-    this._camera = camera;
-    this.scene = new Scene();
+    super('RenderController');
 
-    if (options) Object.assign(this._options, options);
+    this._props.camera = camera;
+    this.scene = new Scene();
 
     this.renderer = new WebGLRenderer({
       canvas: canvas,
@@ -34,7 +35,8 @@ export class RenderController {
     });
     this.renderer.outputColorSpace = SRGBColorSpace;
 
-    this.renderer.setClearColor(this._options.clearColor);
+    const { r, g, b, a } = Store.debug.state.clearColor;
+    this.renderer.setClearColor(new Color(r, g, b), a);
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Store.stage.state.pixelRatio);
 
@@ -53,9 +55,8 @@ export class RenderController {
   private setupSubscriptions() {
     Store.debug.subscribe(
       this.namespace,
-      (state) => state.enabled,
-      this.debug,
-      { fireImmediately: true }
+      (state) => state.clearColor,
+      this.debug
     );
 
     Store.stage.subscribe(
@@ -69,44 +70,8 @@ export class RenderController {
 
   /* CALLBACKS */
 
-  private debug = (active?: boolean) => {
-    if (!active) return;
-
-    const clearAlpha = this.renderer.getClearAlpha();
-    const clearColor = this.renderer.getClearColor(new Color());
-
-    const object = {
-      clearColor: {
-        r: clearColor.r,
-        g: clearColor.g,
-        b: clearColor.b,
-        a: clearAlpha,
-      },
-    };
-
-    Store.debug.addConfig({
-      bindings: [
-        {
-          object,
-          key: 'clearColor',
-          options: {
-            color: { type: 'float' },
-          },
-          onChange: (event) => {
-            if (event.target.key === 'clearColor') {
-              this.renderer.setClearColor(
-                new Color(event.value.r, event.value.g, event.value.b),
-                event.value.a
-              );
-            }
-          },
-        },
-      ],
-      folder: {
-        title: 'Renderer',
-        index: 1,
-      },
-    });
+  private debug = ({ r, g, b, a }: ClearColor) => {
+    this.renderer.setClearColor(new Color(r, g, b), a);
   };
 
   private resize = (width: number, height: number, pixelRatio: number) => {
@@ -115,6 +80,6 @@ export class RenderController {
   };
 
   private update = () => {
-    this.renderer.render(this.scene, this._camera);
+    this.renderer.render(this.scene, this._props.camera);
   };
 }

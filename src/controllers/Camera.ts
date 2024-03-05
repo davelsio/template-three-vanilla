@@ -1,13 +1,15 @@
+import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
 import { PerspectiveCamera } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
-export class CameraController {
+export class CameraController extends BaseController {
   public camera: PerspectiveCamera;
   public controls: OrbitControls;
-  public namespace = 'CameraController';
 
   public constructor(aspectRatio: number, canvas: HTMLElement) {
+    super('CameraController');
+
     // Camera
     this.camera = new PerspectiveCamera(40, aspectRatio, 0.5, 40);
     this.camera.position.set(3, 3, 5);

@@ -11,7 +11,7 @@ interface TimeState {
   elapsed: number;
 }
 
-export default class TimeStore extends StoreInstance<TimeState> {
+export class TimeStore extends StoreInstance<TimeState> {
   constructor() {
     super({
       delta: 16,

@@ -6,8 +6,9 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
   protected _props: T;
   protected _scene: Scene;
 
-  protected constructor(scene: Scene, props: T) {
+  protected constructor(namespace: string, scene: Scene, props: T = {} as T) {
     super();
+    this.namespace = namespace;
     this._props = props;
     this._scene = scene;
     this._scene.add(this);

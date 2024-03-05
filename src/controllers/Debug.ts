@@ -1,3 +1,5 @@
+import { debugConfig } from '@debug/debugConfig';
+import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
 import {
   Bindable,
@@ -13,41 +15,42 @@ import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials';
 import { FolderApi, Pane } from 'tweakpane';
 
-export type BindingItem = {
-  object: Bindable;
-  key: keyof Bindable;
-  options?: BindingParams;
-  onChange?: Parameters<BindingApi<unknown, Bindable[keyof Bindable]>['on']>[1];
+export type BindingPanel<T extends Bindable = Bindable> = {
+  bindings: BindingItem<T>[];
+  folder?: FolderParams;
 };
 
-export type BindingConfig = {
-  bindings: BindingItem[];
-  folder?: FolderParams;
+export type BindingItem<T extends Bindable = Bindable> = {
+  object: T;
+  key: keyof T;
+  options?: BindingParams;
+  onChange?: Parameters<BindingApi<T[keyof T], T[keyof T]>['on']>[1];
 };
 
 export type BaseOnChange = (
   ev: TpChangeEvent<unknown, BladeApi<BladeController<View>>>
 ) => void;
 
-export class DebugController {
-  private _panel: Pane;
-  private _folders: Record<string, FolderApi>;
-  private _fpsGraph: FpsGraphBladeApi;
-  private _fpsRunning = false;
+type Props = {
+  fpsGraph?: FpsGraphBladeApi;
+  fpsRunning: boolean;
+  folders: Record<string, FolderApi>;
+  panel: Pane;
+};
 
-  public namespace = 'DebugController';
-
+export class DebugController extends BaseController<Props> {
   public constructor() {
+    super('DebugController', {
+      panel: new Pane({ title: 'Debug Options' }),
+      folders: {},
+      fpsRunning: false,
+    });
+
     const active = window.location.href.endsWith('/debug');
     if (!active) return;
+
     Store.debug.enableDebug();
-
-    this._panel = new Pane({ title: 'Debug Options' });
-    this._panel.hidden = true;
-    this._panel.registerPlugin(EssentialsPlugin);
-    this._folders = {};
-
-    this.setupBasePanel();
+    this.setupPanels();
     this.setupSubscriptions();
   }
 
@@ -55,34 +58,44 @@ export class DebugController {
     Store.debug.unsubscribe(this.namespace);
     Store.time.unsubscribe(this.namespace);
     Store.world.unsubscribe(this.namespace);
-    this._fpsGraph?.dispose();
-    this._fpsRunning = false;
-    this._panel?.dispose();
-    this._folders = {};
+    this._props.fpsGraph?.dispose();
+    this._props.fpsRunning = false;
+    this._props.panel?.dispose();
+    this._props.folders = {};
   }
 
   /* SETUP */
 
-  private setupBasePanel() {
-    this._fpsGraph = this._panel.addBlade({
+  private setupPanels() {
+    this._props.panel.hidden = true;
+    this._props.panel.expanded = false;
+    this._props.panel.registerPlugin(EssentialsPlugin);
+    this._props.folders = {};
+
+    this._props.fpsGraph = this._props.panel.addBlade({
       view: 'fpsgraph',
       label: 'FPS',
       lineCount: 2,
     }) as FpsGraphBladeApi;
+
+    debugConfig.forEach(({ folder, bindings }) => {
+      this.addConfig({
+        folder,
+        bindings: bindings.map((binding) => ({
+          ...binding,
+          object: Store.debug.state,
+          onChange: Store.debug.updateBinding,
+        })),
+      });
+    });
   }
 
   private setupSubscriptions() {
-    Store.debug.subscribe(
-      this.namespace,
-      (state) => state.panels,
-      (panels) => this.addConfig(panels[panels.length - 1])
-    );
-
     Store.world.subscribe(
       this.namespace,
       (state) => state.viewsProgress,
       (progress) => {
-        if (progress === 1) this._panel.hidden = false;
+        if (progress === 1) this._props.panel.hidden = false;
       }
     );
 
@@ -90,10 +103,10 @@ export class DebugController {
       this.namespace,
       (state) => state.elapsed,
       (_) => {
-        this._fpsRunning && this._fpsGraph.end();
-        this._fpsGraph.begin();
-        if (!this._fpsRunning) {
-          this._fpsRunning = true;
+        this._props.fpsRunning && this._props.fpsGraph?.end();
+        this._props.fpsGraph?.begin();
+        if (!this._props.fpsRunning) {
+          this._props.fpsRunning = true;
         }
       }
     );
@@ -101,17 +114,20 @@ export class DebugController {
 
   /* CALLBACKS */
 
-  private addConfig(config: BindingConfig) {
-    const { folder, bindings } = config;
-
+  /**
+   * Add a new configuration to the panel.
+   * @param folder optional folder where to add the config
+   * @param bindings array of bindings
+   */
+  private addConfig = ({ folder, bindings }: BindingPanel) => {
     // Declare where to add the new config, to the base pane or a folder
-    let ui: Pane | FolderApi = this._panel;
+    let ui: Pane | FolderApi = this._props.panel;
     if (folder) {
       const title = folder.title;
-      if (!this._folders[title]) {
-        this._folders[title] = this._panel.addFolder(folder);
+      if (!this._props.folders[title]) {
+        this._props.folders[title] = this._props.panel.addFolder(folder);
       }
-      ui = this._folders[title];
+      ui = this._props.folders[title];
     }
 
     // Add each binding using the appropriate API
@@ -121,5 +137,5 @@ export class DebugController {
         ui.on('change', input.onChange as unknown as BaseOnChange);
       }
     });
-  }
+  };
 }
