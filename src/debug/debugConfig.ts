@@ -1,5 +1,5 @@
 import { Bindable, BindingParams, FolderParams } from '@tweakpane/core';
-import { Color } from 'three';
+import { Color, Vector3 } from 'three';
 
 /**
  * Debug variables.
@@ -9,6 +9,10 @@ export type DebugObject = typeof debugObject;
 const { r, g, b } = new Color(0x000000);
 export const debugObject = {
   clearColor: { r, g, b, a: 1.0 },
+  cameraPosition: new Vector3(3, 3, 5),
+  cameraFov: 40,
+  cameraNear: 0.1,
+  cameraFar: 100,
   //
   baseSize: 0.75,
   color: new Color(0xffffff),

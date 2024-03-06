@@ -31,21 +31,29 @@ export type BaseOnChange = (
   ev: TpChangeEvent<unknown, BladeApi<BladeController<View>>>
 ) => void;
 
-export class DebugController extends BaseController {
+type Props = {
+  fps: boolean;
+  expanded: boolean;
+};
+
+export class DebugController extends BaseController<Props> {
   private _fpsGraph?: FpsGraphBladeApi;
   private _fpsRunning: boolean;
   private _folders: Record<string, FolderApi>;
   private _panel: Pane;
 
   public constructor() {
-    super('DebugController');
+    super('DebugController', {
+      fps: false,
+      expanded: true,
+    });
+
+    const active = window.location.href.endsWith('/debug');
+    if (!active) return;
 
     this._panel = new Pane({ title: 'Debug Options' });
     this._folders = {};
     this._fpsRunning = false;
-
-    const active = window.location.href.endsWith('/debug');
-    if (!active) return;
 
     Store.debug.enableDebug();
     this.setupPanels();
@@ -65,15 +73,17 @@ export class DebugController extends BaseController {
 
   private setupPanels() {
     this._panel.hidden = true;
-    this._panel.expanded = false;
+    this._panel.expanded = this._props.expanded;
     this._panel.registerPlugin(EssentialsPlugin);
     this._folders = {};
 
-    this._fpsGraph = this._panel.addBlade({
-      view: 'fpsgraph',
-      label: 'FPS',
-      lineCount: 2,
-    }) as FpsGraphBladeApi;
+    if (this._props.fps) {
+      this._fpsGraph = this._panel.addBlade({
+        view: 'fpsgraph',
+        label: 'FPS',
+        lineCount: 2,
+      }) as FpsGraphBladeApi;
+    }
 
     debugConfig.forEach(({ folder, bindings }) => {
       this.addConfig({
@@ -100,6 +110,7 @@ export class DebugController extends BaseController {
       this.namespace,
       (state) => state.elapsed,
       (_) => {
+        if (!this._props.fps) return;
         this._fpsRunning && this._fpsGraph?.end();
         this._fpsGraph?.begin();
         if (!this._fpsRunning) {
