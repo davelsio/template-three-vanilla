@@ -1,4 +1,4 @@
-#include ../utils/perlin_noise
+#include "../includes/perlinNoise3D.glsl"
 
 uniform vec3 uColorStart;
 uniform vec3 uColorEnd;
@@ -11,10 +11,10 @@ varying vec2 vUv;
 void main() {
 
   // Displace UV using Perlin noise
-  vec2 displacedUv = vUv + cnoise(vec3(vUv * uOffsetDisplacementUv, uTime * 0.1));
+  vec2 displacedUv = vUv + perlinNoise3D(vec3(vUv * uOffsetDisplacementUv, uTime * 0.1));
 
   // Create black and white patterns
-  float strength = cnoise(vec3(displacedUv * uOffsetStrengthUv, uTime * 0.2));
+  float strength = perlinNoise3D(vec3(displacedUv * uOffsetStrengthUv, uTime * 0.2));
 
   // Add an outer glow
   float outerGlow = distance(vUv, vec2(0.5)) * 5.0 - 1.4;
