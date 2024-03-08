@@ -10,6 +10,7 @@ import { createStore } from 'zustand/vanilla';
 export type Subscription = () => void;
 
 export abstract class StoreInstance<T extends object> {
+  private fps: number = 0;
   protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
 
   protected _subscriptions = defaultDict<Subscription[]>(() => []);
@@ -75,4 +76,10 @@ export abstract class StoreInstance<T extends object> {
   public unsubscribe(namespace: string) {
     this._subscriptions[namespace].forEach((unsub) => unsub());
   }
+
+  /* DEBUG PANELS */
+
+  public update = (state: Partial<T>) => {
+    this._state.setState(state);
+  };
 }

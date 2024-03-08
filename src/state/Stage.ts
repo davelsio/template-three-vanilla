@@ -28,8 +28,4 @@ export class StageStore extends StoreInstance<StageState> {
       pixelRatio: 1,
     });
   }
-
-  public update(state: Partial<StageState>) {
-    this._state.setState({ ...state });
-  }
 }

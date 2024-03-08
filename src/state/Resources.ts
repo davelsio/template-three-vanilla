@@ -1,6 +1,6 @@
 import { StoreInstance } from '@helpers/StoreInstance';
 
-interface StateProps {
+interface ResourceState {
   /**
    * Number of assets already loaded.
    */
@@ -15,7 +15,7 @@ interface StateProps {
   totalAssets: number;
 }
 
-export class ResourceStore extends StoreInstance<StateProps> {
+export class ResourceStore extends StoreInstance<ResourceState> {
   constructor() {
     super({
       loadedAssets: 0,

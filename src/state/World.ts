@@ -1,6 +1,11 @@
 import { StoreInstance } from '@helpers/StoreInstance';
+import { WorldSettings, worldSettings } from '@settings/world';
 
-interface WorldState {
+export interface WorldState extends WorldSettings {
+  /**
+   * Loader
+   */
+  loader: boolean;
   /**
    * The WebGL views that need to be loaded.
    */
@@ -18,10 +23,16 @@ interface WorldState {
 export class WorldStore extends StoreInstance<WorldState> {
   constructor() {
     super({
+      loader: false,
       viewsToLoad: [],
       viewsLoaded: [],
       viewsProgress: 0,
+      ...worldSettings,
     });
+  }
+
+  public setState(state: Partial<WorldState>) {
+    this._state.setState(state);
   }
 
   /* ACTIONS */

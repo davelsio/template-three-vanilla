@@ -1,6 +1,6 @@
 import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
-import { PerspectiveCamera } from 'three';
+import { PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
 export class CameraController extends BaseController {
@@ -11,10 +11,10 @@ export class CameraController extends BaseController {
     super('CameraController');
 
     // Config
-    const fov = Store.debug.state.cameraFov;
-    const near = Store.debug.state.cameraNear;
-    const far = Store.debug.state.cameraFar;
-    const position = Store.debug.state.cameraPosition;
+    const fov = Store.camera.state.cameraFov;
+    const near = Store.camera.state.cameraNear;
+    const far = Store.camera.state.cameraFar;
+    const position = Store.camera.state.cameraPosition;
 
     // Camera
     this.camera = new PerspectiveCamera(fov, aspectRatio, near, far);
@@ -35,12 +35,9 @@ export class CameraController extends BaseController {
   /* SETUP */
 
   private setupSubscriptions() {
-    Store.stage.subscribe(
-      this.namespace,
-      (state) => state.aspectRatio,
-      this.resize
-    );
-    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
+    const { stage, time } = Store.getSubscribers(this.namespace);
+    stage((state) => state.aspectRatio, this.resize);
+    time((state) => state.elapsed, this.updateControls);
   }
 
   /* CALLBACKS */
@@ -50,7 +47,7 @@ export class CameraController extends BaseController {
     this.camera.updateProjectionMatrix();
   };
 
-  private update = () => {
+  private updateControls = () => {
     this.controls.enabled && this.controls.update();
   };
 }

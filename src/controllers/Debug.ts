@@ -1,18 +1,19 @@
-import { debugConfig } from '@debug/debugConfig';
+import { NumberStateBundle } from '@debug/StateBundle';
 import { BaseController } from '@helpers/BaseController';
+import { StoreInstance } from '@helpers/StoreInstance';
+import { cameraConfig } from '@settings/camera';
+import { BindingConfig, debugConfig } from '@settings/debug';
+import { renderConfig } from '@settings/renderer';
+import { timeConfig } from '@settings/time';
+import { worldConfig } from '@settings/world';
 import { Store } from '@state/Store';
 import {
+  BaseBladeParams,
   Bindable,
   BindingParams,
-  BladeApi,
-  BladeController,
   FolderParams,
-  TpChangeEvent,
-  View,
 } from '@tweakpane/core';
-import { BindingApi } from '@tweakpane/core/src/blade/binding/api/binding';
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
-import { FpsGraphBladeApi } from '@tweakpane/plugin-essentials';
 import { FolderApi, Pane } from 'tweakpane';
 
 export type BindingPanel<T extends Bindable = Bindable> = {
@@ -24,36 +25,20 @@ export type BindingItem<T extends Bindable = Bindable> = {
   object: T;
   key: keyof T;
   options?: BindingParams;
-  onChange?: Parameters<BindingApi<T[keyof T], T[keyof T]>['on']>[1];
 };
 
-export type BaseOnChange = (
-  ev: TpChangeEvent<unknown, BladeApi<BladeController<View>>>
-) => void;
-
-type Props = {
-  fps: boolean;
-  expanded: boolean;
-};
-
-export class DebugController extends BaseController<Props> {
-  private _fpsGraph?: FpsGraphBladeApi;
-  private _fpsRunning: boolean;
+export class DebugController extends BaseController {
   private _folders: Record<string, FolderApi>;
   private _panel: Pane;
 
   public constructor() {
-    super('DebugController', {
-      fps: false,
-      expanded: true,
-    });
+    super('DebugController');
 
     const active = window.location.href.endsWith('/debug');
     if (!active) return;
 
     this._panel = new Pane({ title: 'Debug Options' });
     this._folders = {};
-    this._fpsRunning = false;
 
     Store.debug.enableDebug();
     this.setupPanels();
@@ -63,8 +48,6 @@ export class DebugController extends BaseController<Props> {
   public destroy() {
     Store.unsubscribe(this.namespace);
     Store.debug.destroy();
-    this._fpsGraph?.dispose();
-    this._fpsRunning = false;
     this._panel?.dispose();
     this._folders = {};
   }
@@ -72,78 +55,65 @@ export class DebugController extends BaseController<Props> {
   /* SETUP */
 
   private setupPanels() {
+    const { expanded } = Store.debug.state;
     this._panel.hidden = true;
-    this._panel.expanded = this._props.expanded;
+    this._panel.expanded = expanded;
     this._panel.registerPlugin(EssentialsPlugin);
     this._folders = {};
 
-    if (this._props.fps) {
-      this._fpsGraph = this._panel.addBlade({
-        view: 'fpsgraph',
-        label: 'FPS',
-        lineCount: 2,
-      }) as FpsGraphBladeApi;
-    }
+    this._panel.registerPlugin(NumberStateBundle);
 
-    debugConfig.forEach(({ folder, bindings }) => {
-      this.addConfig({
-        folder,
-        bindings: bindings.map((binding) => ({
-          ...binding,
-          object: Store.debug.state,
-          onChange: Store.debug.updateBinding,
-        })),
-      });
-    });
+    this.setupConfig(debugConfig, Store.debug);
+    this.setupConfig(timeConfig, Store.time);
+    this.setupConfig(cameraConfig, Store.camera);
+    this.setupConfig(renderConfig, Store.render);
+    this.setupConfig(worldConfig, Store.world);
   }
-
-  private setupSubscriptions() {
-    Store.world.subscribe(
-      this.namespace,
-      (state) => state.viewsProgress,
-      (progress) => {
-        if (progress === 1) this._panel.hidden = false;
-      }
-    );
-
-    Store.time.subscribe(
-      this.namespace,
-      (state) => state.elapsed,
-      (_) => {
-        if (!this._props.fps) return;
-        this._fpsRunning && this._fpsGraph?.end();
-        this._fpsGraph?.begin();
-        if (!this._fpsRunning) {
-          this._fpsRunning = true;
-        }
-      }
-    );
-  }
-
-  /* CALLBACKS */
 
   /**
-   * Add a new configuration to the panel.
-   * @param folder optional folder where to add the config
-   * @param bindings array of bindings
+   * Initialize config panels for each store.
+   * @param config binding config object
+   * @param store store instance
    */
-  private addConfig = ({ folder, bindings }: BindingPanel) => {
-    // Declare where to add the new config, to the base pane or a folder
-    let ui: Pane | FolderApi = this._panel;
-    if (folder) {
-      const title = folder.title;
-      if (!this._folders[title]) {
-        this._folders[title] = this._panel.addFolder(folder);
-      }
-      ui = this._folders[title];
-    }
+  private setupConfig<T extends object>(
+    config: BindingConfig<T>[],
+    store: StoreInstance<T>
+  ) {
+    config.forEach(({ folder, bindings }) => {
+      const ui: Pane | FolderApi = folder
+        ? this.getFolder(folder)
+        : this._panel;
 
-    // Add each binding using the appropriate API
-    bindings.forEach((input) => {
-      ui.addBinding(input.object, input.key, input.options);
-      if (input.onChange) {
-        ui.on('change', input.onChange as unknown as BaseOnChange);
-      }
+      bindings.forEach(({ key, options }) =>
+        ui.addBinding(store.state, key, {
+          ...options,
+          _reader: (key: keyof T) => store.state[key],
+          _writer: (state: Partial<T>) => store.update(state),
+        })
+      );
     });
+  }
+
+  /**
+   * Retrieve or create a new folder panel.
+   * @param folder folder parameters
+   */
+  private getFolder = (folder: FolderParams) => {
+    const title = folder.title;
+    if (!this._folders[title]) {
+      this._folders[title] = this._panel.addFolder(folder);
+    }
+    return this._folders[title];
+  };
+
+  /* SUBSCRIPTIONS */
+
+  private setupSubscriptions() {
+    const { world } = Store.getSubscribers(this.namespace);
+    world((state) => state.viewsProgress, this.toggleDebugPanel);
+  }
+
+  private toggleDebugPanel = (progress: number) => {
+    if (progress === 1) this._panel.hidden = false;
   };
 }

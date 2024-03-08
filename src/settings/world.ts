@@ -1,19 +1,12 @@
-import { Bindable, BindingParams, FolderParams } from '@tweakpane/core';
-import { Color, Vector3 } from 'three';
+import { Color } from 'three';
 
-/**
- * Debug variables.
- */
-export type DebugObject = typeof debugObject;
+import { BindingConfig } from './debug';
 
-const { r, g, b } = new Color(0x000000);
-export const debugObject = {
-  clearColor: { r, g, b, a: 1.0 },
-  cameraPosition: new Vector3(3, 3, 5),
-  cameraFov: 40,
-  cameraNear: 0.1,
-  cameraFar: 100,
-  //
+export type WorldSettings = typeof worldSettings;
+export type WorldConfig = BindingConfig<WorldSettings>;
+
+export const worldSettings = {
+  // Views
   baseSize: 0.75,
   color: new Color(0xffffff),
   //
@@ -24,18 +17,7 @@ export const debugObject = {
   uvStrengthOffset: 5.0,
 };
 
-/**
- * Binding panels configuration object.
- */
-export type BindingConfig<T extends Bindable = Bindable> = {
-  folder: FolderParams;
-  bindings: Array<{
-    key: keyof T;
-    options?: BindingParams;
-  }>;
-};
-
-export const debugConfig: BindingConfig<DebugObject>[] = [
+export const worldConfig: WorldConfig[] = [
   {
     folder: {
       title: 'Fireflies',
@@ -44,7 +26,7 @@ export const debugConfig: BindingConfig<DebugObject>[] = [
       {
         key: 'baseSize',
         options: {
-          label: 'baseSize',
+          label: 'Size',
           min: 0.01,
           max: 2.0,
           step: 0.01,
@@ -53,7 +35,7 @@ export const debugConfig: BindingConfig<DebugObject>[] = [
       {
         key: 'color',
         options: {
-          label: 'uColor',
+          label: 'Color',
           color: { type: 'float' },
         },
       },
@@ -67,21 +49,21 @@ export const debugConfig: BindingConfig<DebugObject>[] = [
       {
         key: 'portalColorStart',
         options: {
-          label: 'uColorStart',
+          label: 'Inner Color',
           color: { type: 'float' },
         },
       },
       {
         key: 'portalColorEnd',
         options: {
-          label: 'uColorEnd',
+          label: 'Outer Color',
           color: { type: 'float' },
         },
       },
       {
         key: 'uvDisplacementOffset',
         options: {
-          label: 'uDisplacement',
+          label: 'Displacement',
           min: 0,
           max: 50,
           step: 0.1,
@@ -90,7 +72,7 @@ export const debugConfig: BindingConfig<DebugObject>[] = [
       {
         key: 'uvStrengthOffset',
         options: {
-          label: 'uStrength',
+          label: 'Strength',
           min: 0,
           max: 50,
           step: 0.1,
@@ -106,7 +88,7 @@ export const debugConfig: BindingConfig<DebugObject>[] = [
       {
         key: 'poleLightColor',
         options: {
-          label: 'poleLightColor',
+          label: 'Pole Light Color',
           color: { type: 'float' },
         },
       },

@@ -27,6 +27,7 @@
       "@errors/*": ["./src/errors/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@loaders/*": ["./src/loaders/*"],
+      "@settings/*": ["./src/settings/*"],
       "@shaders/*": ["./src/shaders/*"],
       "@state/*": ["./src/state/*"],
       "@styles/*": ["./src/styles/*"],

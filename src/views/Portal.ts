@@ -75,19 +75,19 @@ export class Portal extends WebGLView {
     });
 
     const poleLightMaterial = new MeshBasicMaterial({
-      color: Store.debug.state.poleLightColor,
+      color: Store.world.state.poleLightColor,
     });
 
     const portalLightMaterial = new ShaderMaterial({
       fragmentShader: portalFragmentShader,
       vertexShader: portalVertexShader,
       uniforms: {
-        uColorEnd: new Uniform(Store.debug.state.portalColorEnd),
-        uColorStart: new Uniform(Store.debug.state.portalColorStart),
+        uColorEnd: new Uniform(Store.world.state.portalColorEnd),
+        uColorStart: new Uniform(Store.world.state.portalColorStart),
         uOffsetDisplacementUv: new Uniform(
-          Store.debug.state.uvDisplacementOffset
+          Store.world.state.uvDisplacementOffset
         ),
-        uOffsetStrengthUv: new Uniform(Store.debug.state.uvStrengthOffset),
+        uOffsetStrengthUv: new Uniform(Store.world.state.uvStrengthOffset),
         uTime: new Uniform(0),
       },
     });
@@ -125,32 +125,13 @@ export class Portal extends WebGLView {
   }
 
   private setupSubscriptions() {
-    const debugSubscriber = Store.debug.getSubscriber(this.namespace);
-
-    debugSubscriber(
-      (state) => state.portalColorStart,
-      this.updatePortalStartColor
-    );
-
-    debugSubscriber((state) => state.portalColorEnd, this.updatePortalEndColor);
-
-    debugSubscriber(
-      (state) => state.uvDisplacementOffset,
-      this.updatePortalDisplacement
-    );
-
-    debugSubscriber(
-      (state) => state.uvStrengthOffset,
-      this.updatePortalStrength
-    );
-
-    debugSubscriber((state) => state.poleLightColor, this.updatePoleLightColor);
-
-    Store.time.subscribe(
-      this.namespace,
-      (state) => state.elapsed,
-      this.updateTime
-    );
+    const { world, time } = Store.getSubscribers(this.namespace);
+    world((state) => state.portalColorStart, this.updatePortalStartColor);
+    world((state) => state.portalColorEnd, this.updatePortalEndColor);
+    world((state) => state.uvDisplacementOffset, this.updatePortalDisplacement);
+    world((state) => state.uvStrengthOffset, this.updatePortalStrength);
+    world((state) => state.poleLightColor, this.updatePoleLightColor);
+    time((state) => state.elapsed, this.updateTime);
   }
 
   /* CALLBACKS */

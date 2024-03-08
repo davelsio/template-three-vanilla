@@ -6,25 +6,20 @@ import { Loading } from '@views/Loading';
 import { Portal } from '@views/Portal';
 import { Scene } from 'three';
 
-type Props = {
-  loader?: boolean;
-};
-
-export class WorldController extends BaseController<Props> {
+export class WorldController extends BaseController {
   public scene: Scene;
 
   private _views: WebGLView[] = [];
 
   public constructor(scene: Scene) {
-    super('WorldController', {
-      loader: true,
-    });
+    super('WorldController');
 
     // Create world scene
     this.scene = scene;
 
     // Create view instances
-    if (this._props.loader) {
+    const withLoader = Store.world.state.loader;
+    if (withLoader) {
       this._views.push(new Loading(this.scene));
     }
     this._views.push(new Portal(this.scene));

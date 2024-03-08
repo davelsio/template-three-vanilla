@@ -81,14 +81,14 @@ export class Fireflies extends WebGLView {
       transparent: true,
       //
       uniforms: {
-        uColor: new Uniform(Store.debug.state.color),
+        uColor: new Uniform(Store.world.state.color),
         uResolution: new Uniform(
           new Vector2(
             Store.stage.state.width * Store.stage.state.pixelRatio,
             Store.stage.state.height * Store.stage.state.pixelRatio
           )
         ),
-        uSize: new Uniform(Store.debug.state.baseSize),
+        uSize: new Uniform(Store.world.state.baseSize),
         uTime: new Uniform(0),
       },
     });
@@ -100,15 +100,11 @@ export class Fireflies extends WebGLView {
   }
 
   private setupSubscriptions() {
-    const debugSub = Store.debug.getSubscriber(this.namespace);
-    debugSub((state) => state.baseSize, this.updateSize);
-    debugSub((state) => state.color, this.updateColor);
-    Store.stage.subscribe(this.namespace, (state) => state, this.resize);
-    Store.time.subscribe(
-      this.namespace,
-      (state) => state.elapsed,
-      this.updateTime
-    );
+    const { stage, time, world } = Store.getSubscribers(this.namespace);
+    stage((state) => state, this.resize);
+    time((state) => state.elapsed, this.updateTime);
+    world((state) => state.baseSize, this.updateSize);
+    world((state) => state.color, this.updateColor);
   }
 
   /* CALLBACKS */

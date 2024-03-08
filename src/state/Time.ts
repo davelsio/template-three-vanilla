@@ -1,6 +1,7 @@
 import { StoreInstance } from '@helpers/StoreInstance';
+import { TimeSettings, timeSettings } from '@settings/time';
 
-interface TimeState {
+export interface TimeState extends TimeSettings {
   /**
    * Time elapsed in milliseconds since the previous frame.
    */
@@ -16,6 +17,7 @@ export class TimeStore extends StoreInstance<TimeState> {
     super({
       delta: 16,
       elapsed: 0,
+      ...timeSettings,
     });
   }
 

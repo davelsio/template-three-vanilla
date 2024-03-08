@@ -1,4 +1,5 @@
 import { BaseController } from '@helpers/BaseController';
+import { StageState } from '@state/Stage';
 import { Store } from '@state/Store';
 import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 
@@ -33,7 +34,7 @@ export class RenderController extends BaseController {
     });
     this.renderer.outputColorSpace = SRGBColorSpace;
 
-    const { r, g, b, a } = Store.debug.state.clearColor;
+    const { r, g, b, a } = Store.render.state.clearColor;
     this.renderer.setClearColor(new Color(r, g, b), a);
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Store.stage.state.pixelRatio);
@@ -49,19 +50,10 @@ export class RenderController extends BaseController {
   /* SETUP */
 
   private setupSubscriptions() {
-    Store.debug.subscribe(
-      this.namespace,
-      (state) => state.clearColor,
-      this.debug
-    );
-
-    Store.stage.subscribe(
-      this.namespace,
-      (state) => [state.width, state.height, state.pixelRatio],
-      ([width, height, pixelRatio]) => this.resize(width, height, pixelRatio)
-    );
-
-    Store.time.subscribe(this.namespace, (state) => state.elapsed, this.update);
+    const { render, stage, time } = Store.getSubscribers(this.namespace);
+    render((state) => state.clearColor, this.debug);
+    stage((state) => state, this.resize);
+    time((state) => state.elapsed, this.update);
   }
 
   /* CALLBACKS */
@@ -70,7 +62,7 @@ export class RenderController extends BaseController {
     this.renderer.setClearColor(new Color(r, g, b), a);
   };
 
-  private resize = (width: number, height: number, pixelRatio: number) => {
+  private resize = ({ width, height, pixelRatio }: StageState) => {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(pixelRatio);
   };
