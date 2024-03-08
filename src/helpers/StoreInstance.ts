@@ -1,3 +1,4 @@
+import { Settings } from '@controllers/Debug';
 import { defaultDict } from '@utils/defaultDict';
 import { StoreApi } from 'zustand';
 import {
@@ -9,7 +10,7 @@ import { createStore } from 'zustand/vanilla';
 
 export type Subscription = () => void;
 
-export abstract class StoreInstance<T extends object> {
+export abstract class StoreInstance<T extends Settings> {
   private fps: number = 0;
   protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
 

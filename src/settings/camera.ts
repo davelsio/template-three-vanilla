@@ -1,4 +1,4 @@
-import { BindingConfig } from '@settings/debug';
+import { BindingConfig } from '@controllers/Debug';
 import { Vector3 } from 'three';
 
 /**

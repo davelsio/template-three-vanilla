@@ -1,19 +1,4 @@
-import { Bindable, BindingParams, FolderParams } from '@tweakpane/core';
-
-/**
- * Binding panels configuration object.
- */
-export type BindingConfig<T extends Bindable = Bindable> = {
-  folder?: FolderParams;
-  bindings: Array<{
-    key: keyof T;
-    options?: CustomBindingParams<T>;
-  }>;
-};
-
-type CustomBindingParams<T extends Bindable> = BindingParams & {
-  condition?: keyof T;
-};
+import { BindingConfig } from '@controllers/Debug';
 
 /**
  * Debug variables.

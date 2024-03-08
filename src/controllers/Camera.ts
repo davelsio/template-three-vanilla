@@ -1,6 +1,6 @@
 import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
-import { PerspectiveCamera, Vector3 } from 'three';
+import { PerspectiveCamera } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
 export class CameraController extends BaseController {

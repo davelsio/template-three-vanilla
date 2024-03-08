@@ -1,31 +1,36 @@
-import { NumberStateBundle } from '@debug/StateBundle';
 import { BaseController } from '@helpers/BaseController';
 import { StoreInstance } from '@helpers/StoreInstance';
-import { cameraConfig } from '@settings/camera';
-import { BindingConfig, debugConfig } from '@settings/debug';
-import { renderConfig } from '@settings/renderer';
-import { timeConfig } from '@settings/time';
-import { worldConfig } from '@settings/world';
+import { cameraConfig, CameraSettings } from '@settings/camera';
+import { debugConfig, DebugSettings } from '@settings/debug';
+import { renderConfig, RenderSettings } from '@settings/renderer';
+import { timeConfig, TimeSettings } from '@settings/time';
+import { worldConfig, WorldSettings } from '@settings/world';
 import { Store } from '@state/Store';
-import {
-  BaseBladeParams,
-  Bindable,
-  BindingParams,
-  FolderParams,
-} from '@tweakpane/core';
-import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
+import { Bindable, BindingParams, FolderParams } from '@tweakpane/core';
 import { FolderApi, Pane } from 'tweakpane';
 
-export type BindingPanel<T extends Bindable = Bindable> = {
-  bindings: BindingItem<T>[];
+/**
+ * Binding panels configuration object.
+ */
+export type BindingConfig<T extends Bindable = Bindable> = {
   folder?: FolderParams;
+  bindings: Array<{
+    key: keyof T;
+    options?: BindingParams & {
+      condition?: keyof T;
+    };
+  }>;
 };
 
-export type BindingItem<T extends Bindable = Bindable> = {
-  object: T;
-  key: keyof T;
-  options?: BindingParams;
-};
+/**
+ * Setting types
+ */
+export type Settings =
+  | CameraSettings
+  | DebugSettings
+  | RenderSettings
+  | TimeSettings
+  | WorldSettings;
 
 export class DebugController extends BaseController {
   private _folders: Record<string, FolderApi>;
@@ -58,15 +63,13 @@ export class DebugController extends BaseController {
     const { expanded } = Store.debug.state;
     this._panel.hidden = true;
     this._panel.expanded = expanded;
-    this._panel.registerPlugin(EssentialsPlugin);
     this._folders = {};
-
-    this._panel.registerPlugin(NumberStateBundle);
 
     this.setupConfig(debugConfig, Store.debug);
     this.setupConfig(timeConfig, Store.time);
     this.setupConfig(cameraConfig, Store.camera);
     this.setupConfig(renderConfig, Store.render);
+    this.setupConfig(worldConfig, Store.world);
     this.setupConfig(worldConfig, Store.world);
   }
 
@@ -75,7 +78,7 @@ export class DebugController extends BaseController {
    * @param config binding config object
    * @param store store instance
    */
-  private setupConfig<T extends object>(
+  private setupConfig<T extends Settings>(
     config: BindingConfig<T>[],
     store: StoreInstance<T>
   ) {
@@ -84,13 +87,13 @@ export class DebugController extends BaseController {
         ? this.getFolder(folder)
         : this._panel;
 
-      bindings.forEach(({ key, options }) =>
+      bindings.forEach(({ key, options }) => {
         ui.addBinding(store.state, key, {
           ...options,
           _reader: (key: keyof T) => store.state[key],
           _writer: (state: Partial<T>) => store.update(state),
-        })
-      );
+        });
+      });
     });
   }
 

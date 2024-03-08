@@ -1,6 +1,5 @@
+import { BindingConfig } from '@controllers/Debug';
 import { Color } from 'three';
-
-import { BindingConfig } from './debug';
 
 export type RenderSettings = typeof renderSettings;
 export type RenderConfig = BindingConfig<RenderSettings>;
