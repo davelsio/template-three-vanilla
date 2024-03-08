@@ -25,20 +25,17 @@ export class Loading extends WebGLView<LoadingProps> {
   constructor(scene: Scene) {
     super('Loading', scene, {
       loadingDelay: 0.5,
+      withLoading: false,
     });
-    this.init();
-  }
-
-  public async init() {
-    this.setupOverlayGeometry();
-    this.setupOverlayMaterial();
-    this.setupOverlayMesh();
-
-    this.setupBarGeometry();
-    this.setupBarMaterial();
-    this.setupBarMesh();
-
-    this.setupSubscriptions();
+    this.init(
+      this.setupBarGeometry,
+      this.setupBarMaterial,
+      this.setupBarMesh,
+      this.setupOverlayGeometry,
+      this.setupOverlayMaterial,
+      this.setupOverlayMesh,
+      this.setupSubscriptions
+    );
   }
 
   public destroy() {

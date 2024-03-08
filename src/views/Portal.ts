@@ -38,16 +38,12 @@ export class Portal extends WebGLView {
 
   constructor(scene: Scene) {
     super('Portal', scene);
-    super.flagAsLoading();
-    this.init();
-  }
-
-  public async init() {
-    await this.setupAssets();
-    this.setupMaterial();
-    this.setupModel();
-    this.setupSubscriptions();
-    super.flagAsLoaded();
+    this.init(
+      this.setupAssets,
+      this.setupMaterial,
+      this.setupModel,
+      this.setupSubscriptions
+    );
   }
 
   public destroy() {

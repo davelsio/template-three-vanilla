@@ -21,16 +21,12 @@ export class Fireflies extends WebGLView {
 
   constructor(scene: Scene) {
     super('Fireflies', scene);
-    super.flagAsLoading();
-    this.init();
-  }
-
-  public async init() {
-    this.setupGeometry();
-    this.setupMaterial();
-    this.setupPoints();
-    this.setupSubscriptions();
-    super.flagAsLoaded();
+    this.init(
+      this.setupGeometry,
+      this.setupMaterial,
+      this.setupPoints,
+      this.setupSubscriptions
+    );
   }
 
   public destroy() {

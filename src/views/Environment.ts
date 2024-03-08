@@ -24,13 +24,7 @@ export class Environment extends WebGLView<Props> {
     });
 
     super.flagAsLoading();
-    this.init();
-  }
-
-  public async init() {
-    await this.setupEnvironmentMap();
-    this.setupLights();
-    super.flagAsLoaded();
+    this.init(this.setupEnvironmentMap, this.setupLights);
   }
 
   public destroy() {
