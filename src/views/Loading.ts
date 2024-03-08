@@ -92,8 +92,8 @@ export class Loading extends WebGLView<LoadingProps> {
   }
 
   private setupSubscriptions() {
-    Store.world.subscribe(
-      this.namespace,
+    const { world } = Store.getSubscribers(this.namespace);
+    world(
       (state) => state.viewsProgress,
       (progress) => {
         gsap
