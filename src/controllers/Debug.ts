@@ -73,7 +73,6 @@ export class DebugController extends BaseController {
     this.setupConfig(cameraConfig, Store.camera);
     this.setupConfig(renderConfig, Store.render);
     this.setupConfig(worldConfig, Store.world);
-    this.setupConfig(worldConfig, Store.world);
   }
 
   /**

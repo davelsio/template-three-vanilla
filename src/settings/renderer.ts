@@ -4,9 +4,10 @@ import { Color } from 'three';
 export type RenderSettings = typeof renderSettings;
 export type RenderConfig = BindingConfig<RenderSettings>;
 
-const { r, g, b } = new Color(0x000000);
+const { r, g, b } = new Color(0x000011);
 
 export const renderSettings = {
+  anisotropy: 1,
   clearColor: { r, g, b, a: 1.0 },
 };
 

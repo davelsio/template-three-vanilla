@@ -71,8 +71,11 @@ export function getColorObjectWriter(
   return (target, inValue) => {
     const cc = mapColorType(inValue, colorType);
     const obj = cc.toRgbaObject();
+
+    const isColor = isThreeColor(target.read());
     const color = new ThreeColor(obj.r, obj.g, obj.b);
-    _writer({ [target.key]: isThreeColor(inValue) ? color : obj });
+
+    _writer({ [target.key]: isColor ? color : obj });
   };
 }
 

@@ -63,6 +63,21 @@ export class Store {
   }
 
   /**
+   * Get all state instances.
+   */
+  public static getStates() {
+    return {
+      camera: this.camera.state,
+      debug: this.debug.state,
+      render: this.render.state,
+      resources: this.resources.state,
+      stage: this.stage.state,
+      time: this.time.state,
+      world: this.world.state,
+    };
+  }
+
+  /**
    * Get store subscribers for a given namespace.
    * @param namespace the namespace
    */
@@ -75,6 +90,21 @@ export class Store {
       stage: this.stage.getSubscriber(namespace),
       time: this.time.getSubscriber(namespace),
       world: this.world.getSubscriber(namespace),
+    };
+  }
+
+  /**
+   * Get store updaters for all state instances.
+   */
+  public static getUpdaters() {
+    return {
+      camera: this.camera.update,
+      debug: this.debug.update,
+      render: this.render.update,
+      resources: this.resources.update,
+      stage: this.stage.update,
+      time: this.time.update,
+      world: this.world.update,
     };
   }
 
