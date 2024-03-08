@@ -1,3 +1,4 @@
+import { StateBundle } from '@debug/StateBundle';
 import { BaseController } from '@helpers/BaseController';
 import { StoreInstance } from '@helpers/StoreInstance';
 import { cameraConfig, CameraSettings } from '@settings/camera';
@@ -64,6 +65,8 @@ export class DebugController extends BaseController {
     this._panel.hidden = true;
     this._panel.expanded = expanded;
     this._folders = {};
+
+    this._panel.registerPlugin(StateBundle);
 
     this.setupConfig(debugConfig, Store.debug);
     this.setupConfig(timeConfig, Store.time);

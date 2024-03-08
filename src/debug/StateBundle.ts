@@ -5,7 +5,7 @@ import { ColorObjectInputPlugin } from './color/ColorObjectInputPlugin';
 import { NumberInputStatePlugin } from './number/NumberInputStatePlugin';
 import { NumberMonitorPlugin } from './number/NumberMonitorStatePlugin';
 
-export const NumberStateBundle: TpPluginBundle = {
+export const StateBundle: TpPluginBundle = {
   id: 'state-compatibility',
   plugins: [
     ColorNumberInputPlugin,
