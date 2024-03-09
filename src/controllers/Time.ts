@@ -29,8 +29,9 @@ export class TimeController extends BaseController {
     const delta = newCurrent - this._current;
     const elapsed = newCurrent - this._start;
     this._current = newCurrent;
+    const fps = 1 / delta;
 
-    Store.time.update({ delta, elapsed });
+    Store.time.update({ delta, elapsed, fps });
 
     this._animationHandle = window.requestAnimationFrame(this.tick);
   };

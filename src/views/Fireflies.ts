@@ -39,7 +39,7 @@ export class Fireflies extends WebGLView {
 
   /* SETUP */
 
-  private setupGeometry() {
+  private setupGeometry = () => {
     this.geometry = new BufferGeometry();
 
     const count = 30;
@@ -65,9 +65,9 @@ export class Fireflies extends WebGLView {
     this.geometry.setAttribute('position', new BufferAttribute(positions, 3));
 
     this.geometry.setAttribute('aScale', new BufferAttribute(scales, 1));
-  }
+  };
 
-  private setupMaterial() {
+  private setupMaterial = () => {
     this.material = new ShaderMaterial({
       fragmentShader: fireflyFragmentShader,
       vertexShader: fireflyVertexShader,
@@ -88,20 +88,20 @@ export class Fireflies extends WebGLView {
         uTime: new Uniform(0),
       },
     });
-  }
+  };
 
-  private setupPoints() {
+  private setupPoints = () => {
     this.fireflies = new Points(this.geometry, this.material);
     this.add(this.fireflies);
-  }
+  };
 
-  private setupSubscriptions() {
+  private setupSubscriptions = () => {
     const { stage, time, world } = Store.getSubscribers(this.namespace);
     stage((state) => state, this.resize);
     time((state) => state.elapsed, this.updateTime);
     world((state) => state.baseSize, this.updateSize);
     world((state) => state.color, this.updateColor);
-  }
+  };
 
   /* CALLBACKS */
 

@@ -1,98 +1,89 @@
 import {
-  ColorController,
+  BindingReader,
+  BindingWriter,
   colorFromRgbaNumber,
   colorFromRgbNumber,
-  ColorInputParams,
-  colorToHexRgbaString,
-  colorToHexRgbString,
-  createColorStringParser,
-  createPlugin,
-  equalsColor,
-  Formatter,
-  InputBindingPlugin,
+  colorToRgbaNumber,
+  colorToRgbNumber,
   IntColor,
+  NumberColorInputPlugin as DefaultNumberColorInputPlugin,
 } from '@tweakpane/core';
-import { createColorNumberWriter } from '@tweakpane/core/dist/input-binding/color/converter/writer';
-import { parseColorInputParams } from '@tweakpane/core/dist/input-binding/color/util';
 
-import { getCustomAccept } from '../getCustomAccept';
-import { getColorNumberWriter } from '../getCustomBindings';
+import { customAccept } from '../helpers/customAccept';
+import {
+  InputBindingArgs,
+  InputBindingArgsWithStateParams,
+} from '../helpers/customTypes';
 
-function shouldSupportAlpha(inputParams: ColorInputParams): boolean {
-  if (inputParams?.color?.alpha) {
-    return true;
-  }
-  return false;
+/**
+ * Default plugin type alias.
+ */
+type ColorNumberInputPlugin = typeof DefaultNumberColorInputPlugin;
+
+/**
+ * Default binding arguments.
+ */
+type ColorNumberInputArgs = InputBindingArgs<ColorNumberInputPlugin>;
+
+/**
+ * Extended binding args with custom _reader and _writer params.
+ */
+type ColorNumberInputBindingArgsExtended =
+  InputBindingArgsWithStateParams<ColorNumberInputPlugin>;
+
+function getColorNumberReader(
+  args: ColorNumberInputArgs
+): BindingReader<IntColor> {
+  const {
+    target,
+    params: { _reader, supportsAlpha },
+  } = args as ColorNumberInputBindingArgsExtended;
+  const colorFromNumber = supportsAlpha
+    ? colorFromRgbaNumber
+    : colorFromRgbNumber;
+  return (_: unknown) => {
+    const value = _reader(target.key);
+    return colorFromNumber(value);
+  };
 }
 
-function createFormatter(supportsAlpha: boolean): Formatter<IntColor> {
-  return supportsAlpha
-    ? (v: IntColor) => colorToHexRgbaString(v, '0x')
-    : (v: IntColor) => colorToHexRgbString(v, '0x');
+/**
+ * Custom color <number>input writer function.
+ * @param args binding arguments
+ */
+function getColorNumberWriter(
+  args: ColorNumberInputArgs
+): BindingWriter<IntColor> {
+  const {
+    params: { _writer, supportsAlpha },
+  } = args as ColorNumberInputBindingArgsExtended;
+  const colorToNumber = supportsAlpha ? colorToRgbaNumber : colorToRgbNumber;
+  return (target, value) => {
+    _writer({ [target.key]: colorToNumber(value) });
+  };
 }
 
-function isForColor(params: Record<string, unknown>): boolean {
-  if ('color' in params) {
-    return true;
-  }
-  if (params.view === 'color') {
-    return true;
-  }
-  return false;
-}
+const {
+  accept, // passes params to the binding
+  api,
+  binding, // defines reader and writer functions
+  controller,
+  id,
+  type,
+  core,
+} = DefaultNumberColorInputPlugin;
 
-export interface NumberColorInputParams extends ColorInputParams {
-  supportsAlpha: boolean;
-}
-
-export const ColorNumberInputPlugin: InputBindingPlugin<
-  IntColor,
-  number,
-  NumberColorInputParams
-> = createPlugin({
-  id: 'input-color-number',
-  type: 'input',
-  accept: (value, params) => {
-    if (typeof value !== 'number') {
-      return null;
-    }
-    if (!isForColor(params)) {
-      return null;
-    }
-
-    const result = parseColorInputParams(params);
-    return result
-      ? {
-          initialValue: value,
-          params: {
-            ...result,
-            ...getCustomAccept(params),
-            supportsAlpha: shouldSupportAlpha(params),
-          },
-        }
-      : null;
-  },
+export const ColorNumberInputPlugin: ColorNumberInputPlugin = {
+  id,
+  type,
+  accept: customAccept(accept),
   binding: {
-    reader: (args) => {
-      return args.params.supportsAlpha
-        ? colorFromRgbaNumber
-        : colorFromRgbNumber;
-    },
-    equals: equalsColor,
-    writer: (args) =>
-      getColorNumberWriter(args) ??
-      createColorNumberWriter(args.params.supportsAlpha),
+    constraint: binding.constraint,
+    equals: binding.equals,
+    reader: getColorNumberReader,
+    writer: getColorNumberWriter,
   },
-  controller: (args) => {
-    return new ColorController(args.document, {
-      colorType: 'int',
-      expanded: args.params.expanded ?? false,
-      formatter: createFormatter(args.params.supportsAlpha),
-      parser: createColorStringParser('int'),
-      pickerLayout: args.params.picker ?? 'popup',
-      supportsAlpha: args.params.supportsAlpha,
-      value: args.value,
-      viewProps: args.viewProps,
-    });
-  },
-});
+  controller,
+  api,
+  core,
+};

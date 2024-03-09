@@ -57,15 +57,15 @@ export class Portal extends WebGLView {
 
   /* SETUP */
 
-  private async setupAssets() {
+  private setupAssets = async () => {
     this.portalBakedTexture =
       await ResourceLoader.loadTexture('portalBakedTexture');
     this.portalBakedTexture.flipY = false;
     this.portalBakedTexture.colorSpace = SRGBColorSpace;
     this.portalScene = await ResourceLoader.loadGltfModel('portalModel');
-  }
+  };
 
-  private setupMaterial() {
+  private setupMaterial = () => {
     const bakedMaterial = new MeshBasicMaterial({
       map: this.portalBakedTexture,
     });
@@ -93,9 +93,9 @@ export class Portal extends WebGLView {
       poleLight: poleLightMaterial,
       portalLight: portalLightMaterial,
     };
-  }
+  };
 
-  private setupModel() {
+  private setupModel = () => {
     this.model = this.portalScene.scene;
     this.model.name = 'PortalScene';
 
@@ -118,9 +118,9 @@ export class Portal extends WebGLView {
       );
     }
     this.add(this.model);
-  }
+  };
 
-  private setupSubscriptions() {
+  private setupSubscriptions = () => {
     const { world, time } = Store.getSubscribers(this.namespace);
     world((state) => state.portalColorStart, this.updatePortalStartColor);
     world((state) => state.portalColorEnd, this.updatePortalEndColor);
@@ -128,7 +128,7 @@ export class Portal extends WebGLView {
     world((state) => state.uvStrengthOffset, this.updatePortalStrength);
     world((state) => state.poleLightColor, this.updatePoleLightColor);
     time((state) => state.elapsed, this.updateTime);
-  }
+  };
 
   /* CALLBACKS */
 
