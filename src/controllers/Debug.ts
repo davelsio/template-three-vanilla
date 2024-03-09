@@ -7,8 +7,13 @@ import { renderConfig, RenderSettings } from '@settings/renderer';
 import { timeConfig, TimeSettings } from '@settings/time';
 import { worldConfig, WorldSettings } from '@settings/world';
 import { Store } from '@state/Store';
-import { Bindable, BindingParams, FolderParams } from '@tweakpane/core';
-import { FolderApi, Pane } from 'tweakpane';
+import {
+  Bindable,
+  BindingParams,
+  FolderApi,
+  FolderParams,
+} from '@tweakpane/core';
+import { Pane } from 'tweakpane';
 
 /**
  * Binding panels configuration object.
@@ -92,8 +97,9 @@ export class DebugController extends BaseController {
       bindings.forEach(({ key, options }) => {
         ui.addBinding(store.state, key, {
           ...options,
-          _reader: (key: keyof T) => store.state[key],
-          _writer: (state: Partial<T>) => store.update(state),
+          reader: (target) => store.state[target.key as keyof T],
+          writer: (target, value) =>
+            store.update({ [target.key]: value } as Partial<T>),
         });
       });
     });

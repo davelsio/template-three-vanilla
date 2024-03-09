@@ -5,6 +5,9 @@ import { ColorObjectInputPlugin } from './color/ColorObjectInputPlugin';
 import { NumberInputPlugin } from './number/NumberInputPlugin';
 import { NumberMonitorPlugin } from './number/NumberMonitorPlugin';
 
+/**
+ * Default plugin overrides to support zustand state management.
+ */
 export const StateBundle: TpPluginBundle = {
   id: 'state-compatibility',
   plugins: [

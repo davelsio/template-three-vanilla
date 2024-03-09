@@ -1,4 +1,8 @@
 import {
+  defaultPrimitiveWriter,
+  defaultReader,
+} from '@debug/helpers/defaultBindingTarget';
+import {
   BindingReader,
   BindingWriter,
   colorFromRgbaNumber,
@@ -10,10 +14,7 @@ import {
 } from '@tweakpane/core';
 
 import { customAccept } from '../helpers/customAccept';
-import {
-  InputBindingArgs,
-  InputBindingArgsWithStateParams,
-} from '../helpers/customTypes';
+import { InputBindingArgsWithStateParams } from '../helpers/customTypes';
 
 /**
  * Default plugin type alias.
@@ -21,29 +22,22 @@ import {
 type ColorNumberInputPlugin = typeof DefaultNumberColorInputPlugin;
 
 /**
- * Default binding arguments.
- */
-type ColorNumberInputArgs = InputBindingArgs<ColorNumberInputPlugin>;
-
-/**
- * Extended binding args with custom _reader and _writer params.
+ * Extended binding args with custom reader and writer params.
  */
 type ColorNumberInputBindingArgsExtended =
   InputBindingArgsWithStateParams<ColorNumberInputPlugin>;
 
-function getColorNumberReader(
-  args: ColorNumberInputArgs
-): BindingReader<IntColor> {
-  const {
-    target,
-    params: { _reader, supportsAlpha },
-  } = args as ColorNumberInputBindingArgsExtended;
-  const colorFromNumber = supportsAlpha
+function getColorNumberReader({
+  params,
+  target,
+}: ColorNumberInputBindingArgsExtended): BindingReader<IntColor> {
+  const _reader = params.reader ?? defaultReader;
+  const colorFromNumber = params.supportsAlpha
     ? colorFromRgbaNumber
     : colorFromRgbNumber;
-  return (_: unknown) => {
-    const value = _reader(target.key);
-    return colorFromNumber(value);
+  return (value) => {
+    const _value = _reader(target, value as number);
+    return colorFromNumber(_value);
   };
 }
 
@@ -51,15 +45,15 @@ function getColorNumberReader(
  * Custom color <number>input writer function.
  * @param args binding arguments
  */
-function getColorNumberWriter(
-  args: ColorNumberInputArgs
-): BindingWriter<IntColor> {
-  const {
-    params: { _writer, supportsAlpha },
-  } = args as ColorNumberInputBindingArgsExtended;
-  const colorToNumber = supportsAlpha ? colorToRgbaNumber : colorToRgbNumber;
+function getColorNumberWriter({
+  params,
+}: ColorNumberInputBindingArgsExtended): BindingWriter<IntColor> {
+  const colorToNumber = params.supportsAlpha
+    ? colorToRgbaNumber
+    : colorToRgbNumber;
+  const _writer = params.writer ?? defaultPrimitiveWriter;
   return (target, value) => {
-    _writer({ [target.key]: colorToNumber(value) });
+    _writer(target, colorToNumber(value));
   };
 }
 

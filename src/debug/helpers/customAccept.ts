@@ -18,8 +18,8 @@ export function customAccept<
       result.params = {
         ...result.params,
         ...parseRecord(params, (p) => ({
-          _reader: p.optional.function,
-          _writer: p.optional.function,
+          reader: p.optional.function,
+          writer: p.optional.function,
         })),
       };
     }

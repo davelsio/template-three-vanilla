@@ -1,4 +1,6 @@
 import {
+  Bindable,
+  BindingApi,
   BindingParams,
   BindingTarget,
   InputBindingPlugin,
@@ -7,7 +9,7 @@ import {
 
 /**
  * Flexible parameters to allow the `readonly` states of both monitor (true)
- * and input (true) bindings.
+ * and input (false) bindings.
  */
 export type BaseParams = BindingParams &
   Record<string, unknown> & {
@@ -24,49 +26,66 @@ export interface BindingArguments<T, P extends BaseParams> {
 }
 
 /**
- * Input binding plugin with custom _reader and _writer state parameters.
+ * Input binding plugin with custom reader and writer state parameters.
  */
 export type InputBindingPluginWithStateParams<T> =
   T extends InputBindingPlugin<infer In, infer Ex, infer Params>
     ? InputBindingPlugin<In, Ex, WithStateParams<Params>>
     : never;
+
 /**
- * Binding arguments for the default reader and writer bindings.
+ * Binding input arguments for the default reader and writer params.
  */
 export type InputBindingArgs<T> =
   T extends InputBindingPlugin<infer In, infer Ex, infer Params>
     ? BindingArguments<Ex, Params>
     : never;
+
 /**
- * Binding arguments with custom _writer and _reader params.
- */
-export type InputBindingArgsWithStateParams<T> =
-  T extends InputBindingPlugin<infer In, infer Ex, infer Params>
-    ? WithStateParams<BindingArguments<Ex, Params>>
-    : never;
-/**
- * Binding arguments for the default reader binding.
+ * Binding monitor arguments for the default reader param.
  */
 export type MonitorBindingArgs<T> =
   T extends MonitorBindingPlugin<infer In, infer Params>
     ? BindingArguments<In, Params>
     : never;
+
 /**
- * Binding arguments with custom _reader param.
+ * Binding input arguments with custom writer and reader params.
+ */
+export type InputBindingArgsWithStateParams<T> =
+  T extends InputBindingPlugin<infer In, infer Ex, infer Params>
+    ? WithStateParams<BindingArguments<Ex, Params>>
+    : never;
+
+/**
+ * Binding monitor arguments with custom reader param.
  */
 export type MonitorBindingArgsWithStateParams<T> =
   T extends MonitorBindingPlugin<infer In, infer Params>
     ? WithStateParams<BindingArguments<In, Params>>
     : never;
+
 /**
- * Extend binding type args with params with custom _reader and _writer params.
+ * Extend binding type args with params with custom reader and writer params.
  */
 export type WithStateParams<T> =
   T extends BindingArguments<infer V, infer P>
     ? T & {
-        params: P & {
-          _reader: (key: string) => V;
-          _writer: (state: { [key: string]: V }) => void;
-        };
+        params: P & StateParams<V>;
       }
     : never;
+
+export type StateParams<V> = {
+  reader?: (target: BindingTarget, value: V) => V;
+  writer?: (target: BindingTarget, value: V) => void;
+};
+
+declare module '@tweakpane/core' {
+  interface FolderApi {
+    addBinding<T extends Bindable>(
+      target: T,
+      key: keyof T,
+      options?: BindingParams & StateParams<T>
+    ): BindingApi;
+  }
+}
