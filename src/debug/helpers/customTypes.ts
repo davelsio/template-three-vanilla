@@ -82,10 +82,10 @@ export type StateParams<V> = {
 
 declare module '@tweakpane/core' {
   interface FolderApi {
-    addBinding<T extends Bindable>(
+    addBinding<T extends Bindable, K extends keyof T>(
       target: T,
-      key: keyof T,
-      options?: BindingParams & StateParams<T>
+      key: K,
+      options?: BindingParams & StateParams<K>
     ): BindingApi;
   }
 }
