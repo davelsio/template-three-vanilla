@@ -1,62 +1,21 @@
 import {
-  defaultPrimitiveWriter,
-  defaultReader,
-} from '@debug/helpers/defaultBindingTarget';
+  GetReaderType,
+  GetWriterType,
+  InputBindingPluginWithStateParams,
+} from '@debug/helpers/customTypes';
 import {
-  BindingReader,
-  BindingWriter,
   colorFromRgbaNumber,
   colorFromRgbNumber,
   colorToRgbaNumber,
   colorToRgbNumber,
-  IntColor,
   NumberColorInputPlugin as DefaultNumberColorInputPlugin,
 } from '@tweakpane/core';
 
 import { customAccept } from '../helpers/customAccept';
-import { InputBindingArgsWithStateParams } from '../helpers/customTypes';
 
 /**
- * Default plugin type alias.
+ * Default plugin properties to override.
  */
-type ColorNumberInputPlugin = typeof DefaultNumberColorInputPlugin;
-
-/**
- * Extended binding args with custom reader and writer params.
- */
-type ColorNumberInputBindingArgsExtended =
-  InputBindingArgsWithStateParams<ColorNumberInputPlugin>;
-
-function getColorNumberReader({
-  params,
-  target,
-}: ColorNumberInputBindingArgsExtended): BindingReader<IntColor> {
-  const _reader = params.reader ?? defaultReader;
-  const colorFromNumber = params.supportsAlpha
-    ? colorFromRgbaNumber
-    : colorFromRgbNumber;
-  return (value) => {
-    const _value = _reader(target, value as number);
-    return colorFromNumber(_value);
-  };
-}
-
-/**
- * Custom color <number>input writer function.
- * @param args binding arguments
- */
-function getColorNumberWriter({
-  params,
-}: ColorNumberInputBindingArgsExtended): BindingWriter<IntColor> {
-  const colorToNumber = params.supportsAlpha
-    ? colorToRgbaNumber
-    : colorToRgbNumber;
-  const _writer = params.writer ?? defaultPrimitiveWriter;
-  return (target, value) => {
-    _writer(target, colorToNumber(value));
-  };
-}
-
 const {
   accept, // passes params to the binding
   api,
@@ -66,6 +25,46 @@ const {
   type,
   core,
 } = DefaultNumberColorInputPlugin;
+
+/**
+ * Custom plugin type alias.
+ */
+type ColorNumberInputPlugin = InputBindingPluginWithStateParams<
+  typeof DefaultNumberColorInputPlugin
+>;
+type CustomReader = GetReaderType<ColorNumberInputPlugin>;
+type CustomWriter = GetWriterType<ColorNumberInputPlugin>;
+
+/**
+ * Custom <number>color reader function.
+ */
+const getColorNumberReader: CustomReader = (args) => {
+  const _reader = args.params.reader;
+  if (!_reader) return binding.reader(args);
+
+  const colorFromNumber = args.params.supportsAlpha
+    ? colorFromRgbaNumber
+    : colorFromRgbNumber;
+  return (value) => {
+    const _value = _reader(args.target, value as number);
+    return colorFromNumber(_value);
+  };
+};
+
+/**
+ * Custom <number>color writer function.
+ */
+const getColorNumberWriter: CustomWriter = (args) => {
+  const _writer = args.params.writer;
+  if (!_writer) return binding.writer(args);
+
+  const colorToNumber = args.params.supportsAlpha
+    ? colorToRgbaNumber
+    : colorToRgbNumber;
+  return (target, value) => {
+    _writer(target, colorToNumber(value));
+  };
+};
 
 export const ColorNumberInputPlugin: ColorNumberInputPlugin = {
   id,

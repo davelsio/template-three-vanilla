@@ -1,3 +1,5 @@
+import gsap from 'gsap';
+import { Mesh, PlaneGeometry, Scene, ShaderMaterial } from 'three';
 import { WebGLView } from '@helpers/WebGLView';
 import {
   barFragmentShader,
@@ -6,8 +8,6 @@ import {
   overlayVertexShader,
 } from '@shaders/progress';
 import { Store } from '@state/Store';
-import gsap from 'gsap';
-import { Mesh, PlaneGeometry, Scene, ShaderMaterial } from 'three';
 
 export interface LoadingProps {
   loadingDelay: number;

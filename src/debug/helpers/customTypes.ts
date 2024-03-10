@@ -11,15 +11,15 @@ import {
  * Flexible parameters to allow the `readonly` states of both monitor (true)
  * and input (false) bindings.
  */
-export type BaseParams = BindingParams &
+type BaseParams = BindingParams &
   Record<string, unknown> & {
     readonly?: boolean;
   };
 
 /**
- * Binding arguments for the default reader and writer bindings.
+ * Default binding arguments for the reader and writer functions.
  */
-export interface BindingArguments<T, P extends BaseParams> {
+interface BindingArguments<T, P extends BaseParams> {
   initialValue: T;
   params: P;
   target: BindingTarget;
@@ -30,13 +30,39 @@ export interface BindingArguments<T, P extends BaseParams> {
  */
 export type InputBindingPluginWithStateParams<T> =
   T extends InputBindingPlugin<infer In, infer Ex, infer Params>
-    ? InputBindingPlugin<In, Ex, WithStateParams<Params>>
+    ? InputBindingPlugin<In, Ex, Params & StateParams<Ex>>
+    : never;
+
+/**
+ * Monitor binding plugin with a custom reader state parameter.
+ */
+export type MonitorBindingPluginWithStateParams<T> =
+  T extends MonitorBindingPlugin<infer In, infer Params>
+    ? MonitorBindingPlugin<In, Params & StateParams<In>>
+    : never;
+
+/**
+ * Get the reader type from the binding plugin.
+ */
+export type GetReaderType<T> =
+  T extends InputBindingPlugin<infer In, infer Ex, infer Params>
+    ? T['binding']['reader']
+    : T extends MonitorBindingPlugin<infer In, infer Params>
+      ? T['binding']['reader']
+      : never;
+
+/**
+ * Get the writer type from the input binding plugin.
+ */
+export type GetWriterType<T> =
+  T extends InputBindingPlugin<infer In, infer Ex, infer Params>
+    ? T['binding']['writer']
     : never;
 
 /**
  * Binding input arguments for the default reader and writer params.
  */
-export type InputBindingArgs<T> =
+export type DefaultInputBindingArgs<T> =
   T extends InputBindingPlugin<infer In, infer Ex, infer Params>
     ? BindingArguments<Ex, Params>
     : never;
@@ -44,7 +70,7 @@ export type InputBindingArgs<T> =
 /**
  * Binding monitor arguments for the default reader param.
  */
-export type MonitorBindingArgs<T> =
+export type DefaultMonitorBindingArgs<T> =
   T extends MonitorBindingPlugin<infer In, infer Params>
     ? BindingArguments<In, Params>
     : never;
@@ -52,40 +78,41 @@ export type MonitorBindingArgs<T> =
 /**
  * Binding input arguments with custom writer and reader params.
  */
-export type InputBindingArgsWithStateParams<T> =
+export type CustomInputBindingArgs<T> =
   T extends InputBindingPlugin<infer In, infer Ex, infer Params>
-    ? WithStateParams<BindingArguments<Ex, Params>>
+    ? BindingArguments<Ex, WithStateParams<Params, Ex>>
     : never;
 
 /**
  * Binding monitor arguments with custom reader param.
  */
-export type MonitorBindingArgsWithStateParams<T> =
+export type CustomMonitorBindingArgs<T> =
   T extends MonitorBindingPlugin<infer In, infer Params>
-    ? WithStateParams<BindingArguments<In, Params>>
+    ? BindingArguments<In, WithStateParams<Params, In>>
     : never;
 
 /**
  * Extend binding type args with params with custom reader and writer params.
  */
-export type WithStateParams<T> =
-  T extends BindingArguments<infer V, infer P>
-    ? T & {
-        params: P & StateParams<V>;
-      }
-    : never;
-
-export type StateParams<V> = {
+type WithStateParams<P, V> = P & {
   reader?: (target: BindingTarget, value: V) => V;
   writer?: (target: BindingTarget, value: V) => void;
 };
 
+export type StateParams<V> = {
+  reader?: (target: BindingTarget, value: unknown) => V;
+  writer?: (target: BindingTarget, value: V) => void;
+};
+
+/**
+ * Module augmentation for the `FolderApi` to add the custom binding functions.
+ */
 declare module '@tweakpane/core' {
   interface FolderApi {
     addBinding<T extends Bindable, K extends keyof T>(
       target: T,
       key: K,
-      options?: BindingParams & StateParams<K>
+      options?: WithStateParams<BindingParams, K>
     ): BindingApi;
   }
 }

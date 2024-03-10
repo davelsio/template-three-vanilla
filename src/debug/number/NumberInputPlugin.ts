@@ -1,53 +1,11 @@
-import {
-  defaultPrimitiveWriter,
-  defaultReader,
-} from '@debug/helpers/defaultBindingTarget';
-import {
-  BindingReader,
-  BindingWriter,
-  NumberInputPlugin as DefaultNumberInputPlugin,
-} from '@tweakpane/core';
+import { NumberInputPlugin as DefaultNumberInputPlugin } from '@tweakpane/core';
 
 import { customAccept } from '../helpers/customAccept';
-import { InputBindingArgsWithStateParams } from '../helpers/customTypes';
-
-/**
- * Plugin type alias.
- */
-type TNumberInputPlugin = typeof DefaultNumberInputPlugin;
-
-/**
- * Extended binding params with custom reader and writer bindings.
- */
-type NumberInputBindingArgsExtended =
-  InputBindingArgsWithStateParams<TNumberInputPlugin>;
-
-/**
- * Custom number input/monitor reader function.
- * @param _args binding arguments
- */
-function getNumberReader({
-  params,
-  target,
-}: NumberInputBindingArgsExtended): BindingReader<number> {
-  const _reader = params.reader ?? defaultReader;
-  return (value) => {
-    return _reader(target, value as number) as number;
-  };
-}
-
-/**
- * Custom number input/monitor writer function.
- * @param _args binding arguments
- */
-function getNumberWriter({
-  params,
-}: NumberInputBindingArgsExtended): BindingWriter<number> {
-  const _writer = params.writer ?? defaultPrimitiveWriter;
-  return (target, value) => {
-    _writer?.(target, value);
-  };
-}
+import {
+  GetReaderType,
+  GetWriterType,
+  InputBindingPluginWithStateParams,
+} from '../helpers/customTypes';
 
 /**
  * Override the binding and accept functions.
@@ -62,7 +20,38 @@ const {
   type,
 } = DefaultNumberInputPlugin;
 
-export const NumberInputPlugin: TNumberInputPlugin = {
+/**
+ * Plugin type alias.
+ */
+type NumberInputPlugin = InputBindingPluginWithStateParams<
+  typeof DefaultNumberInputPlugin
+>;
+type CustomReader = GetReaderType<NumberInputPlugin>;
+type CustomWriter = GetWriterType<NumberInputPlugin>;
+
+/**
+ * Custom number input/monitor reader function.
+ */
+const getNumberReader: CustomReader = (args) => {
+  const _reader = args.params.reader;
+  if (!_reader) return binding.reader(args);
+  return (value) => {
+    return _reader(args.target, Number(value));
+  };
+};
+
+/**
+ * Custom number input writer function.
+ */
+const getNumberWriter: CustomWriter = (args) => {
+  const _writer = args.params.writer;
+  if (!_writer) return binding.writer(args);
+  return (target, value) => {
+    _writer?.(target, value);
+  };
+};
+
+export const NumberInputPlugin: NumberInputPlugin = {
   id: id + 'state',
   type,
   accept: customAccept(accept),

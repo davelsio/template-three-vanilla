@@ -1,18 +1,34 @@
 import { parseRecord } from '@tweakpane/core';
 
+/**
+ * Accept function return type (not exported from `@tweakpane/core`).
+ */
 interface Acceptance<T, P> {
   initialValue: T;
   params: P;
 }
 
-type Accept<Ex, P> = (value: Ex, params: P) => Acceptance<Ex, P> | null;
-type AcceptValue<T> = T extends Record<string, infer V> ? V : never;
+/**
+ * Accept function type (not exported from `@tweakpane/core`).
+ */
+type AcceptFunction<Ex, P> = {
+  /**
+   * @param exValue The value input by users.
+   * @param params The additional parameters specified by users.
+   * @return A typed value if the plugin accepts the input, or null if the plugin sees them off and pass them to the next plugin.
+   */
+  (exValue: unknown, params: Record<string, unknown>): Acceptance<Ex, P> | null;
+};
 
-export function customAccept<
-  T extends Record<string, unknown>,
-  A extends Accept<AcceptValue<T>, T>,
->(accept: A) {
-  return (value: AcceptValue<T>, params: T) => {
+/**
+ * Custom accept function that extends the default by passing the custom reader
+ * and writer params to the rest of the plugin chain.
+ * @param accept default accept function
+ */
+export const customAccept = <Ex, P>(
+  accept: AcceptFunction<Ex, P>
+): AcceptFunction<Ex, P> => {
+  return (value, params) => {
     const result = accept(value, params);
     if (result) {
       result.params = {
@@ -25,4 +41,4 @@ export function customAccept<
     }
     return result as ReturnType<typeof accept>;
   };
-}
+};
