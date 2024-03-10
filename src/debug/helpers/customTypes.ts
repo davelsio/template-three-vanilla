@@ -30,7 +30,7 @@ interface BindingArguments<T, P extends BaseParams> {
  */
 export type InputBindingPluginWithStateParams<T> =
   T extends InputBindingPlugin<infer In, infer Ex, infer Params>
-    ? InputBindingPlugin<In, Ex, Params & StateParams<Ex>>
+    ? InputBindingPlugin<In, Ex, WithStateParams<Params, Ex>>
     : never;
 
 /**
@@ -38,7 +38,7 @@ export type InputBindingPluginWithStateParams<T> =
  */
 export type MonitorBindingPluginWithStateParams<T> =
   T extends MonitorBindingPlugin<infer In, infer Params>
-    ? MonitorBindingPlugin<In, Params & StateParams<In>>
+    ? MonitorBindingPlugin<In, WithStateParams<Params, In>>
     : never;
 
 /**
@@ -95,11 +95,6 @@ export type CustomMonitorBindingArgs<T> =
  * Extend binding type args with params with custom reader and writer params.
  */
 type WithStateParams<P, V> = P & {
-  reader?: (target: BindingTarget, value: V) => V;
-  writer?: (target: BindingTarget, value: V) => void;
-};
-
-export type StateParams<V> = {
   reader?: (target: BindingTarget, value: unknown) => V;
   writer?: (target: BindingTarget, value: V) => void;
 };
