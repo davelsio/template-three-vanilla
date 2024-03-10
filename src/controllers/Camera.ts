@@ -1,7 +1,8 @@
-import { BaseController } from '@helpers/BaseController';
-import { Store } from '@state/Store';
 import { PerspectiveCamera } from 'three';
 import { OrbitControls } from 'three-stdlib';
+
+import { BaseController } from '@helpers/BaseController';
+import { Store } from '@state/Store';
 
 export class CameraController extends BaseController {
   public camera: PerspectiveCamera;

@@ -1,7 +1,3 @@
-import { WebGLView } from '@helpers/WebGLView';
-import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
-import { StageState } from '@state/Stage';
-import { Store } from '@state/Store';
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -13,6 +9,11 @@ import {
   Uniform,
   Vector2,
 } from 'three';
+
+import { WebGLView } from '@helpers/WebGLView';
+import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
+import { StageState } from '@state/Stage';
+import { Store } from '@state/Store';
 
 export class Fireflies extends WebGLView {
   private geometry: BufferGeometry;

@@ -1,6 +1,7 @@
+import { Clock } from 'three';
+
 import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
-import { Clock } from 'three';
 
 export class TimeController extends BaseController {
   private _animationHandle: number;

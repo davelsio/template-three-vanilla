@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, Scene, ShaderMaterial } from 'three';
+
 import { WebGLView } from '@helpers/WebGLView';
 import {
   barFragmentShader,

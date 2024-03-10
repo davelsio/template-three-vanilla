@@ -31,8 +31,42 @@ module.exports = {
     'prettier/prettier': ['warn'],
 
     // Sort imports
-    'simple-import-sort/imports': 'warn',
     'simple-import-sort/exports': 'warn',
+    'simple-import-sort/imports': [
+        'warn', {
+        groups: [
+          // Module imports
+          ['^[a-z]', '^@'],
+          // Folder aliases
+          [
+            '^@controllers',
+            '^@debug',
+            '^@errors',
+            '^@helpers',
+            '^@loaders',
+            '^@settings',
+            '^@shaders',
+            '^@state',
+            '^@styles',
+            '^@type-guards',
+            '^@utils',
+            '^@views',
+          ],
+          // Folder imports (starting with `../` or `./`)
+          [
+            '^\\.\\.(?!/?$)',
+            '^\\.\\./?$',
+            '^\\./(?=.*/)(?!/?$)',
+            '^\\.(?!/?$)',
+            '^\\./?$',
+          ],
+          // Style imports
+          ['^.+\\.s?css$'],
+          // Side effect imports
+          ['^\\u0000'],
+        ],
+      },
+    ],
   },
   overrides: [
     {

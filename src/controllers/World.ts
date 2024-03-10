@@ -1,10 +1,11 @@
+import { Scene } from 'three';
+
 import { BaseController } from '@helpers/BaseController';
 import { WebGLView } from '@helpers/WebGLView';
 import { Store } from '@state/Store';
 import { Fireflies } from '@views/Fireflies';
 import { Loading } from '@views/Loading';
 import { Portal } from '@views/Portal';
-import { Scene } from 'three';
 
 export class WorldController extends BaseController {
   public scene: Scene;

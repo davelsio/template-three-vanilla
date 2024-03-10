@@ -1,15 +1,16 @@
 import {
-  GetReaderType,
-  GetWriterType,
-  InputBindingPluginWithStateParams,
-} from '@debug/helpers/customTypes';
-import {
   colorFromRgbaNumber,
   colorFromRgbNumber,
   colorToRgbaNumber,
   colorToRgbNumber,
   NumberColorInputPlugin as DefaultNumberColorInputPlugin,
 } from '@tweakpane/core';
+
+import {
+  GetReaderType,
+  GetWriterType,
+  InputBindingPluginWithStateParams,
+} from '@debug/helpers/customTypes';
 
 import { customAccept } from '../helpers/customAccept';
 

@@ -1,3 +1,11 @@
+import { Pane } from 'tweakpane';
+import {
+  Bindable,
+  BindingParams,
+  FolderApi,
+  FolderParams,
+} from '@tweakpane/core';
+
 import { StateBundle } from '@debug/StateBundle';
 import { BaseController } from '@helpers/BaseController';
 import { StoreInstance } from '@helpers/StoreInstance';
@@ -7,13 +15,6 @@ import { renderConfig, RenderSettings } from '@settings/renderer';
 import { timeConfig, TimeSettings } from '@settings/time';
 import { worldConfig, WorldSettings } from '@settings/world';
 import { Store } from '@state/Store';
-import {
-  Bindable,
-  BindingParams,
-  FolderApi,
-  FolderParams,
-} from '@tweakpane/core';
-import { Pane } from 'tweakpane';
 
 /**
  * Binding panels configuration object.

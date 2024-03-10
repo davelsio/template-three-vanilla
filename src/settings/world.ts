@@ -1,5 +1,6 @@
-import { BindingConfig } from '@controllers/Debug';
 import { Color } from 'three';
+
+import { BindingConfig } from '@controllers/Debug';
 
 export type WorldSettings = typeof worldSettings;
 export type WorldConfig = BindingConfig<WorldSettings>;

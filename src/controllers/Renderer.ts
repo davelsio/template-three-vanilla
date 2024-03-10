@@ -1,7 +1,8 @@
+import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
+
 import { BaseController } from '@helpers/BaseController';
 import { StageState } from '@state/Stage';
 import { Store } from '@state/Store';
-import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 
 export type ClearColor = {
   r: number;

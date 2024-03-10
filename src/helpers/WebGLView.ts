@@ -1,5 +1,6 @@
-import { Store } from '@state/Store';
 import { Group, Scene } from 'three';
+
+import { Store } from '@state/Store';
 
 type SetupCallback = () => void | Promise<void>;
 type WebGLViewOptions<T> = T & {

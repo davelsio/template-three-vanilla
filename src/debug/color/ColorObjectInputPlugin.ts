@@ -1,8 +1,9 @@
+import { Color as ThreeColor } from 'three';
 import { ObjectColorInputPlugin as DefaultObjectColorInputPlugin } from '@tweakpane/core';
 import { colorFromObject } from '@tweakpane/core/dist/input-binding/color/converter/color-object';
 import { mapColorType } from '@tweakpane/core/dist/input-binding/color/model/colors';
+
 import { isThreeColor } from '@type-guards/isThreeColor';
-import { Color as ThreeColor } from 'three';
 
 import { customAccept } from '../helpers/customAccept';
 import {

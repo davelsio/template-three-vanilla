@@ -1,3 +1,12 @@
+import {
+  CubeTexture,
+  CubeTextureLoader,
+  LoadingManager,
+  Texture,
+  TextureLoader,
+} from 'three';
+import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib';
+
 import { AssetNotFoundError } from '@errors/AssetNotFoundError';
 import {
   AssetType,
@@ -7,14 +16,6 @@ import {
 } from '@loaders/assets';
 import { Store } from '@state/Store';
 import { TypedObject } from '@utils/typedObject';
-import {
-  CubeTexture,
-  CubeTextureLoader,
-  LoadingManager,
-  Texture,
-  TextureLoader,
-} from 'three';
-import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib';
 
 type LoaderOptions = {
   onProgress?: (event: ProgressEvent) => void;

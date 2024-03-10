@@ -1,5 +1,3 @@
-import { Settings } from '@controllers/Debug';
-import { defaultDict } from '@utils/defaultDict';
 import { StoreApi } from 'zustand';
 import {
   StoreSubscribeWithSelector,
@@ -7,6 +5,9 @@ import {
   Write,
 } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
+
+import { Settings } from '@controllers/Debug';
+import { defaultDict } from '@utils/defaultDict';
 
 export type Subscription = () => void;
 
