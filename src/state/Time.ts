@@ -20,8 +20,4 @@ export class TimeStore extends StoreInstance<TimeState> {
       ...timeSettings,
     });
   }
-
-  public update(state: Partial<TimeState>) {
-    this._state.setState(state);
-  }
 }

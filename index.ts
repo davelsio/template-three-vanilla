@@ -10,5 +10,6 @@ if (!root) {
   throw new Error('Root element not found');
 }
 
-const experience = new Experience(root);
-experience.onLoad(() => console.log('Experience loaded'));
+const { api } = new Experience(root);
+
+api.onLoad(() => console.log('Experience loaded'));

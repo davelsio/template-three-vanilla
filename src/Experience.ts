@@ -8,22 +8,22 @@ import { CubeTextures, GLTFModels, Textures } from '@loaders/assets';
 import { ResourceLoader } from '@loaders/ResourceLoader';
 import { Store } from '@state/Store';
 
+import { ExperienceApi } from './ExperienceApi';
+
 export class Experience {
+  public namespace = 'Experience';
+
+  /**
+   * The public API for the experience.
+   */
+  public api: ExperienceApi;
+
   private _cameraController: CameraController;
   private _debugController: DebugController;
   private _renderController: RenderController;
   private _stageController: StageController;
   private _timeController: TimeController;
   private _worldController: WorldController;
-
-  public get api() {
-    return {
-      camera: this._cameraController.camera,
-      controls: this._cameraController.controls,
-    };
-  }
-
-  public namespace = 'Experience';
 
   public constructor(root: HTMLDivElement, canvas?: HTMLCanvasElement) {
     Store.init();
@@ -59,6 +59,12 @@ export class Experience {
 
     // WebGL views
     this._worldController = new WorldController(this._renderController.scene);
+
+    // API
+    this.api = new ExperienceApi(this.namespace, {
+      camera: this._cameraController.camera,
+      controls: this._cameraController.controls,
+    });
   }
 
   /**
@@ -75,16 +81,4 @@ export class Experience {
 
     Store.destroy();
   };
-
-  /**
-   * Handler function to execute after the experience is loaded.
-   * @param callback callback function to execute
-   */
-  public onLoad(callback: () => void) {
-    Store.world.subscribe(
-      this.namespace,
-      (state) => state.viewsProgress,
-      (progress) => progress === 1 && callback()
-    );
-  }
 }

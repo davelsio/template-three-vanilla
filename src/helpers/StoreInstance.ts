@@ -79,8 +79,10 @@ export abstract class StoreInstance<T extends Settings> {
     this._subscriptions[namespace].forEach((unsub) => unsub());
   }
 
-  /* DEBUG PANELS */
-
+  /**
+   * Update the store state.
+   * @param state partial state
+   */
   public update = (state: Partial<T>) => {
     this._state.setState(state);
   };

@@ -1,3 +1,5 @@
+import { Vector2 } from 'three';
+
 import { BaseController } from '@helpers/BaseController';
 import { Store } from '@state/Store';
 
@@ -37,36 +39,45 @@ export class StageController extends BaseController {
 
     this.canvas = _canvas;
 
-    // Update the controller state
-    this.updateStage();
+    // Initialize the store state
+    Store.stage.update({ root: this.root, canvas: this.canvas });
+    this.updateDimensions();
     this.updatePixelRatio();
-    window.addEventListener('resize', this.updateStage);
+    window.addEventListener('resize', this.updateDimensions);
   }
 
   public destroy = () => {
-    window.removeEventListener('resize', this.updateStage);
+    window.removeEventListener('pointermove', this.updateCursorPosition);
+    window.removeEventListener('resize', this.updateDimensions);
     this._media?.removeEventListener('change', this.updatePixelRatio);
     Store.stage.destroy();
   };
 
   /*  CALLBACKS */
 
-  private updatePixelRatio = () => {
-    const mqString = `(resolution: ${window.devicePixelRatio}dppx)`;
-    const media = matchMedia(mqString);
-    Store.stage.update({ pixelRatio: Math.min(window.devicePixelRatio, 2) });
-    media.addEventListener('change', this.updatePixelRatio, { once: true });
-    this._media = media;
+  private updateCursorPosition = (event: PointerEvent) => {
+    // Convert to clip space [-1, 1]
+    const x = (event.clientX / this.width) * 2 - 1; // left to right
+    const y = -(event.clientY / this.height) * 2 + 1; // bottom to top
+    Store.stage.update({ cursorPosition: new Vector2(x, y) });
   };
 
-  private updateStage = () => {
+  private updateDimensions = () => {
     const width = this.root.clientWidth;
     const height = this.root.clientHeight;
-
     Store.stage.update({
       width,
       height,
       aspectRatio: width / height,
+    });
+  };
+
+  private updatePixelRatio = () => {
+    Store.stage.update({ pixelRatio: Math.min(window.devicePixelRatio, 2) });
+    const mqString = `(resolution: ${window.devicePixelRatio}dppx)`;
+    this._media = window.matchMedia(mqString);
+    this._media.addEventListener('change', this.updatePixelRatio, {
+      once: true,
     });
   };
 }
