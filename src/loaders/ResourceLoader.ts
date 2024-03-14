@@ -76,6 +76,7 @@ export class ResourceLoader {
     if (options?.draco) {
       const dracoLoader = new DRACOLoader();
       this._gltfLoader.setDRACOLoader(dracoLoader);
+      dracoLoader.setDecoderPath('draco/'); // from node_modules/three/examples/js/libs/draco/
     }
 
     const cubeTextureCount = TypedObject.keys(cubeTextures).length;

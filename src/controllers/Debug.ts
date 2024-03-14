@@ -29,6 +29,10 @@ export type BindingConfig<T extends Bindable = Bindable> = {
   }>;
 };
 
+export type DefineBindingConfig<T extends Settings> = (
+  store: StoreInstance<T>
+) => BindingConfig[];
+
 /**
  * Setting types
  */

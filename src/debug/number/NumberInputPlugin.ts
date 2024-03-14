@@ -30,7 +30,7 @@ type CustomReader = GetReaderType<NumberInputPlugin>;
 type CustomWriter = GetWriterType<NumberInputPlugin>;
 
 /**
- * Custom number input/monitor reader function.
+ * Custom number input reader function.
  */
 const getNumberReader: CustomReader = (args) => {
   const _reader = args.params.reader;

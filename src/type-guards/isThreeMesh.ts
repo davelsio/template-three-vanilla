@@ -1,5 +1,5 @@
 import { Mesh } from 'three';
 
-export function isThreeMesh(x: unknown): x is Mesh {
+export function isThreeMesh<T extends Mesh>(x: unknown): x is T {
   return x instanceof Mesh;
 }
