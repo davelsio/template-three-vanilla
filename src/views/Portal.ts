@@ -8,13 +8,12 @@ import {
   Texture,
   Uniform,
 } from 'three';
-import { GLTF } from 'three-stdlib';
 
-import { WebGLView } from '@helpers/WebGLView';
+import { WebGLView } from '@helpers/classes/WebGLView';
+import { isThreeMesh } from '@helpers/guards/isThreeMesh';
 import { ResourceLoader } from '@loaders/ResourceLoader';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 import { Store } from '@state/Store';
-import { isThreeMesh } from '@type-guards/isThreeMesh';
 import { TypedObject } from '@utils/typedObject';
 
 interface ModelMeshes {
@@ -31,10 +30,9 @@ interface ModelMaterials {
 }
 
 export class Portal extends WebGLView {
-  private portalBakedTexture: Texture;
-
   private model: Group;
   private materials: ModelMaterials;
+  private texture: Texture;
 
   constructor() {
     super('Portal');
@@ -58,17 +56,16 @@ export class Portal extends WebGLView {
   /* SETUP */
 
   private setupAssets = async () => {
-    this.portalBakedTexture =
-      await ResourceLoader.loadTexture('portalBakedTexture');
-    this.portalBakedTexture.flipY = false;
-    this.portalBakedTexture.colorSpace = SRGBColorSpace;
+    this.texture = await ResourceLoader.loadTexture('portalBakedTexture');
+    this.texture.flipY = false;
+    this.texture.colorSpace = SRGBColorSpace;
     const gltf = await ResourceLoader.loadGltfModel('portalModel');
     this.model = gltf.scene;
   };
 
   private setupMaterial = () => {
     const bakedMaterial = new MeshBasicMaterial({
-      map: this.portalBakedTexture,
+      map: this.texture,
     });
 
     const poleLightMaterial = new MeshBasicMaterial({

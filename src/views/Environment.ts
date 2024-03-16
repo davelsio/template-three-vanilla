@@ -1,8 +1,8 @@
 import { AmbientLight, CubeTexture, PointLight, SRGBColorSpace } from 'three';
 
-import { WebGLView } from '@helpers/WebGLView';
-import { isThreeMeshStandardMaterial } from '@type-guards/isThreeMaterial';
-import { isThreeMesh } from '@type-guards/isThreeMesh';
+import { WebGLView } from '@helpers/classes/WebGLView';
+import { isThreeMeshStandardMaterial } from '@helpers/guards/isThreeMaterial';
+import { isThreeMesh } from '@helpers/guards/isThreeMesh';
 
 interface Props {
   envMapIntensity: number;

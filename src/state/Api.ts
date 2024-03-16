@@ -2,7 +2,7 @@ import { Camera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
 import { StateNotInitializedError } from '@errors/StateNotInitializedError';
-import { StoreInstance } from '@helpers/StoreInstance';
+import { StoreInstance } from '@helpers/classes/StoreInstance';
 
 type ApiState = {
   _camera?: Camera;

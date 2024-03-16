@@ -1,15 +1,9 @@
 import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 
-import { BaseController } from '@helpers/BaseController';
+import { BaseController } from '@helpers/classes/BaseController';
+import { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import { StageState } from '@state/Stage';
 import { Store } from '@state/Store';
-
-export type ClearColor = {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-};
 
 export class RenderController extends BaseController {
   private _camera: Camera;
@@ -72,7 +66,7 @@ export class RenderController extends BaseController {
 
   /* CALLBACKS */
 
-  private debug = ({ r, g, b, a }: ClearColor) => {
+  private debug = ({ r, g, b, a }: ColorWithAlpha) => {
     this.renderer.setClearColor(new Color(r, g, b), a);
   };
 

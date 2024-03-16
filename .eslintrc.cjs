@@ -48,7 +48,6 @@ module.exports = {
             '^@shaders',
             '^@state',
             '^@styles',
-            '^@type-guards',
             '^@utils',
             '^@views',
           ],

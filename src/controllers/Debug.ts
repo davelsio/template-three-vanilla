@@ -7,8 +7,8 @@ import {
 } from '@tweakpane/core';
 
 import { StateBundle } from '@debug/StateBundle';
-import { BaseController } from '@helpers/BaseController';
-import { StoreInstance } from '@helpers/StoreInstance';
+import { BaseController } from '@helpers/classes/BaseController';
+import { StoreInstance } from '@helpers/classes/StoreInstance';
 import { cameraConfig, CameraSettings } from '@settings/camera';
 import { debugConfig, DebugSettings } from '@settings/debug';
 import { renderConfig, RenderSettings } from '@settings/renderer';

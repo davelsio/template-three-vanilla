@@ -3,7 +3,7 @@ import { ObjectColorInputPlugin as DefaultObjectColorInputPlugin } from '@tweakp
 import { colorFromObject } from '@tweakpane/core/dist/input-binding/color/converter/color-object';
 import { mapColorType } from '@tweakpane/core/dist/input-binding/color/model/colors';
 
-import { isThreeColor } from '@type-guards/isThreeColor';
+import { isThreeColor } from '@helpers/guards/isThreeColor';
 
 import { customAccept } from '../helpers/customAccept';
 import {

@@ -1,6 +1,6 @@
 import { Clock } from 'three';
 
-import { BaseController } from '@helpers/BaseController';
+import { BaseController } from '@helpers/classes/BaseController';
 import { Store } from '@state/Store';
 
 export class TimeController extends BaseController {

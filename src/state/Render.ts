@@ -1,4 +1,4 @@
-import { StoreInstance } from '@helpers/StoreInstance';
+import { StoreInstance } from '@helpers/classes/StoreInstance';
 import { RenderSettings, renderSettings } from '@settings/renderer';
 
 export interface RenderState extends RenderSettings {}

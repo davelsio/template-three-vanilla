@@ -1,6 +1,6 @@
 import { Vector2 } from 'three';
 
-import { StoreInstance } from '@helpers/StoreInstance';
+import { StoreInstance } from '@helpers/classes/StoreInstance';
 
 export interface StageState {
   /**

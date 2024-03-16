@@ -1,5 +1,5 @@
-import { BaseController } from '@helpers/BaseController';
-import { WebGLView } from '@helpers/WebGLView';
+import { BaseController } from '@helpers/classes/BaseController';
+import { WebGLView } from '@helpers/classes/WebGLView';
 import { Store } from '@state/Store';
 import { Views } from '@views/index';
 

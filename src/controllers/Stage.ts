@@ -1,6 +1,6 @@
 import { Vector2 } from 'three';
 
-import { BaseController } from '@helpers/BaseController';
+import { BaseController } from '@helpers/classes/BaseController';
 import { Store } from '@state/Store';
 
 export class StageController extends BaseController {

@@ -1,4 +1,4 @@
-import { StoreInstance } from '@helpers/StoreInstance';
+import { StoreInstance } from '@helpers/classes/StoreInstance';
 import { DebugSettings, debugSettings } from '@settings/debug';
 
 export interface DebugState extends DebugSettings {

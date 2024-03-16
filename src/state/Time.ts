@@ -1,4 +1,4 @@
-import { StoreInstance } from '@helpers/StoreInstance';
+import { StoreInstance } from '@helpers/classes/StoreInstance';
 import { TimeSettings, timeSettings } from '@settings/time';
 
 export interface TimeState extends TimeSettings {

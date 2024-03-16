@@ -1,8 +1,8 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
-import { ClearColor } from '@controllers/Renderer';
-import { WebGLView } from '@helpers/WebGLView';
+import { WebGLView } from '@helpers/classes/WebGLView';
+import { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import {
   barFragmentShader,
   barVertexShader,
@@ -126,7 +126,7 @@ export class Loading extends WebGLView<LoadingProps> {
 
   /* CALLBACKS */
 
-  private updateOverlayColor = (color: ClearColor) => {
+  private updateOverlayColor = (color: ColorWithAlpha) => {
     this._overlayMaterial.uniforms.uColor.value = new Vector4(
       color.r,
       color.g,

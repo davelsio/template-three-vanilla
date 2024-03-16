@@ -9,7 +9,7 @@ import {
   Vector2,
 } from 'three';
 
-import { WebGLView } from '@helpers/WebGLView';
+import { WebGLView } from '@helpers/classes/WebGLView';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 import { StageState } from '@state/Stage';
 import { Store } from '@state/Store';
