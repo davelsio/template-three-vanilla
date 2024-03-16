@@ -1,9 +1,10 @@
-import { Pane } from 'tweakpane';
+import { ButtonApi, ButtonParams, Pane } from 'tweakpane';
 import {
   Bindable,
   BindingParams,
   FolderApi,
   FolderParams,
+  TpMouseEvent,
 } from '@tweakpane/core';
 
 import { StateBundle } from '@debug/StateBundle';
@@ -21,10 +22,15 @@ import { Store } from '@state/Store';
  */
 export type BindingConfig<T extends Bindable = Bindable> = {
   folder?: FolderParams;
-  bindings: Array<{
+  bindings?: Array<{
     key: keyof T;
     options?: BindingParams & {
       condition?: keyof T;
+    };
+  }>;
+  buttons?: Array<{
+    (store: StoreInstance<T>): ButtonParams & {
+      onClick: (event: TpMouseEvent<ButtonApi>) => void;
     };
   }>;
 };
@@ -94,18 +100,24 @@ export class DebugController extends BaseController {
     config: BindingConfig<T>[],
     store: StoreInstance<T>
   ) {
-    config.forEach(({ folder, bindings }) => {
+    config.forEach(({ folder, bindings, buttons }) => {
       const ui: Pane | FolderApi = folder
         ? this.getFolder(folder)
         : this._panel;
 
-      bindings.forEach(({ key, options }) => {
+      bindings?.forEach(({ key, options }) => {
         ui.addBinding(store.state, key, {
           ...options,
           reader: (target) => store.state[target.key as keyof T],
           writer: (target, value) =>
             store.update({ [target.key]: value } as Partial<T>),
         });
+      });
+
+      buttons?.forEach((button) => {
+        const buttonParams = button(store);
+        const buttonApi = ui.addButton(buttonParams);
+        buttonApi.on('click', buttonParams.onClick);
       });
     });
   }
