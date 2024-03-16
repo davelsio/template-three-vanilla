@@ -8,10 +8,6 @@ export interface StageState {
    */
   aspectRatio: number;
   /**
-   * WebGL canvas where the experience is rendered.
-   */
-  canvas?: HTMLCanvasElement;
-  /**
    * Cursor position in clip space [-1, 1].
    */
   cursorPosition: Vector2;
@@ -24,30 +20,12 @@ export interface StageState {
    */
   pixelRatio: number;
   /**
-   * Parent DOM element of the WebGL canvas.
-   */
-  root?: HTMLDivElement;
-  /**
    * Width of the root element in `px`.
    */
   width: number;
 }
 
 export class StageStore extends StoreInstance<StageState> {
-  public get canvas() {
-    if (!this.state.canvas) {
-      throw new Error('WebGL canvas not found.');
-    }
-    return this.state.canvas;
-  }
-
-  public get root() {
-    if (!this.state.root) {
-      throw new Error('WebGL root element not found.');
-    }
-    return this.state.root;
-  }
-
   constructor() {
     super('StageStore', {
       width: 0,

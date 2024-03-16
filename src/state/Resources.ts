@@ -29,18 +29,18 @@ export class ResourceStore extends StoreInstance<ResourceState> {
    * @param assetsTotal number of total available assets
    */
   public updateTotalAssets(assetsTotal: number) {
-    this._state.setState({ totalAssets: assetsTotal });
+    this._store.setState({ totalAssets: assetsTotal });
   }
 
   /**
    * Update the number of loaded assets.
    */
   public notifyAssetLoaded = () => {
-    this._state.setState((state) => {
+    this._store.setState((state) => {
       const loadedAssets = state.loadedAssets + 1;
       return {
         loadedAssets,
-        loadingProgress: loadedAssets / this._state.getState().totalAssets,
+        loadingProgress: loadedAssets / this._store.getState().totalAssets,
       };
     });
   };

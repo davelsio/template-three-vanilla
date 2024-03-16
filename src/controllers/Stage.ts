@@ -39,8 +39,10 @@ export class StageController extends BaseController {
 
     this.canvas = _canvas;
 
+    // Update the API store
+    Store.api.update({ _root: this.root, _canvas: this.canvas });
+
     // Initialize the store state
-    Store.stage.update({ root: this.root, canvas: this.canvas });
     this.updateDimensions();
     this.updatePixelRatio();
     window.addEventListener('resize', this.updateDimensions);

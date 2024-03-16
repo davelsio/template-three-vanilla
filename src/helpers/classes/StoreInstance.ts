@@ -13,19 +13,19 @@ export type Subscription = () => void;
 
 export abstract class StoreInstance<T extends Settings> {
   public namespace: string;
-  protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
+  protected _store: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
   protected _subscriptions = defaultDict<Subscription[]>(() => []);
 
   /**
    * Read-only API to access the component state.
    */
   public get state() {
-    return this._state.getState();
+    return this._store.getState();
   }
 
   constructor(namespace: string, state: T) {
     this.namespace = namespace;
-    this._state = createStore(subscribeWithSelector<T>(() => state));
+    this._store = createStore(subscribeWithSelector<T>(() => state));
   }
 
   /* API */
@@ -47,13 +47,13 @@ export abstract class StoreInstance<T extends Settings> {
    */
   public subscribe<U>(
     namespace: string,
-    ...subscription: Parameters<typeof this._state.subscribe<U>>
+    ...subscription: Parameters<typeof this._store.subscribe<U>>
   ) {
     const options = subscription[2];
     if (options?.unique && this._subscriptions[namespace].length > 0) {
       return () => {};
     }
-    const unsub = this._state.subscribe<U>(...subscription);
+    const unsub = this._store.subscribe<U>(...subscription);
     this._subscriptions[namespace].push(unsub);
     return unsub;
   }
@@ -65,7 +65,7 @@ export abstract class StoreInstance<T extends Settings> {
    */
   public getSubscriber(namespace: string) {
     return <U>(
-      ...subscription: Parameters<typeof this._state.subscribe<U>>
+      ...subscription: Parameters<typeof this._store.subscribe<U>>
     ) => {
       return this.subscribe(namespace, ...subscription);
     };
@@ -84,6 +84,6 @@ export abstract class StoreInstance<T extends Settings> {
    * @param state partial state
    */
   public update = (state: Partial<T>) => {
-    this._state.setState(state);
+    this._store.setState(state);
   };
 }

@@ -2,7 +2,7 @@ import { Experience } from './src/Experience';
 
 import './src/styles/reset.css';
 import './src/styles/webgl.css';
-import './src/styles/tweak-pane.css';
+import './src/styles/tweakpane.css';
 
 const root = document.querySelector<HTMLDivElement>('#root');
 
@@ -12,4 +12,6 @@ if (!root) {
 
 const { api } = new Experience(root);
 
-api.world.onLoad(() => console.log('Experience loaded'));
+api.world.onLoad(() => {
+  console.log('Experience loaded');
+});

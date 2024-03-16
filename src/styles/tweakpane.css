@@ -1,0 +1,14 @@
+/**
+ * Main Tweakpane window.
+ */
+:root .tp-dfwv {
+  /* Increase size */
+  width: 400px;
+}
+
+/**
+ * Tweakpane input binding value
+ */
+:root .tp-lblv_v {
+  width: 67.5%; /* 270px */
+}

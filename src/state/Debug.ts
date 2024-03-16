@@ -27,6 +27,6 @@ export class DebugStore extends StoreInstance<DebugState> {
    * Enable debug mode.
    */
   public enableDebug() {
-    this._state.setState({ enabled: true });
+    this._store.setState({ enabled: true });
   }
 }

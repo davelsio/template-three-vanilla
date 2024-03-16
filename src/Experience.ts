@@ -9,8 +9,6 @@ import { ResourceLoader } from '@loaders/ResourceLoader';
 import { Store } from '@state/Store';
 
 export class Experience {
-  public namespace = 'Experience';
-
   /**
    * The public API for the experience.
    */

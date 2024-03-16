@@ -27,13 +27,13 @@ export class WorldStore extends StoreInstance<WorldState> {
   }
 
   public setState(state: Partial<WorldState>) {
-    this._state.setState(state);
+    this._store.setState(state);
   }
 
   /* ACTIONS */
 
   public addViewsToLoad(name: string) {
-    this._state.setState((state) => ({
+    this._store.setState((state) => ({
       viewsToLoad: [...state.viewsToLoad, name],
     }));
   }
@@ -43,7 +43,7 @@ export class WorldStore extends StoreInstance<WorldState> {
    * @param name namespace of the loaded view
    */
   public addViewLoaded(name: string) {
-    this._state.setState((state) => {
+    this._store.setState((state) => {
       const viewsLoaded = [...state.viewsLoaded, name];
       const viewsProgress = state.viewsToLoad.length / viewsLoaded.length;
       return {
@@ -59,10 +59,16 @@ export class WorldStore extends StoreInstance<WorldState> {
       (state) => state.viewsProgress,
       (viewsProgress) => {
         if (viewsProgress === 1) {
-          callback();
           unsub();
+          callback();
         }
       }
     );
+  }
+
+  public async onLoadAsync() {
+    return new Promise<void>((resolve) => {
+      this.onLoad(resolve);
+    });
   }
 }
