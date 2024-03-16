@@ -24,9 +24,9 @@ The example experience is the final project from Three.js Journey, my very first
 I did not want the project codebase to become too unwieldy by allowing the scene views and various controllers (renderer, camera, etc.) to import and call each other's methods indiscriminately.
 
 To manage that type of communication, I divided the experience in three layers:
-- Controllers: these initialize the experience and handle things such as camera, renderer, stage, and world behavior.
-- Views: these are the scene objects created by the World controller and loaded as asynchronous entities. This approach decouples the resource loading stage. Each view notifies the central state when the loading is done so state subscribers can react accordingly.
-- Communication between Controllers and Views is handled via a centralize Store layer.
+- **Controllers**: these initialize the experience and handle things such as camera, renderer, stage, and world behavior.
+- **Views**: these are the scene objects created by the World controller and loaded as asynchronous entities. This approach decouples the resource loading stage. Each view notifies the central state when the loading is done so state subscribers can react accordingly.
+- **State**: Communication between Controllers and Views is handled via a centralize Store layer.
 
 State management is handled with [zustand](https://github.com/pmndrs/zustand), including subscriptions with selectors. Each controller implements its own state management and all stores are exposed from a central `Store` class.
 
@@ -44,7 +44,7 @@ I wanted to have a unified solution that handled both internal state and various
 
 Different debug tweaks can be added in the [settings](src/settings) folder. To keep things manageable, there is a settings file for each controller. The corresponding controller store will import the exported settings and expose them via the central state. Subscription to UI changes is handled as any other zustand subscription.
 
-For convenience, binding configs are typed as object arrays. It is possible to create [folders](https://tweakpane.github.io/docs/ui-components/#folder) and [bindings](https://tweakpane.github.io/docs/ui-components/#button) using the same APIs described in the official tweakpane docs. Internally, the `reader` and `writer` functions are overridden to read from/write to the store instead of the object. All `key` props are typed to the settings object.
+For convenience, binding configs are typed as object arrays. It is possible to create [folders](https://tweakpane.github.io/docs/ui-components/#folder) and [bindings](https://tweakpane.github.io/docs/ui-components/#button) using the same APIs described in the official tweakpane docs. Internally, the `reader` and `writer` functions are overridden to read from/write to the store instead of directly to the object. All `key` props are typed to the settings object defined in the file.
 
 In addition, an array of button configs can also be passed. Each button is defined as a function callback that receives the corresponding store instance. The function should return the [button params](https://tweakpane.github.io/docs/ui-components/#button) described in the official docs.
 
@@ -121,7 +121,7 @@ pnpm lint    # [--fix] lint files
 
 ### Views
 
-Most of the development should take place in the `views/` folder. Each view is exported in order to the [`WorldController`](src/controllers/World.ts), but each view is self-contained. They are loaded asynchronously and notify the [`WorldStore`](src/state/World.ts) when they are finished loading. There is an example [`Loading`](src/views/Loading.ts) view, set to bypass the loader flags, that gets destroyed once the rest of the views are finished loading.
+Most of the development should take place in the `views/` folder. Views are exported in order to the [`WorldController`](src/controllers/World.ts) by the [`index.ts`](src/views/index.ts) file, but each view is self-contained. They are loaded asynchronously and notify the [`WorldStore`](src/state/World.ts) when they complete loading their setup. There is an example [`Loading`](src/views/Loading.ts) view, set to bypass the loader flags, that gets destroyed once the rest of the views have finished.
 
 Most of the time, when I start a project, I just delete the example [views](src/views), clear the default [setttings](src/settings) and [assets](src/loaders/assets.ts). Then I can start creating the new views and adding whatever tweaks I need. Custom settings and tweaks will be fully typed and available in the appropriate store.
 
@@ -171,7 +171,7 @@ The experience object exposes two properties:
 ### Styles
 
 Some optional css styles are provided that work well with a stand-alone project.
-- `reset.css`: Pretty much a copy-paste from the amazing Josh Comeau [cusotm CSS reset](https://www.joshwcomeau.com/css/custom-css-reset/). This one also removes default `padding` and button `border`.
+- `reset.css`: Pretty much a copy-paste from the amazing Josh Comeau [custom CSS reset](https://www.joshwcomeau.com/css/custom-css-reset/). This one also removes default `padding` and button `border`.
 - `webgl.css`: Applies only the WebGL `canvas` to remove it from the document flow and create its own stacking context. Regardless of this CSS, the experience will always respect the parent container dimensions whether it is the document or some other element.
 - `tweakpane.css`: Adds some extra width to the main debug pane and sligthly adjusts the label:input width proportion of each binding blade, so that the input takes the majority of the available space.
 
