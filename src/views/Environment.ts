@@ -1,10 +1,4 @@
-import {
-  AmbientLight,
-  CubeTexture,
-  PointLight,
-  Scene,
-  SRGBColorSpace,
-} from 'three';
+import { AmbientLight, CubeTexture, PointLight, SRGBColorSpace } from 'three';
 
 import { WebGLView } from '@helpers/WebGLView';
 import { isThreeMeshStandardMaterial } from '@type-guards/isThreeMaterial';
@@ -19,13 +13,11 @@ export class Environment extends WebGLView<Props> {
   private _ambientLight: AmbientLight;
   private _pointLight: PointLight;
 
-  constructor(scene: Scene) {
-    super('EnvironmentView', scene, {
+  constructor() {
+    super('EnvironmentView', {
       envMapIntensity: 2.5,
     });
-
-    super.flagAsLoading();
-    this.init(this.setupEnvironmentMap, this.setupLights);
+    void this.init(this.setupEnvironmentMap, this.setupLights);
   }
 
   public destroy() {

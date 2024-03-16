@@ -40,12 +40,18 @@ export class RenderController extends BaseController {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Store.stage.state.pixelRatio);
 
-    Store.render.update({
+    const { api, render } = Store.getUpdaters();
+    render({
       /**
        * Max may range from 2 to 16 depending on the device and browser.
        * Clamping it to 8 is probably enough and better for performance.
        */
       anisotropy: Math.max(1, this.renderer.capabilities.getMaxAnisotropy()),
+    });
+
+    api({
+      _renderer: this.renderer,
+      _scene: this.scene,
     });
     this.setupSubscriptions();
   }

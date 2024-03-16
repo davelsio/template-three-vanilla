@@ -25,7 +25,8 @@ export class CameraController extends BaseController {
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enabled = true;
 
-    Store.camera.update({ camera: this.camera, controls: this.controls });
+    const { api } = Store.getUpdaters();
+    api({ _camera: this.camera, _controls: this.controls });
     this.setupSubscriptions();
   }
 

@@ -1,4 +1,5 @@
 import { StateNotInitializedError } from '@errors/StateNotInitializedError';
+import { ApiStore } from '@state/Api';
 
 import { CameraStore } from './Camera';
 import { DebugStore } from './Debug';
@@ -9,6 +10,7 @@ import { TimeStore } from './Time';
 import { WorldStore } from './World';
 
 export class Store {
+  private static _api: ApiStore | null;
   private static _camera: CameraStore | null;
   private static _debug: DebugStore | null;
   private static _render: RenderStore | null;
@@ -16,6 +18,11 @@ export class Store {
   private static _stage: StageStore | null;
   private static _time: TimeStore | null;
   private static _world: WorldStore | null;
+
+  public static get api() {
+    if (!this._api) throw new StateNotInitializedError('api');
+    return this._api;
+  }
 
   public static get camera() {
     if (!this._camera) throw new StateNotInitializedError('camera');
@@ -53,6 +60,7 @@ export class Store {
   }
 
   public static init() {
+    this._api = new ApiStore();
     this._camera = new CameraStore();
     this._debug = new DebugStore();
     this._render = new RenderStore();
@@ -67,6 +75,7 @@ export class Store {
    */
   public static getStates() {
     return {
+      api: this.api.state,
       camera: this.camera.state,
       debug: this.debug.state,
       render: this.render.state,
@@ -83,6 +92,7 @@ export class Store {
    */
   public static getSubscribers(namespace: string) {
     return {
+      api: this.api.getSubscriber(namespace),
       camera: this.camera.getSubscriber(namespace),
       debug: this.debug.getSubscriber(namespace),
       render: this.render.getSubscriber(namespace),
@@ -98,6 +108,7 @@ export class Store {
    */
   public static getUpdaters() {
     return {
+      api: this.api.update,
       camera: this.camera.update,
       debug: this.debug.update,
       render: this.render.update,
@@ -113,6 +124,7 @@ export class Store {
    * @param namespace the namespace to unsubscribe
    */
   public static unsubscribe(namespace: string) {
+    this._api?.unsubscribe(namespace);
     this._camera?.unsubscribe(namespace);
     this._debug?.unsubscribe(namespace);
     this._render?.unsubscribe(namespace);
@@ -127,6 +139,9 @@ export class Store {
    * collection.
    */
   public static destroy() {
+    this._api?.destroy();
+    this._api = null;
+
     this._camera?.destroy();
     this._camera = null;
 

@@ -22,8 +22,8 @@ type LoaderOptions = {
 };
 
 type InitOptions = {
-  loadingManager: LoadingManager;
   draco?: boolean;
+  loadingManager?: LoadingManager;
 };
 
 type Sources = {

@@ -14,13 +14,12 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
 
   protected constructor(
     namespace: string,
-    scene: Scene,
     props: WebGLViewOptions<T> = {} as WebGLViewOptions<T>
   ) {
     super();
     this.namespace = namespace;
     this._props = Object.assign({ withLoading: true }, props);
-    this._scene = scene;
+    this._scene = Store.api.scene;
     this._scene.add(this);
   }
 

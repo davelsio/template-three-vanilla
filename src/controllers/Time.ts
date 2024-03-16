@@ -27,7 +27,7 @@ export class TimeController extends BaseController {
 
   private tick = () => {
     const newCurrent = this._clock.getElapsedTime();
-    const delta = newCurrent - this._current;
+    const delta = newCurrent - this._current; // Math.min(delta, 30);
     const elapsed = newCurrent - this._start;
     this._current = newCurrent;
     const fps = 1 / delta;

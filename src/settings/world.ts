@@ -6,25 +6,38 @@ export type WorldSettings = typeof worldSettings;
 export type WorldConfig = BindingConfig<WorldSettings>;
 
 export const worldSettings = {
-  // Views
-  baseSize: 0.75,
-  color: new Color(0xffffff),
-  //
+  loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
+  fireflySize: 0.75,
+  fireflyColor: new Color(0xffffff),
   poleLightColor: new Color(0xffffff),
   portalColorStart: new Color(0x000000),
   portalColorEnd: new Color(0xffffff),
-  uvDisplacementOffset: 5.0,
-  uvStrengthOffset: 5.0,
+  portalDisplacement: 5.0,
+  portalStrength: 5.0,
 };
 
 export const worldConfig: WorldConfig[] = [
+  {
+    folder: {
+      title: 'Loading',
+    },
+    bindings: [
+      {
+        key: 'loadingColor',
+        options: {
+          label: 'Color',
+          color: { type: 'float' },
+        },
+      },
+    ],
+  },
   {
     folder: {
       title: 'Fireflies',
     },
     bindings: [
       {
-        key: 'baseSize',
+        key: 'fireflySize',
         options: {
           label: 'Size',
           min: 0.01,
@@ -33,7 +46,7 @@ export const worldConfig: WorldConfig[] = [
         },
       },
       {
-        key: 'color',
+        key: 'fireflyColor',
         options: {
           label: 'Color',
           color: { type: 'float' },
@@ -61,7 +74,7 @@ export const worldConfig: WorldConfig[] = [
         },
       },
       {
-        key: 'uvDisplacementOffset',
+        key: 'portalDisplacement',
         options: {
           label: 'Displacement',
           min: 0,
@@ -70,7 +83,7 @@ export const worldConfig: WorldConfig[] = [
         },
       },
       {
-        key: 'uvStrengthOffset',
+        key: 'portalStrength',
         options: {
           label: 'Strength',
           min: 0,

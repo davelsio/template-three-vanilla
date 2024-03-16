@@ -1,6 +1,7 @@
 import gsap from 'gsap';
-import { Mesh, PlaneGeometry, Scene, ShaderMaterial } from 'three';
+import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
+import { ClearColor } from '@controllers/Renderer';
 import { WebGLView } from '@helpers/WebGLView';
 import {
   barFragmentShader,
@@ -11,7 +12,7 @@ import {
 import { Store } from '@state/Store';
 
 export interface LoadingProps {
-  loadingDelay: number;
+  loadingDuration: number;
 }
 
 export class Loading extends WebGLView<LoadingProps> {
@@ -23,18 +24,18 @@ export class Loading extends WebGLView<LoadingProps> {
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
-  constructor(scene: Scene) {
-    super('Loading', scene, {
-      loadingDelay: 0.5,
+  constructor() {
+    super('Loading', {
+      loadingDuration: 0.5,
       withLoading: false,
     });
-    this.init(
-      this.setupBarGeometry,
-      this.setupBarMaterial,
-      this.setupBarMesh,
+    void this.init(
       this.setupOverlayGeometry,
       this.setupOverlayMaterial,
       this.setupOverlayMesh,
+      this.setupBarGeometry,
+      this.setupBarMaterial,
+      this.setupBarMesh,
       this.setupSubscriptions
     );
   }
@@ -51,55 +52,67 @@ export class Loading extends WebGLView<LoadingProps> {
 
   /* SETUP */
 
-  private setupBarGeometry() {
+  private setupBarGeometry = () => {
     this._barGeometry = new PlaneGeometry(1.0, 0.04, 1, 1);
-  }
+  };
 
-  private setupBarMaterial() {
+  private setupBarMaterial = () => {
     this._barMaterial = new ShaderMaterial({
       uniforms: {
-        uAlpha: { value: 1.0 },
-        uProgress: { value: -0.5 },
+        uAlpha: new Uniform(1.0),
+        uProgress: new Uniform(-this._props.loadingDuration),
       },
       fragmentShader: barFragmentShader,
       vertexShader: barVertexShader,
       transparent: true,
     });
-  }
+  };
 
-  private setupBarMesh() {
+  private setupBarMesh = () => {
     this._barMesh = new Mesh(this._barGeometry, this._barMaterial);
     this.add(this._barMesh);
-  }
+  };
 
-  private setupOverlayGeometry() {
+  private setupOverlayGeometry = () => {
     this._overlayGeometry = new PlaneGeometry(2, 2, 1, 1);
-  }
+  };
 
-  private setupOverlayMaterial() {
+  private setupOverlayMaterial = () => {
+    const { world } = Store.getStates();
     this._overlayMaterial = new ShaderMaterial({
       uniforms: {
-        uAlpha: { value: 1.0 },
+        uAlpha: new Uniform(1.0),
+        uColor: new Uniform(
+          new Vector4(
+            world.loadingColor.r,
+            world.loadingColor.g,
+            world.loadingColor.b,
+            world.loadingColor.a
+          )
+        ),
       },
       fragmentShader: overlayFragmentShader,
       vertexShader: overlayVertexShader,
       transparent: true,
     });
-  }
+  };
 
-  private setupOverlayMesh() {
+  private setupOverlayMesh = () => {
     this._overlayMesh = new Mesh(this._overlayGeometry, this._overlayMaterial);
     this.add(this._overlayMesh);
-  }
+  };
 
-  private setupSubscriptions() {
+  private setupSubscriptions = () => {
     const { world } = Store.getSubscribers(this.namespace);
+
+    world((state) => state.loadingColor, this.updateOverlayColor);
+
     world(
       (state) => state.viewsProgress,
       (progress) => {
         gsap
           .to(this._barMaterial.uniforms.uProgress, {
-            duration: this._props.loadingDelay,
+            duration: this._props.loadingDuration,
             value: progress,
           })
           .then((res) => {
@@ -109,5 +122,16 @@ export class Loading extends WebGLView<LoadingProps> {
           });
       }
     );
-  }
+  };
+
+  /* CALLBACKS */
+
+  private updateOverlayColor = (color: ClearColor) => {
+    this._overlayMaterial.uniforms.uColor.value = new Vector4(
+      color.r,
+      color.g,
+      color.b,
+      color.a
+    );
+  };
 }

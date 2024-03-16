@@ -3,7 +3,6 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
-  Scene,
   ShaderMaterial,
   SRGBColorSpace,
   Texture,
@@ -15,6 +14,8 @@ import { WebGLView } from '@helpers/WebGLView';
 import { ResourceLoader } from '@loaders/ResourceLoader';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 import { Store } from '@state/Store';
+import { isThreeMesh } from '@type-guards/isThreeMesh';
+import { TypedObject } from '@utils/typedObject';
 
 interface ModelMeshes {
   baked: Mesh;
@@ -31,15 +32,13 @@ interface ModelMaterials {
 
 export class Portal extends WebGLView {
   private portalBakedTexture: Texture;
-  private portalScene: GLTF;
 
   private model: Group;
-  private meshes: ModelMeshes;
   private materials: ModelMaterials;
 
-  constructor(scene: Scene) {
-    super('Portal', scene);
-    this.init(
+  constructor() {
+    super('Portal');
+    void this.init(
       this.setupAssets,
       this.setupMaterial,
       this.setupModel,
@@ -63,7 +62,8 @@ export class Portal extends WebGLView {
       await ResourceLoader.loadTexture('portalBakedTexture');
     this.portalBakedTexture.flipY = false;
     this.portalBakedTexture.colorSpace = SRGBColorSpace;
-    this.portalScene = await ResourceLoader.loadGltfModel('portalModel');
+    const gltf = await ResourceLoader.loadGltfModel('portalModel');
+    this.model = gltf.scene;
   };
 
   private setupMaterial = () => {
@@ -82,9 +82,9 @@ export class Portal extends WebGLView {
         uColorEnd: new Uniform(Store.world.state.portalColorEnd),
         uColorStart: new Uniform(Store.world.state.portalColorStart),
         uOffsetDisplacementUv: new Uniform(
-          Store.world.state.uvDisplacementOffset
+          Store.world.state.portalDisplacement
         ),
-        uOffsetStrengthUv: new Uniform(Store.world.state.uvStrengthOffset),
+        uOffsetStrengthUv: new Uniform(Store.world.state.portalStrength),
         uTime: new Uniform(0),
       },
     });
@@ -97,20 +97,18 @@ export class Portal extends WebGLView {
   };
 
   private setupModel = () => {
-    this.model = this.portalScene.scene;
     this.model.name = 'PortalScene';
 
     try {
-      this.meshes = Object.fromEntries(
-        this.model.children.map((child) => {
-          return [child.name, child];
-        })
-      ) as unknown as ModelMeshes;
+      const meshArray = this.model.children.filter(isThreeMesh).map((child) => {
+        return [child.name, child] as [keyof ModelMeshes, Mesh];
+      });
+      const meshes = TypedObject.fromEntries<ModelMeshes>(meshArray);
 
-      this.meshes.baked.material = this.materials.baked;
-      this.meshes.poleLightL.material = this.materials.poleLight;
-      this.meshes.poleLightR.material = this.materials.poleLight;
-      this.meshes.portalLight.material = this.materials.portalLight;
+      meshes.baked.material = this.materials.baked;
+      meshes.poleLightL.material = this.materials.poleLight;
+      meshes.poleLightR.material = this.materials.poleLight;
+      meshes.portalLight.material = this.materials.portalLight;
     } catch (error) {
       console.error(
         'One or more of the model meshes in the Portal',
@@ -125,8 +123,8 @@ export class Portal extends WebGLView {
     const { world, time } = Store.getSubscribers(this.namespace);
     world((state) => state.portalColorStart, this.updatePortalStartColor);
     world((state) => state.portalColorEnd, this.updatePortalEndColor);
-    world((state) => state.uvDisplacementOffset, this.updatePortalDisplacement);
-    world((state) => state.uvStrengthOffset, this.updatePortalStrength);
+    world((state) => state.portalDisplacement, this.updatePortalDisplacement);
+    world((state) => state.portalStrength, this.updatePortalStrength);
     world((state) => state.poleLightColor, this.updatePoleLightColor);
     time((state) => state.elapsed, this.updateTime);
   };

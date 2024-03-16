@@ -11,7 +11,7 @@ export function objectEntries<T extends {}>(obj: T) {
  * Returns the values of an object as an array. Type inference is preserved.
  * @param obj object to get the values from
  */
-function objectValues<T extends {}>(obj: T) {
+function objectValues<T extends object>(obj: T) {
   return Object.values(obj) as T[keyof T][];
 }
 
@@ -19,12 +19,12 @@ function objectValues<T extends {}>(obj: T) {
  * Returns the keys of an object as an array. Type inference is preserved.
  * @param obj object to get the keys from
  */
-function objectKeys<T extends {}>(obj: T) {
+function objectKeys<T extends object>(obj: T) {
   return Object.keys(obj) as (keyof T)[];
 }
 
-function objectFromEntries<T extends {}>(entries: [keyof T, T[keyof T]][]) {
-  return Object.fromEntries(entries) as T;
+function objectFromEntries<T>(entries: Array<[keyof T, T[keyof T]]>) {
+  return Object.fromEntries(entries) as Record<keyof T, T[keyof T]>;
 }
 
 /**

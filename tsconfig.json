@@ -35,7 +35,8 @@
       "@utils/*": ["./src/utils/*"],
       "@views/*": ["./src/views/*"],
       "three/addons/controls/*": ["node_modules/@types/three/examples/jsm/controls/*"],
-      "three/addons/loaders/*": ["node_modules/@types/three/examples/jsm/loaders/*"]
+      "three/addons/loaders/*": ["node_modules/@types/three/examples/jsm/loaders/*"],
+      "three/addons/misc/*": ["node_modules/@types/three/examples/jsm/misc/*"],
     }
   },
 }

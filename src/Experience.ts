@@ -8,15 +8,13 @@ import { CubeTextures, GLTFModels, Textures } from '@loaders/assets';
 import { ResourceLoader } from '@loaders/ResourceLoader';
 import { Store } from '@state/Store';
 
-import { ExperienceApi } from './ExperienceApi';
-
 export class Experience {
   public namespace = 'Experience';
 
   /**
    * The public API for the experience.
    */
-  public api: ExperienceApi;
+  public api = Store;
 
   private _cameraController: CameraController;
   private _debugController: DebugController;
@@ -29,7 +27,9 @@ export class Experience {
     Store.init();
 
     // Assets and resources
-    ResourceLoader.init(CubeTextures, Textures, GLTFModels);
+    ResourceLoader.init(CubeTextures, Textures, GLTFModels, {
+      draco: true,
+    });
 
     // DOM interactive interface and render context
     this._stageController = new StageController(root, canvas);
@@ -58,13 +58,7 @@ export class Experience {
     );
 
     // WebGL views
-    this._worldController = new WorldController(this._renderController.scene);
-
-    // API
-    this.api = new ExperienceApi(this.namespace, {
-      camera: this._cameraController.camera,
-      controls: this._cameraController.controls,
-    });
+    this._worldController = new WorldController();
   }
 
   /**

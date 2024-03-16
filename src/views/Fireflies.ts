@@ -4,7 +4,6 @@ import {
   BufferGeometry,
   Color,
   Points,
-  Scene,
   ShaderMaterial,
   Uniform,
   Vector2,
@@ -20,9 +19,9 @@ export class Fireflies extends WebGLView {
   private material: ShaderMaterial;
   private fireflies: Points;
 
-  constructor(scene: Scene) {
-    super('Fireflies', scene);
-    this.init(
+  constructor() {
+    super('Fireflies');
+    void this.init(
       this.setupGeometry,
       this.setupMaterial,
       this.setupPoints,
@@ -78,14 +77,14 @@ export class Fireflies extends WebGLView {
       transparent: true,
       //
       uniforms: {
-        uColor: new Uniform(Store.world.state.color),
+        uColor: new Uniform(Store.world.state.fireflyColor),
         uResolution: new Uniform(
           new Vector2(
             Store.stage.state.width * Store.stage.state.pixelRatio,
             Store.stage.state.height * Store.stage.state.pixelRatio
           )
         ),
-        uSize: new Uniform(Store.world.state.baseSize),
+        uSize: new Uniform(Store.world.state.fireflySize),
         uTime: new Uniform(0),
       },
     });
@@ -100,8 +99,8 @@ export class Fireflies extends WebGLView {
     const { stage, time, world } = Store.getSubscribers(this.namespace);
     stage((state) => state, this.resize);
     time((state) => state.elapsed, this.updateTime);
-    world((state) => state.baseSize, this.updateSize);
-    world((state) => state.color, this.updateColor);
+    world((state) => state.fireflySize, this.updateSize);
+    world((state) => state.fireflyColor, this.updateColor);
   };
 
   /* CALLBACKS */

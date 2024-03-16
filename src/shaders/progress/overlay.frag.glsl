@@ -1,8 +1,8 @@
 uniform float uAlpha;
+uniform vec4 uColor;
 
 void main() {
-  vec3 color = vec3(0.13, 0.1, 0.1);
-  gl_FragColor = vec4(color, uAlpha);
+  gl_FragColor = uColor;
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }

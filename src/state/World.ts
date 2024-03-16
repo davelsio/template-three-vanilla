@@ -3,10 +3,6 @@ import { WorldSettings, worldSettings } from '@settings/world';
 
 export interface WorldState extends WorldSettings {
   /**
-   * Loader
-   */
-  loader: boolean;
-  /**
    * The WebGL views that need to be loaded.
    */
   viewsToLoad: string[];
@@ -23,7 +19,6 @@ export interface WorldState extends WorldSettings {
 export class WorldStore extends StoreInstance<WorldState> {
   constructor() {
     super({
-      loader: false,
       viewsToLoad: [],
       viewsLoaded: [],
       viewsProgress: 0,
@@ -56,5 +51,18 @@ export class WorldStore extends StoreInstance<WorldState> {
         viewsProgress,
       };
     });
+  }
+
+  public onLoad(callback: () => void) {
+    const unsub = this.subscribe(
+      'WordApi',
+      (state) => state.viewsProgress,
+      (viewsProgress) => {
+        if (viewsProgress === 1) {
+          callback();
+          unsub();
+        }
+      }
+    );
   }
 }

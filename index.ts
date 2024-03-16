@@ -12,4 +12,4 @@ if (!root) {
 
 const { api } = new Experience(root);
 
-api.onLoad(() => console.log('Experience loaded'));
+api.world.onLoad(() => console.log('Experience loaded'));
