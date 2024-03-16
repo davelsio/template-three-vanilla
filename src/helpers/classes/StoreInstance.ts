@@ -12,9 +12,8 @@ import { defaultDict } from '@utils/defaultDict';
 export type Subscription = () => void;
 
 export abstract class StoreInstance<T extends Settings> {
-  private fps: number = 0;
+  public namespace: string;
   protected _state: Write<StoreApi<T>, StoreSubscribeWithSelector<T>>;
-
   protected _subscriptions = defaultDict<Subscription[]>(() => []);
 
   /**
@@ -24,7 +23,8 @@ export abstract class StoreInstance<T extends Settings> {
     return this._state.getState();
   }
 
-  constructor(state: T) {
+  constructor(namespace: string, state: T) {
+    this.namespace = namespace;
     this._state = createStore(subscribeWithSelector<T>(() => state));
   }
 

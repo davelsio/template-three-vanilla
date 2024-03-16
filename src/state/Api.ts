@@ -33,6 +33,6 @@ export class ApiStore extends StoreInstance<ApiState> {
   }
 
   constructor() {
-    super({});
+    super('ApiStore', {});
   }
 }

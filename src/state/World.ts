@@ -18,7 +18,7 @@ export interface WorldState extends WorldSettings {
 
 export class WorldStore extends StoreInstance<WorldState> {
   constructor() {
-    super({
+    super('WorldStore', {
       viewsToLoad: [],
       viewsLoaded: [],
       viewsProgress: 0,

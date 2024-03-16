@@ -17,7 +17,7 @@ interface ResourceState {
 
 export class ResourceStore extends StoreInstance<ResourceState> {
   constructor() {
-    super({
+    super('ResourceStore', {
       loadedAssets: 0,
       loadingProgress: 0,
       totalAssets: 0,

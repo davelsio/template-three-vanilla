@@ -49,7 +49,7 @@ export class StageStore extends StoreInstance<StageState> {
   }
 
   constructor() {
-    super({
+    super('StageStore', {
       width: 0,
       height: 0,
       aspectRatio: 0,

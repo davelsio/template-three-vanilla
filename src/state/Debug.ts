@@ -14,7 +14,7 @@ export interface DebugState extends DebugSettings {
 
 export class DebugStore extends StoreInstance<DebugState> {
   constructor() {
-    super({
+    super('DebugStore', {
       enabled: false,
       expanded: true,
       ...debugSettings,

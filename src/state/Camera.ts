@@ -5,7 +5,7 @@ interface CameraState extends CameraSettings {}
 
 export class CameraStore extends StoreInstance<CameraState> {
   constructor() {
-    super({
+    super('CameraStore', {
       ...cameraSettings,
     });
   }

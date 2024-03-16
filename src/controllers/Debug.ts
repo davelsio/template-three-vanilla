@@ -26,6 +26,7 @@ export type BindingConfig<T extends Bindable = Bindable> = {
     key: keyof T;
     options?: BindingParams & {
       condition?: keyof T;
+      listen?: boolean;
     };
   }>;
   buttons?: Array<{
@@ -106,12 +107,22 @@ export class DebugController extends BaseController {
         : this._panel;
 
       bindings?.forEach(({ key, options }) => {
-        ui.addBinding(store.state, key, {
+        const binding = ui.addBinding(store.state, key, {
           ...options,
           reader: (target) => store.state[target.key as keyof T],
           writer: (target, value) =>
             store.update({ [target.key]: value } as Partial<T>),
         });
+
+        if (options?.listen) {
+          store.subscribe(
+            store.namespace,
+            (state) => state[key],
+            (_) => {
+              binding.refresh();
+            }
+          );
+        }
       });
 
       buttons?.forEach((button) => {

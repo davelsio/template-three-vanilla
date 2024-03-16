@@ -5,7 +5,7 @@ export interface RenderState extends RenderSettings {}
 
 export class RenderStore extends StoreInstance<RenderState> {
   constructor() {
-    super({
+    super('RenderStore', {
       ...renderSettings,
     });
   }

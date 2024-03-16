@@ -14,7 +14,7 @@ export interface TimeState extends TimeSettings {
 
 export class TimeStore extends StoreInstance<TimeState> {
   constructor() {
-    super({
+    super('TimeStore', {
       delta: 16,
       elapsed: 0,
       ...timeSettings,
