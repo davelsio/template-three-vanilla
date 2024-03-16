@@ -10,8 +10,8 @@ export const worldSettings = {
   fireflySize: 0.75,
   fireflyColor: new Color(0xffffff),
   poleLightColor: new Color(0xffffff),
-  portalColorStart: new Color(0x000000),
-  portalColorEnd: new Color(0xffffff),
+  portalColorStart: new Color(0xffffff),
+  portalColorEnd: new Color(0x000000),
   portalDisplacement: 5.0,
   portalStrength: 5.0,
 };
