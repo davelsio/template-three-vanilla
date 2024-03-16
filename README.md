@@ -40,13 +40,16 @@ State management is handled with [zustand](https://github.com/pmndrs/zustand), i
 > [!NOTE]
 > The debug UI only shows up in the `/debug` route.
 
-I wanted to have a unified solution that handled both internal state and various configurable settings/tweaks. Because this is a typescript codebase, I added a custom implementation for [tweakpane](https://github.com/cocopon/tweakpane) that is type-safe and integrates with the state management store by overriding its internal [plugin system](src/debug).
+I wanted to have a unified solution that handled both internal state and various configurable settings/tweaks. Because this is a typescript codebase, I added a custom implementation for [tweakpane](https://github.com/cocopon/tweakpane) that is type-safe and integrates with the state management store by overriding its internal [plugin system](src/debug). More about this in the debug [readme](src/debug/README.md) file.
 
 Different debug tweaks can be added in the [settings](src/settings) folder. To keep things manageable, there is a settings file for each controller. The corresponding controller store will import the exported settings and expose them via the central state. Subscription to UI changes is handled as any other zustand subscription.
 
-For convenience, binding configs are typed as object arrays. It is possible to create [folders](https://tweakpane.github.io/docs/ui-components/#folder) and [bindings](https://tweakpane.github.io/docs/ui-components/#button) using the same APIs described in the official tweakpane docs. Internally, the `reader` and `writer` functions are overridden to read from/write to the store instead of directly to the object. All `key` props are typed to the settings object defined in the file.
-
-In addition, an array of button configs can also be passed. Each button is defined as a function callback that receives the corresponding store instance. The function should return the [button params](https://tweakpane.github.io/docs/ui-components/#button) described in the official docs.
+For convenience, debug configs are typed as object arrays. Some notes about this:
+- It is possible to create [folders](https://tweakpane.github.io/docs/ui-components/#folder) and [bindings](https://tweakpane.github.io/docs/ui-components/#button) using the same APIs described in the official tweakpane docs
+- I've added a QoL improvement to automatically listen to updates and refresh the binding accordingly, similarly to [lil-gui listen method](https://lil-gui.georgealways.com/#Controller#listen).
+- Internally, the `reader` and `writer` functions are overridden to read from/write to the store instead of directly to the object.
+- All `key` props are typed to the settings object defined in the file.
+- An array of button configs can also be passed. Each button is defined as a function callback that receives the corresponding store instance. The function should return the [button params](https://tweakpane.github.io/docs/ui-components/#button) described in the official docs plus an `onClick` callback that will be passed to the `on('click')` event.
 
 ### BindingConfig signature
 ```ts
@@ -121,9 +124,9 @@ pnpm lint    # [--fix] lint files
 
 ### Views
 
-Most of the development should take place in the `views/` folder. Views are exported in order to the [`WorldController`](src/controllers/World.ts) by the [`index.ts`](src/views/index.ts) file, but each view is self-contained. They are loaded asynchronously and notify the [`WorldStore`](src/state/World.ts) when they complete loading their setup. There is an example [`Loading`](src/views/Loading.ts) view, set to bypass the loader flags, that gets destroyed once the rest of the views have finished.
+Most of the development should take place in the [`views/`](src/views) folder. Views are exported in order to the [`WorldController`](src/controllers/World.ts) by the [`index.ts`](src/views/index.ts) file, but each view is self-contained. They are loaded asynchronously and notify the [`WorldStore`](src/state/World.ts) when they complete loading their setup. There is an example [`Loading`](src/views/Loading.ts) view, set to bypass the loader flags, that gets destroyed once the rest of the views have finished.
 
-Most of the time, when I start a project, I just delete the example [views](src/views), clear the default [setttings](src/settings) and [assets](src/loaders/assets.ts). Then I can start creating the new views and adding whatever tweaks I need. Custom settings and tweaks will be fully typed and available in the appropriate store.
+Most of the time, when I start a project, I just delete the example [views](src/views) and clear the default [setttings](src/settings) and [assets](src/loaders/assets.ts). Then I can start creating the new views and adding whatever tweaks I need. Custom settings and tweaks will be fully typed and available in the appropriate store.
 
 To create a view, just extend the [WebGLView](src/helpers/classes/WebGLView.ts) class. This class extends the Three.js `Group` interface, so anything added to it will be added to the scene. It also takes care of setting the loading flags and updating the state. Unfortunately, to make this bit of magic work, it is necessary to preserve the class `this` context, so make sure all your methods are arrow functions.
 
