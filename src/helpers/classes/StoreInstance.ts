@@ -77,6 +77,7 @@ export abstract class StoreInstance<T extends Settings> {
    */
   public unsubscribe(namespace: string) {
     this._subscriptions[namespace].forEach((unsub) => unsub());
+    delete this._subscriptions[namespace];
   }
 
   /**
