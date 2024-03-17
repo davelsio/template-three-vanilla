@@ -8,9 +8,9 @@ The example experience is the final project from Three.js Journey, my very first
 
 ### Features
 
-- Codebase architecture that coordinates view and controller state via state events.
+- Architecture to synchronize views and controllers via events.
 - Centralized state management implementation using Zustand.
-- Custom Tweakpane plugin that integrates with the state management.
+- Custom Tweakpane plugin compatible with an external store.
 - Typescript for type safety.
 - Sensible ESLint and Prettier configurations.
 
