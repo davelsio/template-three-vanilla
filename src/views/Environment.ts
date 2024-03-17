@@ -9,47 +9,57 @@ interface Props {
 }
 
 export class Environment extends WebGLView<Props> {
-  private _environmentMap: CubeTexture;
-  private _ambientLight: AmbientLight;
-  private _pointLight: PointLight;
+  private environmentMap: CubeTexture;
+  private ambientLight: AmbientLight;
+  private pointLight: PointLight;
 
   constructor() {
     super('EnvironmentView', {
       envMapIntensity: 2.5,
     });
-    void this.init(this.setupEnvironmentMap, this.setupLights);
+    void this.init(
+      this.setupAssets,
+      this.setupEnvironmentMap,
+      this.setupLights
+    );
   }
 
   public destroy() {
     /**
-     * Do NOT remove or dispose lights, reuse them instead.
-     * Every time a light is removed, all objects within its
-     * influence will need to be updated.
+     * If possible, try to reuse lights instead of removing or disposing them.
+     * Every time a light is removed, all objects within its influence will need
+     * to be updated.
      */
+    this.ambientLight.dispose();
+    this.pointLight.dispose();
+    this._scene.remove(this);
   }
 
   /* SETUP */
 
-  private async setupEnvironmentMap() {
-    // this._environmentMap = await ResourceLoader.loadCubeTexture();
-    this._environmentMap.colorSpace = SRGBColorSpace;
-    this._scene.background = this._environmentMap;
-    this._scene.environment = this._environmentMap;
+  private setupAssets = async () => {
+    // this.environmentMap = await ResourceLoader.loadCubeTexture();
+    this.environmentMap.colorSpace = SRGBColorSpace;
+  };
+
+  private setupEnvironmentMap = () => {
+    this._scene.background = this.environmentMap;
+    this._scene.environment = this.environmentMap;
 
     // Update materials
     this._scene.traverse((child) => {
       if (isThreeMesh(child) && isThreeMeshStandardMaterial(child.material)) {
-        child.material.envMap = this._environmentMap;
+        child.material.envMap = this.environmentMap;
         child.material.envMapIntensity = this._props.envMapIntensity;
         child.material.needsUpdate = true;
       }
     });
-  }
+  };
 
   private setupLights() {
-    this._ambientLight = new AmbientLight(0xffffff, 0.5);
-    this._pointLight = new PointLight(0xffffff, 0.5);
-    this._pointLight.position.set(2, 3, 4);
-    this._scene.add(this._ambientLight);
+    this.ambientLight = new AmbientLight(0xffffff, 0.5);
+    this.pointLight = new PointLight(0xffffff, 0.5);
+    this.pointLight.position.set(2, 3, 4);
+    this.add(this.ambientLight);
   }
 }
