@@ -55,7 +55,7 @@ export class WorldStore extends StoreInstance<WorldState> {
 
   public onLoad(callback: () => void) {
     const unsub = this.subscribe(
-      'WordApi',
+      this.namespace,
       (state) => state.viewsProgress,
       (viewsProgress) => {
         if (viewsProgress === 1) {
