@@ -6,7 +6,6 @@ export type WorldSettings = typeof worldSettings;
 export type WorldConfig = BindingConfig<WorldSettings>;
 
 export const worldSettings = {
-  loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
   fireflySize: 0.75,
   fireflyColor: new Color(0xffffff),
   poleLightColor: new Color(0xffffff),
@@ -17,20 +16,6 @@ export const worldSettings = {
 };
 
 export const worldConfig: WorldConfig[] = [
-  {
-    folder: {
-      title: 'Loading',
-    },
-    bindings: [
-      {
-        key: 'loadingColor',
-        options: {
-          label: 'Color',
-          color: { type: 'float' },
-        },
-      },
-    ],
-  },
   {
     folder: {
       title: 'Fireflies',

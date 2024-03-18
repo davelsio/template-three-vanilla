@@ -12,6 +12,7 @@ import {
 import { Store } from '@state/Store';
 
 export interface LoadingProps {
+  loadingColor: ColorWithAlpha;
   loadingDuration: number;
 }
 
@@ -26,6 +27,7 @@ export class Loading extends WebGLView<LoadingProps> {
 
   constructor() {
     super('Loading', {
+      loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
       loadingDuration: 0.5,
       withLoading: false,
     });
@@ -78,18 +80,11 @@ export class Loading extends WebGLView<LoadingProps> {
   };
 
   private setupOverlayMaterial = () => {
-    const { world } = Store.getStates();
+    const { r, g, b, a } = this._props.loadingColor;
     this._overlayMaterial = new ShaderMaterial({
       uniforms: {
         uAlpha: new Uniform(1.0),
-        uColor: new Uniform(
-          new Vector4(
-            world.loadingColor.r,
-            world.loadingColor.g,
-            world.loadingColor.b,
-            world.loadingColor.a
-          )
-        ),
+        uColor: new Uniform(new Vector4(r, g, b, a)),
       },
       fragmentShader: overlayFragmentShader,
       vertexShader: overlayVertexShader,
@@ -105,8 +100,6 @@ export class Loading extends WebGLView<LoadingProps> {
   private setupSubscriptions = () => {
     const { world } = Store.getSubscribers(this.namespace);
 
-    world((state) => state.loadingColor, this.updateOverlayColor);
-
     world(
       (state) => state.viewsProgress,
       (progress) => {
@@ -121,17 +114,6 @@ export class Loading extends WebGLView<LoadingProps> {
             }
           });
       }
-    );
-  };
-
-  /* CALLBACKS */
-
-  private updateOverlayColor = (color: ColorWithAlpha) => {
-    this._overlayMaterial.uniforms.uColor.value = new Vector4(
-      color.r,
-      color.g,
-      color.b,
-      color.a
     );
   };
 }

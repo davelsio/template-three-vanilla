@@ -4,7 +4,12 @@ import { RenderController } from '@controllers/Renderer';
 import { StageController } from '@controllers/Stage';
 import { TimeController } from '@controllers/Time';
 import { WorldController } from '@controllers/World';
-import { CubeTextures, GLTFModels, Textures } from '@loaders/assets';
+import {
+  CubeTextures,
+  DataTextures,
+  GLTFModels,
+  Textures,
+} from '@loaders/assets';
 import { ResourceLoader } from '@loaders/ResourceLoader';
 import { Store } from '@state/Store';
 
@@ -25,7 +30,7 @@ export class Experience {
     Store.init();
 
     // Assets and resources
-    ResourceLoader.init(CubeTextures, Textures, GLTFModels, {
+    ResourceLoader.init(CubeTextures, DataTextures, Textures, GLTFModels, {
       draco: true,
     });
 

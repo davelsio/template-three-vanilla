@@ -1,4 +1,12 @@
-import { Camera, Color, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
+import {
+  ACESFilmicToneMapping,
+  Camera,
+  Color,
+  PCFSoftShadowMap,
+  Scene,
+  SRGBColorSpace,
+  WebGLRenderer,
+} from 'three';
 
 import { BaseController } from '@helpers/classes/BaseController';
 import { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
@@ -27,6 +35,10 @@ export class RenderController extends BaseController {
       powerPreference: 'high-performance',
       antialias: true,
     });
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = PCFSoftShadowMap;
+    this.renderer.toneMapping = ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1;
     this.renderer.outputColorSpace = SRGBColorSpace;
 
     const { r, g, b, a } = Store.render.state.clearColor;

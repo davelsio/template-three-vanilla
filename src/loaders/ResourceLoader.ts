@@ -1,16 +1,18 @@
 import {
   CubeTexture,
   CubeTextureLoader,
+  DataTexture,
   LoadingManager,
   Texture,
   TextureLoader,
 } from 'three';
-import { DRACOLoader, GLTF, GLTFLoader } from 'three-stdlib';
+import { DRACOLoader, GLTF, GLTFLoader, RGBELoader } from 'three-stdlib';
 
 import { AssetNotFoundError } from '@errors/AssetNotFoundError';
 import {
   AssetType,
   CubeTextureAssets,
+  DataTextureAssets,
   GLTFModelAssets,
   TextureAssets,
 } from '@loaders/assets';
@@ -28,16 +30,19 @@ type InitOptions = {
 
 type Sources = {
   cubeTextures: CubeTextureAssets;
+  dataTextures: DataTextureAssets;
   textures: TextureAssets;
   gltfs: GLTFModelAssets;
 };
 
 type CubeTextureCache = Record<string, CubeTexture>;
+type DataTextureCache = Record<string, DataTexture>;
 type TextureCache = Record<string, Texture>;
 type GLTFCache = Record<string, GLTF>;
 
 type Cache = {
   cubeTexture: CubeTextureCache;
+  dataTexture: DataTextureCache;
   texture: TextureCache;
   gltf: GLTFCache;
 };
@@ -48,28 +53,33 @@ export class ResourceLoader {
 
   private static _loadingManager?: LoadingManager;
   private static _cubeTextureLoader: CubeTextureLoader;
+  private static _rgbeLoader: RGBELoader;
   private static _textureLoader: TextureLoader;
   private static _gltfLoader: GLTFLoader;
 
   public static init(
     cubeTextures: CubeTextureAssets,
+    dataTextures: DataTextureAssets,
     textures: TextureAssets,
     gltfs: GLTFModelAssets,
     options?: InitOptions
   ) {
     this._assets = {
       cubeTextures,
+      dataTextures,
       textures,
       gltfs,
     };
     this._cache = {
       cubeTexture: {},
+      dataTexture: {},
       texture: {},
       gltf: {},
     };
 
     this._loadingManager = options?.loadingManager;
     this._cubeTextureLoader = new CubeTextureLoader(this._loadingManager);
+    this._rgbeLoader = new RGBELoader(this._loadingManager);
     this._textureLoader = new TextureLoader(this._loadingManager);
     this._gltfLoader = new GLTFLoader(this._loadingManager);
 
@@ -107,6 +117,29 @@ export class ResourceLoader {
     );
 
     this._cache.cubeTexture[name] = texture;
+    Store.resources.notifyAssetLoaded();
+    return texture;
+  }
+
+  public static async loadRgbeTexture(
+    name: keyof DataTextureAssets,
+    options?: LoaderOptions
+  ) {
+    if (this._cache.dataTexture[name]) {
+      return this._cache.dataTexture[name];
+    }
+
+    const source = this._assets.dataTextures[name];
+    if (!source) {
+      throw new AssetNotFoundError(name, AssetType.DataTexture);
+    }
+
+    const texture = await this._rgbeLoader.loadAsync(
+      source,
+      options?.onProgress
+    );
+
+    this._cache.dataTexture[name] = texture;
     Store.resources.notifyAssetLoaded();
     return texture;
   }
