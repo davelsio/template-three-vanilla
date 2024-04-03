@@ -3,6 +3,7 @@ import { TpPluginBundle } from '@tweakpane/core';
 import { BooleanInputPlugin } from './boolean/BooleanInputPlugin';
 import { ColorNumberInputPlugin } from './color/ColorNumberInputPlugin';
 import { ColorObjectInputPlugin } from './color/ColorObjectInputPlugin';
+import { ColorStringInputPlugin } from './color/ColorStringInputPlugin';
 import { NumberInputPlugin } from './number/NumberInputPlugin';
 import { NumberMonitorPlugin } from './number/NumberMonitorPlugin';
 import { StringInputPlugin } from './string/StringInputPlugin';
@@ -14,10 +15,11 @@ export const StateBundle: TpPluginBundle = {
   id: 'state-compatibility',
   plugins: [
     BooleanInputPlugin,
-    ColorNumberInputPlugin,
-    ColorObjectInputPlugin,
     NumberInputPlugin,
     NumberMonitorPlugin,
     StringInputPlugin,
+    ColorStringInputPlugin,
+    ColorNumberInputPlugin,
+    ColorObjectInputPlugin,
   ],
 };
