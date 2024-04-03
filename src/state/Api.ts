@@ -1,4 +1,4 @@
-import { Camera, Scene, WebGLRenderer } from 'three';
+import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
 import { StateNotInitializedError } from '@errors/StateNotInitializedError';
@@ -8,7 +8,7 @@ type ApiState = {
   /**
    * Main Three.js camera used.
    */
-  _camera?: Camera;
+  _camera?: PerspectiveCamera;
   /**
    * WebGL canvas where the experience is rendered.
    */

@@ -14,6 +14,7 @@ export const cameraSettings = {
   cameraNear: 0.1,
   cameraFar: 100,
   controlsDamping: true,
+  controlsEnabled: true,
 };
 
 export const cameraConfig: CameraConfig[] = [];
