@@ -126,9 +126,9 @@ export class DebugController extends BaseController {
       });
 
       buttons?.forEach((button) => {
-        const buttonParams = button(store);
+        const { onClick, ...buttonParams } = button(store);
         const buttonApi = ui.addButton(buttonParams);
-        buttonApi.on('click', buttonParams.onClick);
+        buttonApi.on('click', onClick);
       });
     });
   }

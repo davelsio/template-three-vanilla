@@ -1,16 +1,5 @@
 module.exports = {
   root: true,
-  ignorePatterns: [
-    // installed packages
-    'node_modules/*',
-    // static assets folder
-    'public/*',
-    // compiled project
-    'dist/*',
-    // unignore pattern (ignored by default)
-    '!.prettierrc.js',
-    '!.prettierrc.cjs',
-  ],
   env: {
     browser: true,
     node: true,
@@ -21,19 +10,14 @@ module.exports = {
     sourceType: 'module',
     requireConfigFile: false,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['eslint:recommended'],
   plugins: ['simple-import-sort'],
   rules: {
-    // Override prettier/recommended to show errors as warnings
-    'prettier/prettier': ['warn'],
-
     // Sort imports
     'simple-import-sort/exports': 'warn',
     'simple-import-sort/imports': [
-        'warn', {
+      'warn',
+      {
         groups: [
           // Module imports
           ['^[a-z]', '^@'],
@@ -79,9 +63,7 @@ module.exports = {
     {
       files: ['**/*.{ts,tsx}', '**/*.d.ts'],
       parser: '@typescript-eslint/parser',
-      extends: [
-        'plugin:@typescript-eslint/recommended',
-      ],
+      extends: ['plugin:@typescript-eslint/recommended'],
       rules: {
         // Probably not the best practice
         '@typescript-eslint/ban-types': [

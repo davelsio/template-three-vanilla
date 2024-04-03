@@ -6,13 +6,12 @@ import {
   NumberColorInputPlugin as DefaultNumberColorInputPlugin,
 } from '@tweakpane/core';
 
+import { customAccept } from '../helpers/customAccept';
 import {
   GetReaderType,
   GetWriterType,
   InputBindingPluginWithStateParams,
-} from '@debug/helpers/customTypes';
-
-import { customAccept } from '../helpers/customAccept';
+} from '../helpers/customTypes';
 
 /**
  * Default plugin properties to override.

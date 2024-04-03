@@ -24,6 +24,7 @@ The example experience is the final project from Three.js Journey, my very first
 I did not want the project codebase to become too unwieldy by allowing the scene views and various controllers (renderer, camera, etc.) to import and call each other's methods indiscriminately.
 
 To manage that type of communication, I divided the experience in three layers:
+
 - **Controllers**: these initialize the experience and handle things such as camera, renderer, stage, and world behavior.
 - **Views**: these are the scene objects created by the World controller and loaded as asynchronous entities. This approach decouples the resource loading stage. Each view notifies the central state when the loading is done so state subscribers can react accordingly.
 - **State**: Communication between Controllers and Views is handled via a centralize Store layer.
@@ -45,6 +46,7 @@ I wanted to have a unified solution that handled both internal state and various
 Different debug tweaks can be added in the [settings](src/settings) folder. To keep things manageable, there is a settings file for each controller. The corresponding controller store will import the exported settings and expose them via the central state. Subscription to UI changes is handled as any other zustand subscription.
 
 For convenience, debug configs are typed as object arrays. Some notes about this:
+
 - It is possible to create [folders](https://tweakpane.github.io/docs/ui-components/#folder) and [bindings](https://tweakpane.github.io/docs/ui-components/#button) using the same APIs described in the official tweakpane docs
 - I've added a QoL improvement to automatically listen to updates and refresh the binding accordingly, similarly to [lil-gui listen method](https://lil-gui.georgealways.com/#Controller#listen).
 - Internally, the `reader` and `writer` functions are overridden to read from/write to the store instead of directly to the object.
@@ -52,6 +54,7 @@ For convenience, debug configs are typed as object arrays. Some notes about this
 - An array of button configs can also be passed. Each button is defined as a function callback that receives the corresponding store instance. The function should return the [button params](https://tweakpane.github.io/docs/ui-components/#button) described in the official docs plus an `onClick` callback that will be passed to the `on('click')` event.
 
 ### BindingConfig signature
+
 ```ts
 export type BindingConfig<T extends Bindable = Bindable> = {
   folder?: FolderParams;
@@ -71,6 +74,7 @@ export type BindingConfig<T extends Bindable = Bindable> = {
 ```
 
 ### Example Settings for the Renderer
+
 ```ts
 // ./src/settings/renderer.ts
 export type RenderSettings = typeof renderSettings;
@@ -110,12 +114,12 @@ export const renderConfig: RenderConfig[] = [
 ];
 ```
 
-
 ## Develop
 
 This project was created with [pnpm](https://pnpm.io), but any other package manager will work. Bundling is handled with [Vite](https://vitejs.dev).
 
 ### Commands
+
 ```shell
 pnpm install # install package dependencies
 pnpm dev     # start development server
@@ -133,6 +137,7 @@ To create a view, just extend the [WebGLView](src/helpers/classes/WebGLView.ts) 
 ### Resources
 
 To load textures and models, I've created a [ResourceLoader](src/loaders/ResourceLoader.ts) class that exposes various static methods. Some things to note:
+
 - This class imports any resources declared in the [assets](src/loaders/assets.ts) file. The assets are fully typed and the static methods will use those types.
 - By default, the `GLTFLoader` is initialized with the `DRACOLoader`. This setting can be changed in the [Experience (#L29)](src/Experience.ts) file.
 - The DRACO decoder is included within the [public](public) folder, taken as is from `three/examples/js/libs/draco/`.
@@ -174,8 +179,7 @@ The experience object exposes two properties:
 ### Styles
 
 Some optional css styles are provided that work well with a stand-alone project.
+
 - `reset.css`: Pretty much a copy-paste from the amazing Josh Comeau [custom CSS reset](https://www.joshwcomeau.com/css/custom-css-reset/). This one also removes default `padding` and button `border`.
 - `webgl.css`: Applies only the WebGL `canvas` to remove it from the document flow and create its own stacking context. Regardless of this CSS, the experience will always respect the parent container dimensions whether it is the document or some other element.
 - `tweakpane.css`: Adds some extra width to the main debug pane and sligthly adjusts the label:input width proportion of each binding blade, so that the input takes the majority of the available space.
-
-

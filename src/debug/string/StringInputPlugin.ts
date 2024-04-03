@@ -1,7 +1,6 @@
 import { StringInputPlugin as DefaultStringInputPlugin } from '@tweakpane/core';
 
-import { customAccept } from '@debug/helpers/customAccept';
-
+import { customAccept } from '../helpers/customAccept';
 import {
   GetReaderType,
   GetWriterType,

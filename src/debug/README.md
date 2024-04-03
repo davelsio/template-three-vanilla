@@ -3,6 +3,7 @@ I've been using this template to quickly prototype vanilla Three.js apps, for ex
 Because I use typescript, [tweakpane](https://tweakpane.github.io/docs/) was the perfect match to have a debug UI. However, my template also uses [zustand](https://github.com/pmndrs/zustand) to keep a centralized state management solution and my particular case made both incompatible.
 
 Briefly, my problem was that it is not possible pass custom binding options to tweakpane to handle read/write operations in [the configuration object](https://github.com/cocopon/tweakpane/blob/main/packages/core/src/common/binding/target.ts#L8). The default behavior bypasses zustand's `setState` action, and while using the `on('change')` event mostly works, I faced two specific problems:
+
 1. Equality comparison functions break [when using selectors](https://github.com/pmndrs/zustand#using-subscribe-with-selector) because the previous and current values will always be the same. In other words, tweakpane first mutates the prop, then zustand sets the same value again in the change event.
 2. Monitor bindings do not get updated in the UI. I'm not sure why this happens, but I assume tweakpane is not reading from the state.
 
@@ -27,16 +28,15 @@ What I want is to be able to customize how these values are read or written by t
 
 ```ts
 const store = createStore(subscribeWithSelector<typeof state>(() => state));
-const ui: Pane | FolderApi = /* whatever tweakpane pane or folder */
+const ui: Pane | FolderApi = new Pane();
 ui.addBinding(store.getState(), key, {
   ...options, // whatever binding options
   reader: (target) => store.state[target.key],
   writer: (target, value) => store.update({ [target.key]: value }),
 });
-````
+```
 
 In this case, the `store` is the created zustand store, but It could be anything else you want, these are just custom read/write options. Notice the `target` in the callback? This is the [class](https://github.com/cocopon/tweakpane/blob/main/packages/core/src/common/binding/target.ts#L8) that tweakpane uses internally to handle read/write operations to the object properties.
-
 
 ## Implementation
 
@@ -109,7 +109,6 @@ export const customAccept = <Ex, P>(
     return result as ReturnType<typeof accept>;
   };
 };
-
 ```
 
 As you can see, the `customAccept` function is curried to receive the default `accept` function from the plugin we are about to override. In this example we're only overriding the default `NumberInputPlugin`, but this way it can be reused for other input types.
@@ -123,7 +122,7 @@ In the code above, the relevant bit is where we define the `reader` and `writer`
           writer: p.optional.function,
         })),
         // ...
-```  
+```
 
 ### Custom Reader/Writer
 
@@ -236,7 +235,6 @@ export const StateBundle: TpPluginBundle = {
     // ColorNumberInputPlugin,
     // ColorObjectInputPlugin,
     // more overrides...
-
   ],
 };
 ```
@@ -282,12 +280,12 @@ Is there an easier way to do this? Yes, as I mentioned, it is possible to use th
 Another possibility would be to create a custom [`BindingTarget`](https://github.com/cocopon/tweakpane/blob/main/packages/core/src/common/binding/target.ts#L8) class that overrides the `read`, `write`, and `writeProperty` methods with whatever you want. I thought about submitting an issue/PR combo to figure out if it's an option worth exploring. I imagine that implementation along the lines of a generic class:
 
 ```ts
-import {
-  Bindable,
-  BindingTarget,
-} from '@tweakpane/core';
+import { Bindable, BindingTarget } from '@tweakpane/core';
 
-class CustomBindingTarget<T extends Bindable, K extends keyof T> extends BindingTarget<T, K> {
+class CustomBindingTarget<
+  T extends Bindable,
+  K extends keyof T,
+> extends BindingTarget<T, K> {
   public readonly key: K;
   private readonly obj_: T;
 
@@ -296,7 +294,7 @@ class CustomBindingTarget<T extends Bindable, K extends keyof T> extends Binding
     this.obj_ = obj;
     this.key = key;
   }
-       
+
   public read(): T[K] {
     // read from store
   }
@@ -308,7 +306,7 @@ class CustomBindingTarget<T extends Bindable, K extends keyof T> extends Binding
   public writeProperty(name: K, value: T[K]): void {
     // update store
   }
-} 
+}
 
 const bindingTarget = new CustomBindingTarget(store.getState());
 ```

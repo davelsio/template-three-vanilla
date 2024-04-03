@@ -12,6 +12,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "useDefineForClassFields": true,
+    "types": ["vite-plugin-glsl/ext"],
 
     // modules
     "allowSyntheticDefaultImports": true,
@@ -33,7 +34,7 @@
       "@styles/*": ["./src/styles/*"],
       "@type-guards/*": ["./src/type-guards/*"],
       "@utils/*": ["./src/utils/*"],
-      "@views/*": ["./src/views/*"],
+      "@views/*": ["./src/views/*"]
     }
-  },
+  }
 }
