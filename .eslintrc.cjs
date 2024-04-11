@@ -22,18 +22,19 @@ module.exports = {
           // Module imports
           ['^[a-z]', '^@'],
           // Folder aliases
+
           [
-            '^@controllers',
-            '^@debug',
+            '^@atoms',
             '^@errors',
+            '^@geometries',
             '^@helpers',
             '^@loaders',
-            '^@settings',
+            '^@materials',
+            '^@scenes',
             '^@shaders',
             '^@state',
             '^@styles',
             '^@utils',
-            '^@views',
           ],
           // Folder imports (starting with `../` or `./`)
           [
@@ -86,6 +87,9 @@ module.exports = {
             allowConciseArrowFunctionExpressionsStartingWithVoid: true,
           },
         ],
+
+        // Disable the `any` police and allow the creation of more advanced types.
+        '@typescript-eslint/no-explicit-any': 'off',
 
         // Warn about unused variables (ignore middle vars)
         '@typescript-eslint/no-unused-vars': [

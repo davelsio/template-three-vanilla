@@ -1,0 +1,111 @@
+import { atom } from 'jotai';
+import { atomFamily } from 'jotai/utils';
+import { atomWithLocation } from 'jotai-location';
+import { FolderApi, Pane } from 'tweakpane';
+import { BindingParams, FolderParams } from '@tweakpane/core';
+
+import { appStore } from '@state/store';
+
+type AtomWithTweakOptions = BindingParams & {
+  /**
+   * Automatically refresh the tweakpane UI when the atom changes.
+   */
+  listen?: boolean;
+  /**
+   * Routes in which the tweak should be visible.
+   * Defaults to all routes.
+   */
+  paths?: string[];
+};
+
+const locationAtom = atomWithLocation();
+
+const tweakpaneAtom = atom((get) => {
+  const pane = new Pane({ title: 'Debug Panel' });
+  const location = get(locationAtom);
+  pane.hidden = location.pathname !== '/debug';
+  return pane;
+});
+
+const tweakpaneFolderFamily = atomFamily(
+  (folderParams: FolderParams) =>
+    atom<FolderApi>((get) => {
+      const pane = get(tweakpaneAtom);
+      return pane.addFolder(folderParams);
+    }),
+  (a, b) => a.title === b.title
+);
+
+/**
+ * Atom factory to create atoms attached to a tweakpane binding. If no folder
+ * params are provided, the atom will be attached to the tweakpane root blade.
+ * @param folderParams tweakpane folder params
+ */
+export function atomWithBindingFolder(folderParams?: FolderParams) {
+  return <T>(label: string, value: T, options?: AtomWithTweakOptions) => {
+    const prevAtom = atom(value);
+    const currAtom = atom(value);
+
+    const bindingAtom = atom(
+      (get) => get(currAtom),
+      (get, set, arg: T) => {
+        const prevVal = get(currAtom);
+        set(prevAtom, prevVal);
+        set(currAtom, arg);
+      }
+    );
+
+    bindingAtom.onMount = () => {
+      const { get, set, sub } = appStore;
+
+      const { listen, ...params } = options ?? {};
+
+      const folder = folderParams && tweakpaneFolderFamily(folderParams);
+      const pane = folder ? get(folder) : get(tweakpaneAtom);
+
+      const key = bindingAtom.toString();
+      const obj = { [key]: value };
+      const binding = pane.addBinding(obj, key, {
+        label,
+        ...params,
+      });
+      binding.on('change', ({ value }) => {
+        set(bindingAtom, value);
+      });
+
+      // Create non-reactive updates in the tweakpane UI or elsewhere
+      const unsubListener = listen
+        ? sub(bindingAtom, () => binding.refresh())
+        : undefined;
+
+      return () => {
+        unsubListener?.();
+        binding.dispose();
+        pane.remove(binding);
+        if (pane.children.length === 0) {
+          const rootPane = get(tweakpaneAtom);
+          rootPane.remove(pane);
+          folderParams && tweakpaneFolderFamily.remove(folderParams);
+        }
+      };
+    };
+
+    return bindingAtom;
+  };
+}
+
+/**
+ * Create an atom with tweakpane binding args. Equivalent to calling
+ * `atomWithBindingFolder()` with no folder params.
+ *
+ * @example reactive tweak
+ * const color = atomWithBinding(1, {
+ *   listen: true,
+ *   params: { min: 0, max: 10 },
+ * });
+ *
+ * @param value initial value
+ * @param key tweakpane key
+ * @param options binding options
+ */
+export const atomWithBinding = atomWithBindingFolder();

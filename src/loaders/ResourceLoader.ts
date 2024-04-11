@@ -16,7 +16,8 @@ import {
   GLTFModelAssets,
   TextureAssets,
 } from '@loaders/assets';
-import { Store } from '@state/Store';
+import { notifyAssetLoadedAtom, totalAssetsAtom } from '@state/rendering';
+import { appStore } from '@state/store';
 import { TypedObject } from '@utils/typedObject';
 
 type LoaderOptions = {
@@ -93,7 +94,7 @@ export class ResourceLoader {
     const textureCount = TypedObject.keys(textures).length;
     const gltfCount = TypedObject.keys(gltfs).length;
     const totalAssets = cubeTextureCount + textureCount + gltfCount;
-    Store.resources.updateTotalAssets(totalAssets);
+    appStore.set(totalAssetsAtom, totalAssets);
   }
 
   /* LOADERS */
@@ -117,7 +118,7 @@ export class ResourceLoader {
     );
 
     this._cache.cubeTexture[name] = texture;
-    Store.resources.notifyAssetLoaded();
+    appStore.set(notifyAssetLoadedAtom);
     return texture;
   }
 
@@ -140,7 +141,7 @@ export class ResourceLoader {
     );
 
     this._cache.dataTexture[name] = texture;
-    Store.resources.notifyAssetLoaded();
+    appStore.set(notifyAssetLoadedAtom);
     return texture;
   }
 
@@ -164,7 +165,7 @@ export class ResourceLoader {
     texture.name = name as string;
 
     this._cache.texture[name] = texture;
-    Store.resources.notifyAssetLoaded();
+    appStore.set(notifyAssetLoadedAtom);
     return texture;
   }
 
@@ -192,7 +193,7 @@ export class ResourceLoader {
     const gltf = await this._gltfLoader.loadAsync(source, options?.onProgress);
 
     this._cache.gltf[name] = gltf;
-    Store.resources.notifyAssetLoaded();
+    appStore.set(notifyAssetLoadedAtom);
     return gltf;
   }
 }

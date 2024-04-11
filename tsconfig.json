@@ -23,18 +23,18 @@
     // paths
     "baseUrl": ".",
     "paths": {
-      "@controllers/*": ["./src/controllers/*"],
-      "@debug/*": ["./src/debug/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@atoms/*": ["./src/atoms/*"],
       "@errors/*": ["./src/errors/*"],
+      "@geometries/*": ["./src/components/geometries/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@loaders/*": ["./src/loaders/*"],
-      "@settings/*": ["./src/settings/*"],
+      "@materials/*": ["./src/components/materials/*"],
       "@shaders/*": ["./src/shaders/*"],
+      "@scenes/*": ["./src/scenes/*"],
       "@state/*": ["./src/state/*"],
       "@styles/*": ["./src/styles/*"],
-      "@type-guards/*": ["./src/type-guards/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@views/*": ["./src/views/*"]
+      "@utils/*": ["./src/utils/*"]
     }
   }
 }

@@ -1,5 +1,5 @@
 # compiled project
-dist/
+dist/*
 
 # installed packages
 node_modules/*
@@ -12,3 +12,7 @@ public/*
 !.eslintrc.cjs
 !.prettierrc.js
 !.prettierrc.cjs
+
+# temporary ignores
+03-mouse-interactive/
+04-instancing-guide/
