@@ -110,8 +110,8 @@ export class Portal extends WebGLView {
   };
 
   private setupSubscriptions = () => {
-    this.subToAtom(portalColorOuterAtom, this.updatePortalStartColor);
-    this.subToAtom(portalColorInnerAtom, this.updatePortalEndColor);
+    this.subToAtom(portalColorInnerAtom, this.updatePortalStartColor);
+    this.subToAtom(portalColorOuterAtom, this.updatePortalEndColor);
     this.subToAtom(portalDisplacementAtom, this.updatePortalDisplacement);
     this.subToAtom(portalStrengthAtom, this.updatePortalStrength);
     this.subToAtom(portalLightColorAtom, this.updatePoleLightColor);
