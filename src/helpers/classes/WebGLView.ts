@@ -51,7 +51,6 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
    */
   public init(...setup: Array<SetupCallback>) {
     const initialize = async () => {
-      console.log('init', this.namespace);
       for (const callback of setup) {
         await callback();
       }

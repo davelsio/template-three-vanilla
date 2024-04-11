@@ -18,7 +18,6 @@ export function atomWithPixelRatio() {
   const pxAtom = atom(px);
 
   pxAtom.onMount = (set) => {
-    console.log('Pixel Ratio Mounted');
     const callback = () => set(getPixelRatio());
     const unsubscribe = subscribeToPixelRatio(callback);
     callback();
