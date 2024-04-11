@@ -17,20 +17,20 @@ The example experience is the final project from Three.js Journey, my very first
 
 I did not want the project codebase to become too unwieldy by allowing the scene views and various controllers (renderer, camera, etc.) classes to import and call each other's methods indiscriminately.
 
-To manage that type of communication, I've encapsulated the experience in various atoms. To make it easier to initialize a generic Three.js instance that can be reused on various scenes, I've included an [`atomWithThree`](./src/atoms/atomWithThree.ts) that takes care of the whole thing. All atoms can be found in the [`atoms/`](./src/atoms) folder.
+To manage that type of communication, I've encapsulated the experience in various atoms. I've also included an [`atomWithThree`](./src/atoms/atomWithThree.ts) that takes care of initializing a generic Three.js instance that can be reused on various scenes. All atoms can be found in the [`atoms/`](./src/atoms) folder. 
 
-For now, Scenes still use an OOP approach. For convenience, I have an abstract [`WebGLView`](./src/helpers/classes/WebGLView.ts) that provides various convenience methods, like subscribing to atoms or initializing/disposing the view. I figure the whole OOP stuff will eventually go away and I'll just rely on helper functions. Resource handling also uses a static class for the moment. This will soon change to individual atoms behaviors.
+For now, the scenes still use an OOP approach. I have an abstract [`WebGLView`](./src/helpers/classes/WebGLView.ts) that provides various convenience methods, like subscribing to atoms or initializing/disposing the view. Resource handling also uses a static class for the moment. I figure the whole OOP stuff will eventually go away and I'll just rely on atoms and helper functions.
 
 ### Debug Panels
 
 > [!NOTE]
 > The debug UI only shows up in the `/debug` route.
 
-I wanted to have a unified solution that handled both internal state and various configurable settings/tweaks. Because this is a typescript codebase, I added a custom implementation for [tweakpane](https://github.com/cocopon/tweakpane) that is type-safe and integrates with the state management store. Different debug tweaks can be added using the [`atomWithBinding`](./src/atoms/atomWithBinding.ts) and [`atomWithBindingFolder`](./src/atoms/atomWithBinding.ts) atoms. Subscription to UI changes is handled as any other atom subscription.
+I wanted to have a unified solution that handled both internal state and various configurable settings/tweaks. Because this is a typescript codebase, I decided on a custom implementation [tweakpane](https://github.com/cocopon/tweakpane) implementation that is type-safe and integrates with the Jotai store. Different debug tweaks can be added using the [`atomWithBinding`](./src/atoms/atomWithBinding.ts) and [`atomWithBindingFolder`](./src/atoms/atomWithBinding.ts) atoms. Subscription to UI changes is handled as any other atom subscription.
 
 Both tweakpane [folders](https://tweakpane.github.io/docs/ui-components/#folder) and regular [input/monitor bindings](https://tweakpane.github.io/docs/input-bindings/) use the same APIs described in the official tweakpane docs. I've also added a QoL improvement to automatically listen to updates and refresh the binding accordingly, similarly to [lil-gui listen method](https://lil-gui.georgealways.com/#Controller#listen).
 
-#### AtomWithBinding signature
+#### Atom signatures
 
 ```ts
 import { BindingParams, FolderParams } from "@tweakpane/core";
@@ -51,7 +51,7 @@ type AtomWithBinding = <T>(label: string, value: T, options?: AtomWithTweakOptio
 type AtomWithBindingFolder = (folderParams: FolderParams) => AtomWithBinding;
 ```
 
-### Example state with tweakpane bindings for the portal
+#### Example state with tweakpane bindings for the portal
 
 ```ts
 // ./src/state/portal/portal.ts
@@ -69,7 +69,7 @@ export const portalDisplacementAtom = portalFolderBinding('Displacement', 5.0, {
 
 ## Develop
 
-This project was created with [pnpm](https://pnpm.io), but any other package manager will work. Bundling is handled with [Vite](https://vitejs.dev).
+This project was created with [pnpm](https://pnpm.io), but any other package manager will work. Bundling is handled by [Vite](https://vitejs.dev).
 
 ### Commands
 
@@ -104,7 +104,7 @@ The experience is separated in three atoms (more could be added as needed).
 - `vpAtom`: part of an `atomFamily` based on the container selector, it manages resize events for the provided container
 - `timeAtom`: hooked to the `gsap.ticker` function, it manages tick events.
 
-From there it's up to you whether to use the WebGLView and ResourceLoader classes. Since I plan on removing all OOP abstractions, I'll document the new atoms/helpers once that is done.
+From there it's up to you whether to use the `WebGLView` and `ResourceLoader` classes. Since I plan on removing all OOP abstractions, I'll document the new atoms/helpers once that is done.
 
 ### Views
 
@@ -116,7 +116,7 @@ Different scenes can be created and will reuse the existing initialize Three.js 
 
 ### Resources
 
-To load textures and models, I've created a [ResourceLoader](src/loaders/ResourceLoader.ts) class that exposes various static methods. Some things to note:
+To load textures and models I use a [ResourceLoader](src/loaders/ResourceLoader.ts) class that exposes various static methods. Some things to note:
 
 - This class imports any resources declared in the [assets](src/loaders/assets.ts) file. The assets are fully typed and the static methods will use those types.
 - The DRACO decoder is included within the [public](public) folder, taken as is from `three/examples/js/libs/draco/`.
