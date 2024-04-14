@@ -1,6 +1,13 @@
-import { ACESFilmicToneMapping, PCFSoftShadowMap, SRGBColorSpace } from 'three';
+import {
+  ACESFilmicToneMapping,
+  Color,
+  PCFSoftShadowMap,
+  SRGBColorSpace,
+} from 'three';
 
 import { WebGLView } from '@helpers/classes/WebGLView';
+import { backgroundColorAtom } from '@state/portal/scene';
+import { appStore } from '@state/store';
 
 import { Fireflies } from './Fireflies';
 import { Loading } from './Loading';
@@ -17,7 +24,8 @@ export class PortalScene extends WebGLView {
       this.setupCamera,
       this.setupControls,
       this.setupRenderer,
-      this.setupScene
+      this.setupScene,
+      this.setupSubscriptions
     );
 
     void this.dispose(() => {
@@ -48,6 +56,7 @@ export class PortalScene extends WebGLView {
     this._renderer.toneMapping = ACESFilmicToneMapping;
     this._renderer.toneMappingExposure = 1;
     this._renderer.outputColorSpace = SRGBColorSpace;
+    this._scene.background = new Color(appStore.get(backgroundColorAtom));
   };
 
   /* SETUP SCENE */
@@ -56,5 +65,15 @@ export class PortalScene extends WebGLView {
     new Loading();
     this.portal = new Portal();
     this.fireflies = new Fireflies();
+  };
+
+  /* SUBSCRIPTIONS */
+
+  private setupSubscriptions = () => {
+    this.subToAtom(backgroundColorAtom, this.updateBackgroundColor);
+  };
+
+  private updateBackgroundColor = (color: string) => {
+    this._scene.background = new Color(color);
   };
 }

@@ -19,5 +19,3 @@ export const portalStrengthAtom = portalBinding('Strength', 5.0, {
   max: 50,
   step: 0.1,
 });
-
-export const backgroundColorAtom = portalBinding('Background Color', '#000011');
