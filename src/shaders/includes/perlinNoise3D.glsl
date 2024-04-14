@@ -83,3 +83,5 @@ float perlinNoise3D(vec3 P)
 
     return 2.2 * n_xyz;
 }
+
+#pragma glslify: export(perlinNoise3D)

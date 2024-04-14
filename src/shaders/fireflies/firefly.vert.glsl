@@ -23,7 +23,7 @@ void main() {
 
   /**
    * Firefly size adjusted by pixel ratio and distance from camera. Emulates
-   * the `sizeAttenuation` of THREE.PointsMaterial.
+   * the sizeAttenuation of THREE.PointsMaterial.
    *
    *   Adjusting to the device pixel ratio ensures the particle will have
    *   the same size regardless of the device's pixel density.

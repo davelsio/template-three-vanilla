@@ -17,8 +17,8 @@ type PortalMaterialUniforms = {
   uTime: number;
 };
 
-const uColorEnd = new Color(appStore.get(portalColorInnerAtom));
-const uColorStart = new Color(appStore.get(portalColorOuterAtom));
+const uColorEnd = new Color(appStore.get(portalColorOuterAtom));
+const uColorStart = new Color(appStore.get(portalColorInnerAtom));
 const uOffsetDisplacementUv = appStore.get(portalDisplacementAtom);
 const uOffsetStrengthUv = appStore.get(portalDisplacementAtom);
 

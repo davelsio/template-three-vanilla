@@ -1,5 +1,3 @@
-#include "../includes/perlinNoise3D.glsl"
-
 uniform vec3 uColorStart;
 uniform vec3 uColorEnd;
 uniform float uOffsetDisplacementUv;
@@ -7,6 +5,8 @@ uniform float uOffsetStrengthUv;
 uniform float uTime;
 
 varying vec2 vUv;
+
+#pragma glslify: perlinNoise3D = require(../includes/perlinNoise3D.glsl)
 
 void main() {
 
