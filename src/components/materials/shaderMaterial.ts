@@ -63,7 +63,7 @@ export function shaderMaterial<T extends UniformsInput>(
   vertexShader: ShaderMaterialParameters['vertexShader'],
   fragmentShader: ShaderMaterialParameters['fragmentShader']
 ) {
-  const material = class extends ShaderMaterial {
+  class CustomShaderMaterial extends ShaderMaterial {
     constructor({
       uniforms,
       ...args
@@ -91,9 +91,10 @@ export function shaderMaterial<T extends UniformsInput>(
         })
       );
     }
-  };
+  }
+  const material = CustomShaderMaterial;
 
   return material as unknown as new (
     args?: ShaderMaterialParams<T>
-  ) => T & ShaderMaterial;
+  ) => T & CustomShaderMaterial;
 }
