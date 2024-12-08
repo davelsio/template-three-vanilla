@@ -1,6 +1,8 @@
 import { Atom, atom, createStore as JotaiCreateStore } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 
+import { atomWithThree } from '@atoms/atomWithThree';
+
 export type SubToAtomArgs<T, R> = [
   /**
    * Atom to subscribe.
@@ -25,10 +27,10 @@ export type SubToAtomArgs<T, R> = [
   },
 ];
 
-export type State = ReturnType<typeof createState>;
-export type Store = State['store'];
+export type State = ReturnType<typeof createThreeState>;
+export type Store = ReturnType<typeof JotaiCreateStore>;
 
-export function createState() {
+export function createThreeState() {
   const store = JotaiCreateStore();
 
   const subsFamily = atomFamily((_namespace: string) =>
@@ -66,9 +68,28 @@ export function createState() {
     subsFamily.remove(namespace);
   }
 
+  const [
+    threeAtom, // camera, controls, renderer, scene, stage
+    vpAtom, // viewport
+    timeAtom, // time
+  ] = atomWithThree('#root', store);
+
   return {
     store,
     subToAtom,
     unSubAll,
+    threeAtom,
+    vpAtom,
+    timeAtom,
+    //
+    get three() {
+      return store.get(threeAtom);
+    },
+    get vp() {
+      return store.get(vpAtom);
+    },
+    get time() {
+      return store.get(timeAtom);
+    },
   };
 }

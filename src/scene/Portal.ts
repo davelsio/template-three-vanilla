@@ -7,20 +7,21 @@ import {
   type Texture,
 } from 'three';
 
-import { TimeAtomValue } from '@atoms/atomWithTime';
-import { WebGLView } from '@helpers/classes/WebGLView';
+import type { TimeAtomValue } from '@atoms/atomWithTime';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
+import { type State, WebGLView } from '@helpers/three';
 import { ResourceLoader } from '@loaders/ResourceLoader';
+import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
+import { TypedObject } from '@utils/typedObject';
+
+import { PortalMaterial } from './PortalMaterial';
 import {
   portalColorInnerAtom,
   portalColorOuterAtom,
   portalDisplacementAtom,
   portalLightColorAtom,
   portalStrengthAtom,
-} from '@state/portal/portal';
-import { TypedObject } from '@utils/typedObject';
-
-import { PortalMaterial } from './PortalMaterial';
+} from './PortalState';
 
 interface ModelMeshes {
   baked: Mesh;
@@ -40,8 +41,8 @@ export class Portal extends WebGLView {
   private materials: ModelMaterials;
   private texture: Texture;
 
-  constructor() {
-    super('Portal');
+  constructor(state: State) {
+    super('Portal', state);
 
     void this.init(
       this.setupAssets,
@@ -76,7 +77,21 @@ export class Portal extends WebGLView {
       color: new Color(this._state.store.get(portalLightColorAtom)),
     });
 
-    const portalLightMaterial = new PortalMaterial();
+    const uColorEnd = new Color(this._state.store.get(portalColorOuterAtom));
+    const uColorStart = new Color(this._state.store.get(portalColorInnerAtom));
+    const uOffsetDisplacementUv = this._state.store.get(portalDisplacementAtom);
+    const uOffsetStrengthUv = this._state.store.get(portalDisplacementAtom);
+    const portalLightMaterial = new PortalMaterial({
+      vertexShader: portalVertexShader,
+      fragmentShader: portalFragmentShader,
+      uniforms: {
+        uColorEnd,
+        uColorStart,
+        uOffsetDisplacementUv,
+        uOffsetStrengthUv,
+        uTime: 0,
+      },
+    });
 
     this.materials = {
       baked: bakedMaterial,

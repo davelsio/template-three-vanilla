@@ -19,7 +19,7 @@ I did not want the project codebase to become too unwieldy by allowing the scene
 
 To manage that type of communication, I've encapsulated the experience in various atoms. I've also included an [`atomWithThree`](./src/atoms/atomWithThree.ts) that takes care of initializing a generic Three.js instance that can be reused on various scenes. All atoms can be found in the [`atoms/`](./src/atoms) folder. 
 
-For now, the scenes still use an OOP approach. I have an abstract [`WebGLView`](./src/helpers/classes/WebGLView.ts) that provides various convenience methods, like subscribing to atoms or initializing/disposing the view. Resource handling also uses a static class for the moment. I figure the whole OOP stuff will eventually go away and I'll just rely on atoms and helper functions.
+For now, the scenes still use an OOP approach. I have an abstract [`WebGLView`](src/helpers/three/WebGLView.ts) that provides various convenience methods, like subscribing to atoms or initializing/disposing the view. Resource handling also uses a static class for the moment. I figure the whole OOP stuff will eventually go away and I'll just rely on atoms and helper functions.
 
 ### Debug Panels
 
@@ -110,7 +110,7 @@ From there it's up to you whether to use the `WebGLView` and `ResourceLoader` cl
 
 To keep things tidy, I've put the scene in the [`scene/`](src/scene) folder, but this is completely arbitrary. This folder is just an example of an actual implementation.
 
-To create a view, I just extend the [WebGLView](src/helpers/classes/WebGLView.ts) class. This class extends the Three.js `Group` interface and knows how to add and remove itself from the experience. It also takes care of setting the loading flags and updating the state. Unfortunately, to make this bit of magic work, it is necessary to preserve the class `this` context, so I have to make sure all the methods are arrow functions.
+To create a view, I just extend the [WebGLView](src/helpers/three/WebGLView.ts) class. This class extends the Three.js `Group` interface and knows how to add and remove itself from the experience. It also takes care of setting the loading flags and updating the state. Unfortunately, to make this bit of magic work, it is necessary to preserve the class `this` context, so I have to make sure all the methods are arrow functions.
 
 Different scenes can be created and will reuse the existing initialize Three.js atom instance. Most of the time, when I start a project, I just delete the scenes and clear the default state. Then I can start creating the new views and adding whatever tweaks I need.
 

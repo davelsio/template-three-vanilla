@@ -1,13 +1,6 @@
-import { Color } from 'three';
+import type { Color } from 'three';
 
-import { shaderMaterial, ShaderMaterialType } from '@materials/shaderMaterial';
-import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
-import {
-  portalColorInnerAtom,
-  portalColorOuterAtom,
-  portalDisplacementAtom,
-} from '@state/portal/portal';
-import { appStore } from '@state/store';
+import { shaderMaterial, type ShaderMaterialType } from '@helpers/three';
 
 type PortalMaterialUniforms = {
   uColorEnd: Color;
@@ -17,21 +10,6 @@ type PortalMaterialUniforms = {
   uTime: number;
 };
 
-const uColorEnd = new Color(appStore.get(portalColorOuterAtom));
-const uColorStart = new Color(appStore.get(portalColorInnerAtom));
-const uOffsetDisplacementUv = appStore.get(portalDisplacementAtom);
-const uOffsetStrengthUv = appStore.get(portalDisplacementAtom);
-
 export type PortalMaterial = ShaderMaterialType<typeof PortalMaterial>;
 
-export const PortalMaterial = shaderMaterial<PortalMaterialUniforms>(
-  {
-    uTime: 0,
-    uColorEnd,
-    uColorStart,
-    uOffsetDisplacementUv,
-    uOffsetStrengthUv,
-  },
-  portalVertexShader,
-  portalFragmentShader
-);
+export const PortalMaterial = shaderMaterial<PortalMaterialUniforms>();

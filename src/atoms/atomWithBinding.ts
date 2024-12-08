@@ -4,7 +4,7 @@ import { atomWithLocation } from 'jotai-location';
 import { FolderApi, Pane } from 'tweakpane';
 import { BindingParams, FolderParams } from '@tweakpane/core';
 
-import { appStore } from '@state/store';
+import type { Store } from '@helpers/three';
 
 type AtomWithTweakOptions = BindingParams & {
   /**
@@ -39,9 +39,13 @@ const tweakpaneFolderFamily = atomFamily(
 /**
  * Atom factory to create atoms attached to a tweakpane binding. If no folder
  * params are provided, the atom will be attached to the tweakpane root blade.
+ * @param store Jotai store
  * @param folderParams tweakpane folder params
  */
-export function atomWithBindingFolder(folderParams?: FolderParams) {
+export function atomWithBindingFolder(
+  store: Store,
+  folderParams?: FolderParams
+) {
   return <T>(label: string, value: T, options?: AtomWithTweakOptions) => {
     const prevAtom = atom(value);
     const currAtom = atom(value);
@@ -56,7 +60,7 @@ export function atomWithBindingFolder(folderParams?: FolderParams) {
     );
 
     bindingAtom.onMount = () => {
-      const { get, set, sub } = appStore;
+      const { get, set, sub } = store;
 
       const { listen, ...params } = options ?? {};
 
@@ -93,19 +97,3 @@ export function atomWithBindingFolder(folderParams?: FolderParams) {
     return bindingAtom;
   };
 }
-
-/**
- * Create an atom with tweakpane binding args. Equivalent to calling
- * `atomWithBindingFolder()` with no folder params.
- *
- * @example reactive tweak
- * const color = atomWithBinding(1, {
- *   listen: true,
- *   params: { min: 0, max: 10 },
- * });
- *
- * @param value initial value
- * @param key tweakpane key
- * @param options binding options
- */
-export const atomWithBinding = atomWithBindingFolder();

@@ -7,6 +7,7 @@ import {
 import { ResourceLoader } from '@loaders/ResourceLoader';
 
 import { PortalScene } from './scene/PortalScene';
+import { portalState } from './scene/PortalState';
 
 import '@styles/reset.css';
 import '@styles/webgl.css';
@@ -16,4 +17,4 @@ ResourceLoader.init(CubeTextures, DataTextures, Textures, GLTFModels, {
   draco: true,
 });
 
-new PortalScene();
+new PortalScene(portalState);

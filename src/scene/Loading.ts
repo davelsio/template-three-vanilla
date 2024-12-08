@@ -1,7 +1,7 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
-import { WebGLView } from '@helpers/classes/WebGLView';
+import { type State, WebGLView } from '@helpers/three';
 import type { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import {
   barFragmentShader,
@@ -28,8 +28,8 @@ export class Loading extends WebGLView<LoadingProps> {
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
-  constructor() {
-    super('Loading', {
+  constructor(state: State) {
+    super('Loading', state, {
       loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
       loadingDuration: 0.5,
       needsLoadingScreen: false,

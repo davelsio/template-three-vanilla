@@ -1,25 +1,16 @@
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
-import { atomWithThree } from '@atoms/atomWithThree';
-import { TimeAtom } from '@atoms/atomWithTime';
-import { ViewportAtom } from '@atoms/atomWithViewport';
+import type { TimeAtom } from '@atoms/atomWithTime';
+import type { ViewportAtom } from '@atoms/atomWithViewport';
 import { viewsLoadedAtom, viewsToLoadAtom } from '@state/rendering/world';
 
-import { createState, State, type SubToAtomArgs } from '../state/createStore';
+import type { State, SubToAtomArgs } from './createThreeState';
 
 type SetupCallback = () => void | Promise<void>;
 type WebGLViewOptions<T> = T & {
   needsLoadingScreen?: boolean;
 };
-
-const state = createState();
-
-const [
-  threeAtom, // camera, controls, renderer, scene, stage
-  vpAtom, // viewport
-  timeAtom, // time
-] = atomWithThree('#root', state.store);
 
 export abstract class WebGLView<T extends {} = {}> extends Group {
   public namespace: string;
@@ -39,23 +30,24 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
 
   protected constructor(
     namespace: string,
+    state: State,
     props: WebGLViewOptions<T> = {} as WebGLViewOptions<T>
   ) {
     super();
     this.namespace = namespace;
     this.props = Object.assign({ needsLoadingScreen: true }, props);
 
-    this._vpAtom = vpAtom;
-    this._timeAtom = timeAtom;
+    this._vpAtom = state.vpAtom;
+    this._timeAtom = state.timeAtom;
 
-    const { camera, controls, renderer, scene } = state.store.get(threeAtom);
+    const { camera, controls, renderer, scene } = state.three;
     this._camera = camera;
     this._controls = controls;
     this._renderer = renderer;
     this._scene = scene;
     this._state = state;
 
-    state.store.sub(threeAtom, () => {});
+    state.store.sub(state.threeAtom, () => {});
   }
 
   /**
