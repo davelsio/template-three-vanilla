@@ -1,9 +1,9 @@
+import { atom, ExtractAtomValue } from 'jotai/index';
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
 import type { TimeAtom } from '@atoms/atomWithTime';
 import type { ViewportAtom } from '@atoms/atomWithViewport';
-import { viewsLoadedAtom, viewsToLoadAtom } from '@state/rendering/world';
 
 import type { State, SubToAtomArgs } from './createThreeState';
 
@@ -11,6 +11,17 @@ type SetupCallback = () => void | Promise<void>;
 type WebGLViewOptions<T> = T & {
   needsLoadingScreen?: boolean;
 };
+
+const viewsToLoadAtom = atom<string[]>([]);
+const viewsLoadedAtom = atom<string[]>([]);
+
+export type ViewsProgressAtom = typeof viewsProgressAtom;
+export type ViewsProgressAtomValue = ExtractAtomValue<ViewsProgressAtom>;
+export const viewsProgressAtom = atom((get) => {
+  const viewsToLoad = get(viewsToLoadAtom);
+  const viewsLoaded = get(viewsLoadedAtom);
+  return viewsToLoad ? viewsLoaded.length / viewsToLoad.length : 0;
+});
 
 export abstract class WebGLView<T extends {} = {}> extends Group {
   public namespace: string;

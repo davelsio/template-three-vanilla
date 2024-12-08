@@ -1,7 +1,12 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
-import { type State, WebGLView } from '@helpers/three';
+import {
+  type State,
+  viewsProgressAtom,
+  ViewsProgressAtomValue,
+  WebGLView,
+} from '@helpers/three';
 import type { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import {
   barFragmentShader,
@@ -9,10 +14,6 @@ import {
   overlayFragmentShader,
   overlayVertexShader,
 } from '@shaders/progress';
-import {
-  viewsProgressAtom,
-  type ViewsProgressAtomValue,
-} from '@state/rendering';
 
 export interface LoadingProps {
   loadingColor: ColorWithAlpha;
