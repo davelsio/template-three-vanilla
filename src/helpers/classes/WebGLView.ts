@@ -1,20 +1,31 @@
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
+import { atomWithThree } from '@atoms/atomWithThree';
 import { TimeAtom } from '@atoms/atomWithTime';
 import { ViewportAtom } from '@atoms/atomWithViewport';
-import { threeAtom, timeAtom, vpAtom } from '@state/rendering';
 import { viewsLoadedAtom, viewsToLoadAtom } from '@state/rendering/world';
-import { appStore, subToAtom, SubToAtomArgs, unSubAll } from '@state/store';
+
+import { createState, State, type SubToAtomArgs } from '../state/createStore';
 
 type SetupCallback = () => void | Promise<void>;
 type WebGLViewOptions<T> = T & {
   needsLoadingScreen?: boolean;
 };
 
+const state = createState();
+
+const [
+  threeAtom, // camera, controls, renderer, scene, stage
+  vpAtom, // viewport
+  timeAtom, // time
+] = atomWithThree('#root', state.store);
+
 export abstract class WebGLView<T extends {} = {}> extends Group {
   public namespace: string;
   public props: WebGLViewOptions<T>;
+
+  protected _state: State;
 
   protected _camera: PerspectiveCamera;
   protected _controls: OrbitControls;
@@ -37,12 +48,14 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
     this._vpAtom = vpAtom;
     this._timeAtom = timeAtom;
 
-    const { camera, controls, renderer, scene } = appStore.get(threeAtom);
+    const { camera, controls, renderer, scene } = state.store.get(threeAtom);
     this._camera = camera;
     this._controls = controls;
     this._renderer = renderer;
     this._scene = scene;
-    appStore.sub(threeAtom, () => {});
+    this._state = state;
+
+    state.store.sub(threeAtom, () => {});
   }
 
   /**
@@ -76,8 +89,10 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
      */
     const disposeView = async () => {
       this._scene.remove(this);
-      unSubAll(this.namespace);
-      const isLoaded = appStore.get(viewsLoadedAtom).includes(this.namespace);
+      this._state.unSubAll(this.namespace);
+      const isLoaded = this._state.store
+        .get(viewsLoadedAtom)
+        .includes(this.namespace);
       if (isLoaded) {
         for (const callback of this._destroy) {
           await callback();
@@ -100,8 +115,8 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
           const isLoaded = viewsLoaded.includes(this.namespace);
           if (isLoaded) {
             disposeView();
-            appStore.set(viewsToLoadAtom, removeView);
-            appStore.set(viewsLoadedAtom, removeView);
+            this._state.store.set(viewsToLoadAtom, removeView);
+            this._state.store.set(viewsLoadedAtom, removeView);
           }
         })
       : await disposeView();
@@ -111,18 +126,22 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
    * Notify the store that this view has been loaded.
    */
   protected flagAsLoaded() {
-    appStore.set(viewsLoadedAtom, (prev) => [...prev, this.namespace]);
+    this._state.store.set(viewsLoadedAtom, (prev) => [...prev, this.namespace]);
   }
 
   /**
    * Notify the store that this view is loading.
    */
   protected flagAsLoading() {
-    appStore.set(viewsToLoadAtom, (prev) => [...prev, this.namespace]);
+    this._state.store.set(viewsToLoadAtom, (prev) => [...prev, this.namespace]);
   }
 
+  /**
+   * Subscribe to an internal state atom.
+   * @param args subscription parameters
+   */
   protected subToAtom<T, R>(...args: SubToAtomArgs<T, R>) {
-    return subToAtom(this.namespace, ...args);
+    return this._state.subToAtom(this.namespace, ...args);
   }
 
   /**

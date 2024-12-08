@@ -4,7 +4,7 @@ import { OrbitControls } from 'three-stdlib';
 
 import { atomWithTime } from '@atoms/atomWithTime';
 import { atomWithViewport } from '@atoms/atomWithViewport';
-import { appStore } from '@state/store';
+import type { Store } from '@helpers/state/createStore';
 
 export type AtomWithThree = ReturnType<typeof atomWithThree>;
 
@@ -12,10 +12,11 @@ export type AtomWithThree = ReturnType<typeof atomWithThree>;
  * Full experience atom with Three.js. Initializes various atoms to manage the
  * scene, camera, controls, renderer, and staging state.
  * @param selector CSS selector for the viewport container
+ * @param store Jotai store
  */
-export function atomWithThree(selector: string) {
+export function atomWithThree(selector: string, store: Store) {
   const timeAtom = atomWithTime();
-  const vpAtom = atomWithViewport(selector);
+  const vpAtom = atomWithViewport(selector, store);
 
   const canvas = document.createElement('canvas');
   canvas.classList.add('webgl');
@@ -43,7 +44,7 @@ export function atomWithThree(selector: string) {
   };
 
   const updateSizes = () => {
-    const { width, height, aspectRatio, pixelRatio } = appStore.get(vpAtom);
+    const { width, height, aspectRatio, pixelRatio } = store.get(vpAtom);
     camera.aspect = aspectRatio;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
@@ -51,7 +52,7 @@ export function atomWithThree(selector: string) {
   };
 
   // Three
-  const root = appStore.get(vpAtom).root;
+  const root = store.get(vpAtom).root;
   const threeAtom = atom({
     root,
     canvas,
@@ -65,12 +66,12 @@ export function atomWithThree(selector: string) {
   threeAtom.onMount = () => {
     root.appendChild(canvas);
 
-    const unsubVp = appStore.sub(vpAtom, () => {
+    const unsubVp = store.sub(vpAtom, () => {
       updateSizes();
     });
     updateSizes();
 
-    const unsubTime = appStore.sub(timeAtom, () => {
+    const unsubTime = store.sub(timeAtom, () => {
       updateControls();
       renderer.render(scene, camera);
     });

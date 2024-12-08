@@ -7,7 +7,6 @@ import {
 
 import { WebGLView } from '@helpers/classes/WebGLView';
 import { backgroundColorAtom } from '@state/portal/scene';
-import { appStore } from '@state/store';
 
 import { Fireflies } from './Fireflies';
 import { Loading } from './Loading';
@@ -56,7 +55,9 @@ export class PortalScene extends WebGLView {
     this._renderer.toneMapping = ACESFilmicToneMapping;
     this._renderer.toneMappingExposure = 1;
     this._renderer.outputColorSpace = SRGBColorSpace;
-    this._scene.background = new Color(appStore.get(backgroundColorAtom));
+    this._scene.background = new Color(
+      this._state.store.get(backgroundColorAtom)
+    );
   };
 
   /* SETUP SCENE */

@@ -1,10 +1,10 @@
 import {
   Color,
-  Group,
-  Mesh,
+  type Group,
+  type Mesh,
   MeshBasicMaterial,
   SRGBColorSpace,
-  Texture,
+  type Texture,
 } from 'three';
 
 import { TimeAtomValue } from '@atoms/atomWithTime';
@@ -18,7 +18,6 @@ import {
   portalLightColorAtom,
   portalStrengthAtom,
 } from '@state/portal/portal';
-import { appStore } from '@state/store';
 import { TypedObject } from '@utils/typedObject';
 
 import { PortalMaterial } from './PortalMaterial';
@@ -74,7 +73,7 @@ export class Portal extends WebGLView {
     });
 
     const poleLightMaterial = new MeshBasicMaterial({
-      color: new Color(appStore.get(portalLightColorAtom)),
+      color: new Color(this._state.store.get(portalLightColorAtom)),
     });
 
     const portalLightMaterial = new PortalMaterial();
@@ -87,7 +86,7 @@ export class Portal extends WebGLView {
   };
 
   private setupModel = () => {
-    this.model.name = 'PortalScene';
+    this.model.name = 'Portal';
 
     try {
       const meshArray = this.model.children.filter(isThreeMesh).map((child) => {
