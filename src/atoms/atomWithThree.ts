@@ -4,7 +4,7 @@ import { OrbitControls } from 'three-stdlib';
 
 import { atomWithTime } from '@atoms/atomWithTime';
 import { atomWithViewport } from '@atoms/atomWithViewport';
-import type { Store } from '@helpers/state/createStore';
+import type { Store } from '@helpers/three';
 
 export type AtomWithThree = ReturnType<typeof atomWithThree>;
 

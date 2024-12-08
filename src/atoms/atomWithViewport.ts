@@ -1,6 +1,6 @@
 import { atom, type ExtractAtomValue } from 'jotai';
 
-import { Store } from '@helpers/state/createStore';
+import type { Store } from '@helpers/three';
 
 export type ViewportAtom = ReturnType<typeof atomWithViewport>;
 export type ViewportAtomValue = ExtractAtomValue<ViewportAtom>;
