@@ -5,7 +5,7 @@ import {
   Matrix3,
   Matrix4,
   Quaternion,
-  ShaderMaterial,
+  ShaderMaterial as ThreeShaderMaterial,
   ShaderMaterialParameters,
   Texture,
   Uniform,
@@ -58,17 +58,13 @@ type ShaderMaterialParams<T> = Omit<ShaderMaterialParameters, 'uniforms'> & {
  */
 export type ShaderMaterialType<T> = InferConstructableType<T>;
 
-export function shaderMaterial<T extends UniformsInput>(
-  uniformProps: T,
-  vertexShader: ShaderMaterialParameters['vertexShader'],
-  fragmentShader: ShaderMaterialParameters['fragmentShader']
-) {
-  class CustomShaderMaterial extends ShaderMaterial {
+export function shaderMaterial<T extends UniformsInput>() {
+  class CustomShaderMaterial extends ThreeShaderMaterial {
     constructor({
       uniforms,
       ...args
     }: ShaderMaterialParams<T> | undefined = {}) {
-      const entries = Object.entries(uniforms ?? uniformProps);
+      const entries = Object.entries(uniforms ?? {});
 
       // Create the uniforms object
       const _uniforms = entries.reduce<UniformsObject>((acc, [name, value]) => {
@@ -77,13 +73,9 @@ export function shaderMaterial<T extends UniformsInput>(
       }, {});
 
       // Initialize the shader material
-      super({
-        ...args,
-        uniforms: _uniforms,
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShader,
-      });
+      super({ ...args, uniforms: _uniforms });
 
+      // Create uniform accessors
       entries.forEach(([name]) =>
         Object.defineProperty(this, name, {
           get: () => this.uniforms[name].value,
@@ -93,7 +85,6 @@ export function shaderMaterial<T extends UniformsInput>(
     }
   }
   const material = CustomShaderMaterial;
-
   return material as unknown as new (
     args?: ShaderMaterialParams<T>
   ) => T & CustomShaderMaterial;

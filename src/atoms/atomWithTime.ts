@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { atom, ExtractAtomValue } from 'jotai';
+import { atom, type ExtractAtomValue } from 'jotai';
 
 export type TimeAtom = ReturnType<typeof atomWithTime>;
 export type TimeAtomValue = ExtractAtomValue<TimeAtom>;

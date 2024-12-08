@@ -5,20 +5,19 @@ import {
   SRGBColorSpace,
 } from 'three';
 
-import { WebGLView } from '@helpers/classes/WebGLView';
-import { backgroundColorAtom } from '@state/portal/scene';
-import { appStore } from '@state/store';
+import { type State, WebGLView } from '@helpers/three';
 
 import { Fireflies } from './Fireflies';
 import { Loading } from './Loading';
 import { Portal } from './Portal';
+import { backgroundColorAtom } from './PortalState';
 
 export class PortalScene extends WebGLView {
   private portal: Portal;
   private fireflies: Fireflies;
 
-  constructor() {
-    super('PortalScene');
+  constructor(state: State) {
+    super('PortalScene', state);
 
     this.init(
       this.setupCamera,
@@ -56,15 +55,17 @@ export class PortalScene extends WebGLView {
     this._renderer.toneMapping = ACESFilmicToneMapping;
     this._renderer.toneMappingExposure = 1;
     this._renderer.outputColorSpace = SRGBColorSpace;
-    this._scene.background = new Color(appStore.get(backgroundColorAtom));
+    this._scene.background = new Color(
+      this._state.store.get(backgroundColorAtom)
+    );
   };
 
   /* SETUP SCENE */
 
   private setupScene = () => {
-    new Loading();
-    this.portal = new Portal();
-    this.fireflies = new Fireflies();
+    new Loading(this._state);
+    this.portal = new Portal(this._state);
+    this.fireflies = new Fireflies(this._state);
   };
 
   /* SUBSCRIPTIONS */

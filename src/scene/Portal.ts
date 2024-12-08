@@ -1,27 +1,28 @@
 import {
   Color,
-  Group,
-  Mesh,
+  type Group,
+  type Mesh,
   MeshBasicMaterial,
   SRGBColorSpace,
-  Texture,
+  type Texture,
 } from 'three';
 
-import { TimeAtomValue } from '@atoms/atomWithTime';
-import { WebGLView } from '@helpers/classes/WebGLView';
+import type { TimeAtomValue } from '@atoms/atomWithTime';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
-import { ResourceLoader } from '@loaders/ResourceLoader';
+import { type State, WebGLView } from '@helpers/three';
+import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
+import { TypedObject } from '@utils/typedObject';
+
+import { PortalMaterial } from './PortalMaterial';
 import {
+  gltfsFamily,
   portalColorInnerAtom,
   portalColorOuterAtom,
   portalDisplacementAtom,
   portalLightColorAtom,
   portalStrengthAtom,
-} from '@state/portal/portal';
-import { appStore } from '@state/store';
-import { TypedObject } from '@utils/typedObject';
-
-import { PortalMaterial } from './PortalMaterial';
+  texturesFamily,
+} from './PortalState';
 
 interface ModelMeshes {
   baked: Mesh;
@@ -41,8 +42,8 @@ export class Portal extends WebGLView {
   private materials: ModelMaterials;
   private texture: Texture;
 
-  constructor() {
-    super('Portal');
+  constructor(state: State) {
+    super('Portal', state);
 
     void this.init(
       this.setupAssets,
@@ -61,10 +62,13 @@ export class Portal extends WebGLView {
   /* SETUP SCENE */
 
   private setupAssets = async () => {
-    this.texture = await ResourceLoader.loadTexture('portalBakedTexture');
+    this.texture = await this._state.store.get(
+      texturesFamily('portalBakedTexture')
+    );
     this.texture.flipY = false;
     this.texture.colorSpace = SRGBColorSpace;
-    const gltf = await ResourceLoader.loadGltfModel('portalModel');
+    // const gltf = await ResourceLoader.loadGltfModel('portalModel');
+    const gltf = await this._state.store.get(gltfsFamily('portalModel'));
     this.model = gltf.scene;
   };
 
@@ -74,10 +78,24 @@ export class Portal extends WebGLView {
     });
 
     const poleLightMaterial = new MeshBasicMaterial({
-      color: new Color(appStore.get(portalLightColorAtom)),
+      color: new Color(this._state.store.get(portalLightColorAtom)),
     });
 
-    const portalLightMaterial = new PortalMaterial();
+    const uColorEnd = new Color(this._state.store.get(portalColorOuterAtom));
+    const uColorStart = new Color(this._state.store.get(portalColorInnerAtom));
+    const uOffsetDisplacementUv = this._state.store.get(portalDisplacementAtom);
+    const uOffsetStrengthUv = this._state.store.get(portalDisplacementAtom);
+    const portalLightMaterial = new PortalMaterial({
+      vertexShader: portalVertexShader,
+      fragmentShader: portalFragmentShader,
+      uniforms: {
+        uColorEnd,
+        uColorStart,
+        uOffsetDisplacementUv,
+        uOffsetStrengthUv,
+        uTime: 0,
+      },
+    });
 
     this.materials = {
       baked: bakedMaterial,
@@ -87,7 +105,7 @@ export class Portal extends WebGLView {
   };
 
   private setupModel = () => {
-    this.model.name = 'PortalScene';
+    this.model.name = 'Portal';
 
     try {
       const meshArray = this.model.children.filter(isThreeMesh).map((child) => {

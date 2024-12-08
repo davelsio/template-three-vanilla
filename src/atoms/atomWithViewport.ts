@@ -1,10 +1,30 @@
-import { atom, ExtractAtomValue } from 'jotai';
-import { atomFamily } from 'jotai/utils';
+import { atom, type ExtractAtomValue } from 'jotai';
 
-import { appStore } from '@state/store';
+import type { Store } from '@helpers/three';
 
 export type ViewportAtom = ReturnType<typeof atomWithViewport>;
 export type ViewportAtomValue = ExtractAtomValue<ViewportAtom>;
+
+export const atomWithViewport = (selector: string, store: Store) => {
+  const el = document.querySelector(selector) as HTMLElement;
+  if (!el) {
+    throw new Error(`Element with selector "${selector}" not found`);
+  }
+
+  const vpAtom = atom(getVp(el));
+
+  const updateSize = () => store.set(vpAtom, getVp(el));
+
+  vpAtom.onMount = () => {
+    const unsub = sub(updateSize);
+    updateSize();
+    return () => {
+      unsub();
+    };
+  };
+
+  return vpAtom;
+};
 
 function getVp(el: HTMLElement) {
   const width = el.clientWidth;
@@ -24,25 +44,3 @@ function sub(callback: () => void) {
   window.addEventListener('resize', callback);
   return () => window.removeEventListener('resize', callback);
 }
-
-export const atomWithViewport = atomFamily((selector: string) => {
-  const el = document.querySelector(selector) as HTMLElement;
-  if (!el) {
-    throw new Error(`Element with selector "${selector}" not found`);
-  }
-
-  const vpAtom = atom(getVp(el));
-
-  const updateSize = () => appStore.set(vpAtom, getVp(el));
-
-  vpAtom.onMount = () => {
-    const unsub = sub(updateSize);
-    updateSize();
-    return () => {
-      unsub();
-      atomWithViewport.remove(selector);
-    };
-  };
-
-  return vpAtom;
-});

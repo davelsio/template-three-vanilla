@@ -1,15 +1,19 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
-import { WebGLView } from '@helpers/classes/WebGLView';
-import { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
+import {
+  type State,
+  viewsProgressAtom,
+  ViewsProgressAtomValue,
+  WebGLView,
+} from '@helpers/three';
+import type { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import {
   barFragmentShader,
   barVertexShader,
   overlayFragmentShader,
   overlayVertexShader,
 } from '@shaders/progress';
-import { viewsProgressAtom, ViewsProgressAtomValue } from '@state/rendering';
 
 export interface LoadingProps {
   loadingColor: ColorWithAlpha;
@@ -25,8 +29,8 @@ export class Loading extends WebGLView<LoadingProps> {
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
-  constructor() {
-    super('Loading', {
+  constructor(state: State) {
+    super('Loading', state, {
       loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
       loadingDuration: 0.5,
       needsLoadingScreen: false,
@@ -81,7 +85,6 @@ export class Loading extends WebGLView<LoadingProps> {
     const { r, g, b, a } = this.props.loadingColor;
     this._overlayMaterial = new ShaderMaterial({
       uniforms: {
-        uAlpha: new Uniform(1.0),
         uColor: new Uniform(new Vector4(r, g, b, a)),
       },
       fragmentShader: overlayFragmentShader,

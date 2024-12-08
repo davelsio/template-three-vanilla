@@ -4,22 +4,24 @@ import {
   BufferGeometry,
   Color,
   Points,
+  Vector2,
 } from 'three';
 
-import { TimeAtomValue } from '@atoms/atomWithTime';
-import { ViewportAtomValue } from '@atoms/atomWithViewport';
-import { WebGLView } from '@helpers/classes/WebGLView';
-import { fireflyColorAtom, fireflySizeAtom } from '@state/portal/fireflies';
+import type { TimeAtomValue } from '@atoms/atomWithTime';
+import type { ViewportAtomValue } from '@atoms/atomWithViewport';
+import { type State, WebGLView } from '@helpers/three';
+import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
 import { FirefliesMaterial } from './FirefliesMaterial';
+import { fireflyColorAtom, fireflySizeAtom } from './PortalState';
 
 export class Fireflies extends WebGLView {
   private geometry: BufferGeometry;
   private material: FirefliesMaterial;
   private fireflies: Points;
 
-  constructor() {
-    super('Fireflies');
+  constructor(state: State) {
+    super('Fireflies', state);
     void this.init(
       this.setupGeometry,
       this.setupMaterial,
@@ -63,10 +65,21 @@ export class Fireflies extends WebGLView {
   };
 
   private setupMaterial = () => {
+    const uSize = this._state.store.get(fireflySizeAtom);
+    const uColor = this._state.store.get(fireflyColorAtom);
+
     this.material = new FirefliesMaterial({
       blending: AdditiveBlending,
       depthWrite: false,
       transparent: true,
+      vertexShader: fireflyVertexShader,
+      fragmentShader: fireflyFragmentShader,
+      uniforms: {
+        uColor: new Color(uColor),
+        uSize,
+        uTime: 0,
+        uResolution: new Vector2(),
+      },
     });
   };
 
@@ -95,11 +108,11 @@ export class Fireflies extends WebGLView {
      */
     const width = state.width * state.pixelRatio;
     const height = state.height * state.pixelRatio;
-    this.material.uniforms.uResolution.value.set(width, height);
+    this.material.uResolution.set(width, height);
   };
 
   private updateSize = (size: number) => {
-    this.material.uniforms.uSize.value = size;
+    this.material.uSize = size;
   };
 
   private updateColor = (color: string) => {
