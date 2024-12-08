@@ -1,10 +1,7 @@
 import { Atom, atom, createStore as JotaiCreateStore } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 
-import { atomWithAssets } from '@atoms/atomWithAssets';
 import { atomWithThree } from '@atoms/atomWithThree';
-
-import { portalState } from '../../scene/PortalState';
 
 export type SubToAtomArgs<T, R> = [
   /**
@@ -76,21 +73,6 @@ export function createThreeState() {
     vpAtom, // viewport
     timeAtom, // time
   ] = atomWithThree('#root', store);
-
-  // const { gltfsFamily } = atomWithAssets(
-  //   portalState.store,
-  //   undefined,
-  //   undefined,
-  //   {
-  //     portalBakedTexture: 'baked.jpg',
-  //   },
-  //   {
-  //     portalModel: 'portal.glb',
-  //   },
-  //   {
-  //     draco: true,
-  //   }
-  // );
 
   return {
     store,
