@@ -6,8 +6,8 @@ import {
   Points,
 } from 'three';
 
-import { TimeAtomValue } from '@atoms/atomWithTime';
-import { ViewportAtomValue } from '@atoms/atomWithViewport';
+import type { TimeAtomValue } from '@atoms/atomWithTime';
+import type { ViewportAtomValue } from '@atoms/atomWithViewport';
 import { WebGLView } from '@helpers/classes/WebGLView';
 import { fireflyColorAtom, fireflySizeAtom } from '@state/portal/fireflies';
 
