@@ -1,5 +1,5 @@
 import { atomWithAssets } from '@atoms/atomWithAssets';
-import { atomWithBindingFolder } from '@atoms/atomWithBinding';
+import { atomWithBinding } from '@atoms/atomWithBinding';
 import { createThreeState } from '@helpers/three';
 
 export const portalState = createThreeState();
@@ -25,15 +25,15 @@ export const { gltfsFamily, texturesFamily } = atomWithAssets(
 /**
  * Debug Bindings
  */
-const fireflyBinding = atomWithBindingFolder(portalState.store, {
-  title: 'Fireflies',
-});
-const portalBinding = atomWithBindingFolder(portalState.store, {
-  title: 'Portal',
-});
-const sceneBinding = atomWithBindingFolder(portalState.store, {
+const sceneBinding = atomWithBinding(portalState.store, {
   title: 'Scene',
   expanded: false,
+});
+const fireflyBinding = atomWithBinding(portalState.store, {
+  title: 'Fireflies',
+});
+const portalBinding = atomWithBinding(portalState.store, {
+  title: 'Portal',
 });
 
 /**

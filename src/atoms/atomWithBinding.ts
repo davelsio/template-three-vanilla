@@ -42,10 +42,7 @@ const tweakpaneFolderFamily = atomFamily(
  * @param store Jotai store
  * @param folderParams tweakpane folder params
  */
-export function atomWithBindingFolder(
-  store: Store,
-  folderParams?: FolderParams
-) {
+export function atomWithBinding(store: Store, folderParams?: FolderParams) {
   return <T>(label: string, value: T, options?: AtomWithTweakOptions) => {
     const prevAtom = atom(value);
     const currAtom = atom(value);

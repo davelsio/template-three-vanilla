@@ -26,7 +26,7 @@ For now, the scenes still use an OOP approach. I have an abstract [`WebGLView`](
 > [!NOTE]
 > The debug UI only shows up in the `/debug` route.
 
-I wanted to have a unified solution that handled both internal state and various configurable settings/tweaks. Because this is a typescript codebase, I decided on a custom implementation [tweakpane](https://github.com/cocopon/tweakpane) implementation that is type-safe and integrates with the Jotai store. Different debug tweaks can be added using the [`atomWithBinding`](./src/atoms/atomWithBinding.ts) and [`atomWithBindingFolder`](./src/atoms/atomWithBinding.ts) atoms. Subscription to UI changes is handled as any other atom subscription.
+I wanted to have a unified solution that handled both internal state and various configurable settings/tweaks. Because this is a typescript codebase, I decided on a custom implementation [tweakpane](https://github.com/cocopon/tweakpane) implementation that is type-safe and integrates with the Jotai store. Different debug tweaks can be added using the [`atomWithBinding`](./src/atoms/atomWithBinding.ts) and [`atomWithBinding`](./src/atoms/atomWithBinding.ts) atoms. Subscription to UI changes is handled as any other atom subscription.
 
 Both tweakpane [folders](https://tweakpane.github.io/docs/ui-components/#folder) and regular [input/monitor bindings](https://tweakpane.github.io/docs/input-bindings/) use the same APIs described in the official tweakpane docs. I've also added a QoL improvement to automatically listen to updates and refresh the binding accordingly, similarly to [lil-gui listen method](https://lil-gui.georgealways.com/#Controller#listen).
 
@@ -56,9 +56,9 @@ type AtomWithBindingFolder = (folderParams: FolderParams) => AtomWithBinding;
 ```ts
 // ./src/state/portal/portal.ts
 
-import { atomWithBindingFolder } from '@atoms/atomWithBinding';
+import { atomWithBinding } from '@atoms/atomWithBinding';
 
-const portalFolderBinding = atomWithBindingFolder({ title: 'Portal' });
+const portalFolderBinding = atomWithBinding({ title: 'Portal' });
 
 export const portalDisplacementAtom = portalFolderBinding('Displacement', 5.0, {
   min: 0,
