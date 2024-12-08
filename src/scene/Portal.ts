@@ -10,17 +10,18 @@ import {
 import type { TimeAtomValue } from '@atoms/atomWithTime';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
 import { type State, WebGLView } from '@helpers/three';
-import { ResourceLoader } from '@loaders/ResourceLoader';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 import { TypedObject } from '@utils/typedObject';
 
 import { PortalMaterial } from './PortalMaterial';
 import {
+  gltfsFamily,
   portalColorInnerAtom,
   portalColorOuterAtom,
   portalDisplacementAtom,
   portalLightColorAtom,
   portalStrengthAtom,
+  texturesFamily,
 } from './PortalState';
 
 interface ModelMeshes {
@@ -61,10 +62,13 @@ export class Portal extends WebGLView {
   /* SETUP SCENE */
 
   private setupAssets = async () => {
-    this.texture = await ResourceLoader.loadTexture('portalBakedTexture');
+    this.texture = await this._state.store.get(
+      texturesFamily('portalBakedTexture')
+    );
     this.texture.flipY = false;
     this.texture.colorSpace = SRGBColorSpace;
-    const gltf = await ResourceLoader.loadGltfModel('portalModel');
+    // const gltf = await ResourceLoader.loadGltfModel('portalModel');
+    const gltf = await this._state.store.get(gltfsFamily('portalModel'));
     this.model = gltf.scene;
   };
 

@@ -1,8 +1,30 @@
+import { atomWithAssets } from '@atoms/atomWithAssets';
 import { atomWithBindingFolder } from '@atoms/atomWithBinding';
 import { createThreeState } from '@helpers/three';
 
 export const portalState = createThreeState();
 
+/**
+ * Assets
+ */
+export const { gltfsFamily, texturesFamily } = atomWithAssets(
+  portalState.store,
+  {
+    textures: {
+      portalBakedTexture: 'baked.jpg',
+    },
+    gltfs: {
+      portalModel: 'portal.glb',
+    },
+    options: {
+      draco: true,
+    },
+  }
+);
+
+/**
+ * Debug Bindings
+ */
 const fireflyBinding = atomWithBindingFolder(portalState.store, {
   title: 'Fireflies',
 });
