@@ -21,7 +21,7 @@ export const viewsProgressAtom = atom((get) => {
   return viewsToLoad ? viewsLoaded.length / viewsToLoad.length : 0;
 });
 
-export abstract class WebGLView<T extends {} = {}> extends Group {
+export abstract class WebGLView<T extends object = object> extends Group {
   public namespace: string;
   public props: WebGLViewOptions<T>;
 
