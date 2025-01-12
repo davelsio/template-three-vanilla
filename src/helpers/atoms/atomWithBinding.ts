@@ -86,7 +86,9 @@ export function atomWithBinding(store: Store, folderParams?: FolderParams) {
         if (pane.children.length === 0) {
           const rootPane = get(tweakpaneAtom);
           rootPane.remove(pane);
-          folderParams && tweakpaneFolderFamily.remove(folderParams);
+          if (folderParams) {
+            tweakpaneFolderFamily.remove(folderParams);
+          }
         }
       };
     };

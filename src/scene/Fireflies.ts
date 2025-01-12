@@ -7,8 +7,7 @@ import {
   Vector2,
 } from 'three';
 
-import type { TimeAtomValue } from '@atoms/atomWithTime';
-import type { ViewportAtomValue } from '@atoms/atomWithViewport';
+import type { TimeAtomValue, ViewportAtomValue } from '@helpers/atoms';
 import { type State, WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
