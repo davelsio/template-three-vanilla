@@ -7,11 +7,11 @@ import {
   type Texture,
 } from 'three';
 
-import type { TimeAtomValue } from '@atoms/atomWithTime';
+import type { TimeAtomValue } from '@helpers/atoms';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
 import { type State, WebGLView } from '@helpers/three';
+import { TypedObject } from '@helpers/utils';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
-import { TypedObject } from '@utils/typedObject';
 
 import { PortalMaterial } from './PortalMaterial';
 import {
