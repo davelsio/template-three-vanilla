@@ -4,6 +4,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tseslint from 'typescript-eslint';
 import eslint from '@eslint/js';
+import html from '@html-eslint/eslint-plugin';
 
 export default tseslint.config(
   // Global ignores
@@ -16,6 +17,7 @@ export default tseslint.config(
       'public/*',
     ],
   },
+  html.configs['flat/recommended'],
   eslint.configs.recommended,
   tseslint.configs.recommended,
   eslintConfigPrettier,
