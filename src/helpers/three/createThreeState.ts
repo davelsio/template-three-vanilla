@@ -45,7 +45,9 @@ export function createThreeState() {
 
     const listener = () => {
       const res = callback(store.get(atom));
-      once(res) && unsub();
+      if (once(res)) {
+        unsub();
+      }
     };
     const unsub = store.sub(atom, listener);
 

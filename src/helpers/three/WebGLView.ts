@@ -71,9 +71,11 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
       this._scene.add(this);
     };
 
-    this.props.needsLoadingScreen
-      ? void this.withLoader(initialize)
-      : void initialize();
+    if (this.props.needsLoadingScreen) {
+      void this.withLoader(initialize);
+    } else {
+      void initialize();
+    }
   }
 
   /**
@@ -111,16 +113,18 @@ export abstract class WebGLView<T extends {} = {}> extends Group {
     /**
      * Remove the view once it is loaded.
      */
-    this.props.needsLoadingScreen
-      ? this.subToAtom(viewsLoadedAtom, (viewsLoaded) => {
-          const isLoaded = viewsLoaded.includes(this.namespace);
-          if (isLoaded) {
-            disposeView();
-            this._state.store.set(viewsToLoadAtom, removeView);
-            this._state.store.set(viewsLoadedAtom, removeView);
-          }
-        })
-      : await disposeView();
+    if (this.props.needsLoadingScreen) {
+      this.subToAtom(viewsLoadedAtom, (viewsLoaded) => {
+        const isLoaded = viewsLoaded.includes(this.namespace);
+        if (isLoaded) {
+          disposeView();
+          this._state.store.set(viewsToLoadAtom, removeView);
+          this._state.store.set(viewsLoadedAtom, removeView);
+        }
+      });
+    } else {
+      await disposeView();
+    }
   }
 
   /**

@@ -67,16 +67,7 @@ module.exports = {
       extends: ['plugin:@typescript-eslint/recommended'],
       rules: {
         // Probably not the best practice
-        '@typescript-eslint/ban-types': [
-          'error',
-          {
-            extendDefaults: true,
-            types: {
-              // Allow using {}, instead of e.g., Record<string, unknown>
-              '{}': false,
-            },
-          },
-        ],
+        '@typescript-eslint/no-empty-object-type': 'off',
 
         // Disable this rule and specify only input contracts
         // Alternatively, require return types on functions only where useful
