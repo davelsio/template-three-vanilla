@@ -2,8 +2,7 @@ import { atom } from 'jotai/vanilla';
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
-import { atomWithTime } from '@atoms/atomWithTime';
-import { atomWithViewport } from '@atoms/atomWithViewport';
+import { atomWithTime, atomWithViewport } from '@helpers/atoms';
 import type { Store } from '@helpers/three';
 
 export type AtomWithThree = ReturnType<typeof atomWithThree>;

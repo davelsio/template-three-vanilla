@@ -2,9 +2,7 @@ import { atom, ExtractAtomValue } from 'jotai/index';
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
-import type { TimeAtom } from '@atoms/atomWithTime';
-import type { ViewportAtom } from '@atoms/atomWithViewport';
-
+import type { TimeAtom, ViewportAtom } from '../atoms';
 import type { State, SubToAtomArgs } from './createThreeState';
 
 type SetupCallback = () => void | Promise<void>;

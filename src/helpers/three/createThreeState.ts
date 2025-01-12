@@ -1,7 +1,7 @@
 import { Atom, atom, createStore as JotaiCreateStore } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 
-import { atomWithThree } from '@atoms/atomWithThree';
+import { atomWithThree } from '../atoms';
 
 export type SubToAtomArgs<T, R> = [
   /**

@@ -3,7 +3,7 @@
  * preserved for both keys and values.
  * @param obj object to get the entries from
  */
-export function objectEntries<T extends {}>(obj: T) {
+function objectEntries<T extends {}>(obj: T) {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 

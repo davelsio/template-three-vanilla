@@ -1,5 +1,4 @@
-import { atomWithAssets } from '@atoms/atomWithAssets';
-import { atomWithBinding } from '@atoms/atomWithBinding';
+import { atomWithAssets, atomWithBinding } from '@helpers/atoms';
 import { createThreeState } from '@helpers/three';
 
 export const portalState = createThreeState();
