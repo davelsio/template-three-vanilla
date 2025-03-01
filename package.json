@@ -15,33 +15,39 @@
   "dependencies": {
     "@tweakpane/core": "^2.0.5",
     "@tweakpane/plugin-essentials": "^0.2.1",
-    "gsap": "^3.12.5",
-    "jotai": "^2.11.0",
+    "gsap": "^3.12.7",
+    "jotai": "^2.12.1",
     "jotai-location": "^0.5.5",
     "react": "^19.0.0",
-    "three": "^0.172.0",
-    "three-stdlib": "^2.35.7",
+    "three": "^0.174.0",
+    "three-stdlib": "^2.35.14",
     "tweakpane": "^4.0.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.26.5",
+    "@babel/core": "^7.26.9",
+    "@babel/eslint-parser": "^7.26.8",
     "@babel/preset-react": "^7.26.3",
-    "@eslint/js": "^9.18.0",
-    "@html-eslint/eslint-plugin": "^0.32.0",
-    "@html-eslint/parser": "^0.32.0",
-    "@types/node": "^22.10.5",
-    "@types/react": "^19.0.5",
+    "@eslint/js": "^9.21.0",
+    "@html-eslint/eslint-plugin": "^0.35.0",
+    "@html-eslint/parser": "^0.35.0",
+    "@types/node": "^22.13.8",
+    "@types/react": "^19.0.10",
     "@types/styled-components": "^5.1.34",
-    "@types/three": "^0.172.0",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^9.1.0",
+    "@types/three": "^0.174.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "prettier": "^3.4.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.19.1",
-    "vite": "^6.0.7",
-    "vite-plugin-glslify": "^2.1.0",
+    "prettier": "^3.5.2",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.25.0",
+    "vite": "^6.2.0",
+    "vite-plugin-glslify": "^2.2.1",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "packageManager": "pnpm@10.5.0+sha512.11106a5916c7406fe4b8cb8e3067974b8728f47308a4f5ac5e850304afa6f57e2847d7950dfe78877d8d36bfb401d381c4215db3a4c3547ffa63c14333a6fa51",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
