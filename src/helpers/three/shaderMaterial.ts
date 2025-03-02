@@ -21,6 +21,7 @@ import { InferConstructableType } from '@helpers/types/InferConstructableType';
  * Valid uniform value types.
  */
 type UniformValue =
+  | boolean
   | Color
   | CubeTexture
   | Texture
