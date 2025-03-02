@@ -77,6 +77,42 @@ export function atomWithAssets<
     store.set(totalAssetsAtom, count);
   };
 
+  const cubeTexturesFamily = atomFamily((name: keyof CubeTextures) => {
+    const cubeTexturesAtom = atom(
+      async (get) => {
+        const cached = get(cacheAtom).cubeTexture[name];
+        if (cached) {
+          return cached;
+        }
+        const cubeTexture = await resourceLoader.loadCubeTexture(name);
+        store.set(cacheAtom, (prev) => ({
+          ...prev,
+          cubeTexture: {
+            ...prev.cubeTexture,
+            [name]: cubeTexture,
+          },
+        }));
+        store.set(notifyAssetLoadedAtom);
+        return cubeTexture;
+      },
+      (_get, set, payload: CubeTexture) => {
+        set(cacheAtom, (prev) => ({
+          ...prev,
+          cubeTexture: {
+            ...prev.cubeTexture,
+            [name]: payload,
+          },
+        }));
+      }
+    );
+
+    cubeTexturesAtom.onMount = (_set) => {
+      return () => cubeTexturesFamily.remove(name);
+    };
+
+    return cubeTexturesAtom;
+  });
+
   const texturesFamily = atomFamily((name: keyof Textures) => {
     const texturesAtom = atom(
       async (get) => {
@@ -95,12 +131,12 @@ export function atomWithAssets<
         store.set(notifyAssetLoadedAtom);
         return texture;
       },
-      (_get, set, paylaod: Texture) => {
+      (_get, set, payload: Texture) => {
         set(cacheAtom, (prev) => ({
           ...prev,
           texture: {
             ...prev.texture,
-            [name]: paylaod,
+            [name]: payload,
           },
         }));
       }
@@ -150,5 +186,5 @@ export function atomWithAssets<
     return gltfsAtom;
   });
 
-  return { gltfsFamily, texturesFamily };
+  return { gltfsFamily, texturesFamily, cubeTexturesFamily };
 }
