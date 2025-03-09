@@ -62,11 +62,7 @@ export function atomWithThree(selector: string, store: Store) {
 
   // Three
   const root = store.get(vpAtom).root;
-  const threeAtom = atom({
-    canvas: _canvas,
-    renderer: _renderer,
-    scene: _scene,
-  });
+  const threeAtom = atom(null);
 
   // Init
   threeAtom.onMount = () => {
@@ -84,89 +80,71 @@ export function atomWithThree(selector: string, store: Store) {
     };
   };
 
-  const three = {
-    get _atom() {
-      return threeAtom;
-    },
-    get renderer() {
-      return store.get(threeAtom).renderer;
-    },
-    get scene() {
-      return store.get(threeAtom).scene;
-    },
-    mount() {
-      return subscribe(store, threeAtom, () => {});
-    },
-  };
-
-  const camera = {
-    get _atom() {
-      return cameraAtom;
-    },
+  return {
+    // Objects
     get camera() {
       return store.get(cameraAtom).camera;
     },
     get controls() {
       return store.get(cameraAtom).controls;
     },
-  };
-
-  const viewport = {
-    get _atom() {
-      return vpAtom;
+    renderer: _renderer,
+    scene: _scene,
+    viewport: {
+      get _atom() {
+        return vpAtom;
+      },
+      get width() {
+        return store.get(vpAtom).width;
+      },
+      get height() {
+        return store.get(vpAtom).height;
+      },
+      get aspectRatio() {
+        return store.get(vpAtom).aspectRatio;
+      },
+      get pixelRatio() {
+        return store.get(vpAtom).pixelRatio;
+      },
+      sub(...args: SubscribeToAtomArgs<ViewportAtomValue, void>) {
+        return subscribe(store, vpAtom, ...args);
+      },
     },
-    get width() {
-      return store.get(vpAtom).width;
+    three: {
+      mount() {
+        return subscribe(store, threeAtom, () => {});
+      },
     },
-    get height() {
-      return store.get(vpAtom).height;
+    views: {
+      get _atom() {
+        return viewsAtom;
+      },
+      get(view: string) {
+        return store.get(viewsAtom).find((v) => v.name === view);
+      },
+      add(view: WebGLView) {
+        store.set(viewsAtom, (views) => [
+          ...views,
+          { name: view.namespace, loaded: view.props.isLoaded },
+        ]);
+      },
+      remove(name: string) {
+        store.set(viewsAtom, (views) =>
+          views.filter((view) => view.name !== name)
+        );
+      },
+      setLoaded(name: string) {
+        store.set(viewsAtom, (views) =>
+          views.map((view) =>
+            view.name === name ? { ...view, loaded: true } : view
+          )
+        );
+      },
+      sub(...args: SubscribeToAtomArgs<ViewsAtomValue, void>) {
+        return subscribe(store, viewsAtom, ...args);
+      },
     },
-    get aspectRatio() {
-      return store.get(vpAtom).aspectRatio;
-    },
-    get pixelRatio() {
-      return store.get(vpAtom).pixelRatio;
-    },
-    sub(...args: SubscribeToAtomArgs<ViewportAtomValue, void>) {
-      return subscribe(store, vpAtom, ...args);
-    },
-  };
-
-  const views = {
-    get _atom() {
-      return viewsAtom;
-    },
-    get(view: string) {
-      return store.get(viewsAtom).find((v) => v.name === view);
-    },
-    add(view: WebGLView) {
-      store.set(viewsAtom, (views) => [
-        ...views,
-        { name: view.namespace, loaded: view.props.isLoaded },
-      ]);
-    },
-    remove(name: string) {
-      store.set(viewsAtom, (views) =>
-        views.filter((view) => view.name !== name)
-      );
-    },
-    setLoaded(name: string) {
-      store.set(viewsAtom, (views) =>
-        views.map((view) =>
-          view.name === name ? { ...view, loaded: true } : view
-        )
-      );
-    },
-    sub(...args: SubscribeToAtomArgs<ViewsAtomValue, void>) {
-      return subscribe(store, viewsAtom, ...args);
-    },
-  };
-
-  return {
-    three,
-    camera,
-    viewport,
-    views,
+    // Methods
     unsub(namespace: string) {
       unsub(store, namespace);
     },

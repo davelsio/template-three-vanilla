@@ -4,7 +4,7 @@ import { OrbitControls } from 'three-stdlib';
 
 import type { ThreeState } from '../atoms';
 
-type SetupCallback = () => void | Promise<void>;
+type SetupCallback = (state: ThreeState) => void | Promise<void>;
 type WebGLViewOptions<T> = T & {
   isLoaded: boolean;
 };
@@ -41,17 +41,15 @@ export abstract class WebGLView<T extends object = object> extends Group {
   public namespace: string;
   public props: WebGLViewOptions<T>;
 
-  protected _state: ThreeState;
+  private _state: ThreeState;
+  private _destroy: SetupCallback[];
 
   protected _camera: PerspectiveCamera;
   protected _controls: OrbitControls;
   protected _renderer: WebGLRenderer;
   protected _scene: Scene;
-
   protected _viewport: ThreeState['viewport'];
   protected _views: ThreeState['views'];
-
-  private _destroy: SetupCallback[];
 
   protected constructor(
     namespace: string,
@@ -64,16 +62,14 @@ export abstract class WebGLView<T extends object = object> extends Group {
 
     this._state = state;
 
-    const { renderer, scene } = state.three;
-    const { camera, controls } = state.camera;
+    const { camera, controls, renderer, scene, viewport, views } = state;
 
     this._camera = camera;
     this._controls = controls;
     this._renderer = renderer;
     this._scene = scene;
-
-    this._viewport = state.viewport;
-    this._views = state.views;
+    this._viewport = viewport;
+    this._views = views;
 
     state.three.mount();
   }
@@ -87,7 +83,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
     this._scene.add(this);
 
     for (const callback of setup) {
-      await callback();
+      await callback(this._state);
     }
 
     if (!this.props.isLoaded) {
@@ -109,7 +105,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
     this._views.remove(this.namespace);
     this._state.unsub(this.namespace);
     for (const callback of this._destroy) {
-      await callback();
+      await callback(this._state);
     }
   }
 }

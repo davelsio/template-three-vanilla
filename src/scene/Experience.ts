@@ -61,10 +61,10 @@ export class PortalScene extends WebGLView {
 
   /* SETUP SCENE */
 
-  private setupScene = () => {
-    new Loading(this._state);
-    this.portal = new Portal(this._state);
-    this.fireflies = new Fireflies(this._state);
+  private setupScene = (state: ThreeState) => {
+    new Loading(state);
+    this.portal = new Portal(state);
+    this.fireflies = new Fireflies(state);
   };
 
   /* SUBSCRIPTIONS */

@@ -98,7 +98,7 @@ export function atomWithBinding(store: Store, folderParams?: FolderParams) {
     };
 
     return {
-      atom: bindingAtom,
+      _atom: bindingAtom,
       get: () => store.get(bindingAtom),
       sub: (...args: SubscribeToAtomArgs<T, void>) => {
         return subscribe(store, bindingAtom, ...args);

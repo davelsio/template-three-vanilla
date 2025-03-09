@@ -1,6 +1,6 @@
 import { PortalScene } from './Experience';
-import { state, store } from './State';
+import { state } from './State';
 
 export function createPortalScene() {
-  return new PortalScene(state, store);
+  return new PortalScene(state);
 }
