@@ -1,12 +1,12 @@
 import { atom, type ExtractAtomValue } from 'jotai';
 
-import type { Store } from '@helpers/three';
+import type { Store } from '../jotai';
 
 export type ViewportAtom = ReturnType<typeof atomWithViewport>;
 export type ViewportAtomValue = ExtractAtomValue<ViewportAtom>;
 
 export const atomWithViewport = (selector: string, store: Store) => {
-  const el = document.querySelector(selector) as HTMLElement;
+  const el = document.querySelector<HTMLElement>(selector);
   if (!el) {
     throw new Error(`Element with selector "${selector}" not found`);
   }
@@ -16,11 +16,8 @@ export const atomWithViewport = (selector: string, store: Store) => {
   const updateSize = () => store.set(vpAtom, getVp(el));
 
   vpAtom.onMount = () => {
-    const unsub = sub(updateSize);
-    updateSize();
-    return () => {
-      unsub();
-    };
+    const unsub = sub(updateSize, true);
+    return unsub;
   };
 
   return vpAtom;
@@ -40,7 +37,10 @@ function getVp(el: HTMLElement) {
   };
 }
 
-function sub(callback: () => void) {
+function sub(callback: () => void, callImmediately = false) {
   window.addEventListener('resize', callback);
+  if (callImmediately) {
+    callback();
+  }
   return () => window.removeEventListener('resize', callback);
 }

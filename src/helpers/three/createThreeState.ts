@@ -1,23 +1,13 @@
-import { createStore as JotaiCreateStore } from 'jotai';
+import { createStore } from 'jotai';
 
 import { atomWithThree } from '../atoms';
 
 export type State = ReturnType<typeof createThreeState>;
-export type Store = ReturnType<typeof JotaiCreateStore>;
 
 export function createThreeState() {
-  const store = JotaiCreateStore();
-
-  const {
-    three, // camera, controls, renderer, scene, stage
-    viewport, // viewport
-    time, // time
-  } = atomWithThree('#root', store);
-
+  const store = createStore();
   return {
     store,
-    three,
-    viewport,
-    time,
+    ...atomWithThree('#root', store),
   };
 }
