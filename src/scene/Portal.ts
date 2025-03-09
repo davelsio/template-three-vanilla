@@ -1,3 +1,4 @@
+import gsap from 'gsap';
 import {
   Color,
   type Group,
@@ -7,9 +8,8 @@ import {
   type Texture,
 } from 'three';
 
-import type { ThreeState, TimeAtomValue } from '@helpers/atoms';
+import type { ThreeState } from '@helpers/atoms';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
-import { Store } from '@helpers/jotai';
 import { WebGLView } from '@helpers/three';
 import { TypedObject } from '@helpers/utils';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
@@ -42,8 +42,8 @@ export class Portal extends WebGLView {
   private materials: ModelMaterials;
   private texture: Texture;
 
-  constructor(state: ThreeState, store: Store) {
-    super('Portal', state, store);
+  constructor(state: ThreeState) {
+    super('Portal', state);
 
     void this.init(
       this.setupAssets,
@@ -125,12 +125,25 @@ export class Portal extends WebGLView {
   };
 
   private setupSubscriptions = () => {
-    this.subToAtom(portalColorInnerAtom.atom, this.updatePortalStartColor);
-    this.subToAtom(portalColorOuterAtom.atom, this.updatePortalEndColor);
-    this.subToAtom(portalDisplacementAtom.atom, this.updatePortalDisplacement);
-    this.subToAtom(portalStrengthAtom.atom, this.updatePortalStrength);
-    this.subToAtom(portalLightColorAtom.atom, this.updatePoleLightColor);
-    this.subToAtom(this._timeAtom, this.updateTime);
+    portalColorInnerAtom.sub(this.updatePortalStartColor, {
+      namespace: this.namespace,
+    });
+    portalColorOuterAtom.sub(this.updatePortalEndColor, {
+      namespace: this.namespace,
+    });
+    portalDisplacementAtom.sub(this.updatePortalDisplacement, {
+      namespace: this.namespace,
+    });
+    portalLightColorAtom.sub(this.updatePoleLightColor, {
+      namespace: this.namespace,
+    });
+    portalStrengthAtom.sub(this.updatePortalStrength, {
+      namespace: this.namespace,
+    });
+
+    gsap.ticker.add((time) => {
+      this.updateTime(time);
+    });
   };
 
   /* CALLBACKS */
@@ -155,7 +168,7 @@ export class Portal extends WebGLView {
     this.materials.poleLight.color.set(new Color(value));
   };
 
-  private updateTime = ({ elapsed }: TimeAtomValue) => {
+  private updateTime = (elapsed: number) => {
     this.materials.portalLight.uTime = elapsed;
   };
 }

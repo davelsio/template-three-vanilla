@@ -1,3 +1,4 @@
+import gsap from 'gsap';
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -7,12 +8,7 @@ import {
   Vector2,
 } from 'three';
 
-import type {
-  ThreeState,
-  TimeAtomValue,
-  ViewportAtomValue,
-} from '@helpers/atoms';
-import { Store } from '@helpers/jotai';
+import type { ThreeState, ViewportAtomValue } from '@helpers/atoms';
 import { WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
@@ -24,8 +20,8 @@ export class Fireflies extends WebGLView {
   private material: FirefliesMaterial;
   private fireflies: Points;
 
-  constructor(state: ThreeState, store: Store) {
-    super('Fireflies', state, store);
+  constructor(state: ThreeState) {
+    super('Fireflies', state);
     void this.init(
       this.setupGeometry,
       this.setupMaterial,
@@ -93,23 +89,31 @@ export class Fireflies extends WebGLView {
   };
 
   private setupSubscriptions = () => {
-    this.subToAtom(this._timeAtom, this.updateTime);
-    this.subToAtom(this._vpAtom, this.updateResolution, {
-      callImmediately: true,
+    gsap.ticker.add((time) => {
+      this.updateTime(time);
     });
-    this.subToAtom(fireflyColorAtom.atom, this.updateColor);
-    this.subToAtom(fireflySizeAtom.atom, this.updateSize, {
+
+    this._viewport.sub(this.updateResolution, {
       callImmediately: true,
+      namespace: this.namespace,
+    });
+    fireflyColorAtom.sub(this.updateColor, {
+      callImmediately: true,
+      namespace: this.namespace,
+    });
+    fireflySizeAtom.sub(this.updateSize, {
+      callImmediately: true,
+      namespace: this.namespace,
     });
   };
 
   /* CALLBACKS */
 
+  /**
+   * Ensure that the fireflies are correctly sized if the user moves the
+   * browser window to another screen with a different pixel ratio.
+   */
   private updateResolution = (state: ViewportAtomValue) => {
-    /**
-     * Ensure that the fireflies are correctly sized if the user moves the
-     * browser window to another screen with a different pixel ratio.
-     */
     const width = state.width * state.pixelRatio;
     const height = state.height * state.pixelRatio;
     this.material.uResolution.set(width, height);
@@ -123,7 +127,7 @@ export class Fireflies extends WebGLView {
     this.material.uColor = new Color(color);
   };
 
-  private updateTime = ({ elapsed }: TimeAtomValue) => {
+  private updateTime = (elapsed: number) => {
     this.material.uTime = elapsed;
   };
 }

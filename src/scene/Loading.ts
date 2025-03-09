@@ -1,13 +1,8 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
-import { ThreeState } from '@helpers/atoms';
-import { Store } from '@helpers/jotai';
-import {
-  viewsProgressAtom,
-  ViewsProgressAtomValue,
-  WebGLView,
-} from '@helpers/three';
+import type { ThreeState, ViewsAtomValue } from '@helpers/atoms';
+import { WebGLView } from '@helpers/three';
 import type { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import {
   barFragmentShader,
@@ -30,11 +25,11 @@ export class Loading extends WebGLView<LoadingProps> {
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
-  constructor(state: ThreeState, store: Store) {
-    super('Loading', state, store, {
+  constructor(state: ThreeState) {
+    super('Loading', state, {
+      isLoaded: true,
       loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
       loadingDuration: 0.5,
-      needsLoadingScreen: false,
     });
 
     void this.init(
@@ -100,13 +95,21 @@ export class Loading extends WebGLView<LoadingProps> {
   };
 
   private setupSubscriptions = () => {
-    this.subToAtom(viewsProgressAtom, this.updateProgress);
+    this._views.sub(this.updateProgress, {
+      namespace: this.namespace,
+    });
   };
 
-  public updateProgress = async (progress: ViewsProgressAtomValue) => {
+  public updateProgress = async (views: ViewsAtomValue) => {
+    const loaded = views.reduce(
+      (acc, view) => (view.loaded ? acc + 1 : acc),
+      0
+    );
+    const total = views.length;
+
     await gsap.to(this._barMaterial.uniforms.uProgress, {
       duration: this.props.loadingDuration,
-      value: progress,
+      value: loaded / total,
     });
     void this.dispose();
   };

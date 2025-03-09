@@ -5,8 +5,7 @@ import {
   SRGBColorSpace,
 } from 'three';
 
-import { ThreeState } from '@helpers/atoms';
-import { Store } from '@helpers/jotai';
+import type { ThreeState } from '@helpers/atoms';
 import { WebGLView } from '@helpers/three';
 
 import { Fireflies } from './Fireflies';
@@ -18,8 +17,8 @@ export class PortalScene extends WebGLView {
   private portal: Portal;
   private fireflies: Fireflies;
 
-  constructor(state: ThreeState, store: Store) {
-    super('PortalScene', state, store);
+  constructor(state: ThreeState) {
+    super('PortalScene', state);
 
     this.init(
       this.setupCamera,
@@ -63,15 +62,17 @@ export class PortalScene extends WebGLView {
   /* SETUP SCENE */
 
   private setupScene = () => {
-    new Loading(this._state, this._store);
-    this.portal = new Portal(this._state, this._store);
-    this.fireflies = new Fireflies(this._state, this._store);
+    new Loading(this._state);
+    this.portal = new Portal(this._state);
+    this.fireflies = new Fireflies(this._state);
   };
 
   /* SUBSCRIPTIONS */
 
   private setupSubscriptions = () => {
-    this.subToAtom(backgroundColorAtom.atom, this.updateBackgroundColor);
+    backgroundColorAtom.sub(this.updateBackgroundColor, {
+      namespace: this.namespace,
+    });
   };
 
   private updateBackgroundColor = (color: string) => {

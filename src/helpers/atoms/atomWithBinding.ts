@@ -2,9 +2,13 @@ import { atom } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 import { atomWithLocation } from 'jotai-location';
 import { FolderApi, Pane } from 'tweakpane';
-import { BindingParams, FolderParams } from '@tweakpane/core';
+import type { BindingParams, FolderParams } from '@tweakpane/core';
 
-import type { Store } from '@helpers/three';
+import {
+  type Store,
+  subscribe,
+  type SubscribeToAtomArgs,
+} from '@helpers/jotai';
 
 type AtomWithTweakOptions = BindingParams & {
   /**
@@ -96,8 +100,8 @@ export function atomWithBinding(store: Store, folderParams?: FolderParams) {
     return {
       atom: bindingAtom,
       get: () => store.get(bindingAtom),
-      sub: (listener: (value: T) => void) => {
-        return store.sub(bindingAtom, () => listener(store.get(bindingAtom)));
+      sub: (...args: SubscribeToAtomArgs<T, void>) => {
+        return subscribe(store, bindingAtom, ...args);
       },
     };
   };

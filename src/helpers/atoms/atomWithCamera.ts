@@ -2,9 +2,7 @@ import { atom } from 'jotai';
 import { PerspectiveCamera } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
-import type { Store } from '../jotai';
-
-export function atomWithCamera(domElement: HTMLElement, store: Store) {
+export function atomWithCamera(domElement: HTMLElement) {
   const camera = new PerspectiveCamera();
   const controls = new OrbitControls(camera, domElement);
   controls.enabled = true;
@@ -15,15 +13,5 @@ export function atomWithCamera(domElement: HTMLElement, store: Store) {
     controls,
   });
 
-  return {
-    get _atom() {
-      return cameraAtom;
-    },
-    get camera() {
-      return store.get(cameraAtom).camera;
-    },
-    get controls() {
-      return store.get(cameraAtom).controls;
-    },
-  };
+  return cameraAtom;
 }

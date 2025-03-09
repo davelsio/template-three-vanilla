@@ -5,3 +5,4 @@ export * from './atomWithPixelRatio';
 export * from './atomWithThree';
 export * from './atomWithTime';
 export * from './atomWithViewport';
+export * from './atomWithViews';

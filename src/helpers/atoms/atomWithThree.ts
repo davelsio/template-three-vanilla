@@ -1,10 +1,17 @@
+import gsap from 'gsap';
 import { atom } from 'jotai/vanilla';
 import { Scene, WebGLRenderer } from 'three';
 
-import { type Store, subscribe } from '../jotai';
+import {
+  type Store,
+  subscribe,
+  type SubscribeToAtomArgs,
+  unsub,
+} from '../jotai';
+import { WebGLView } from '../three';
 import { atomWithCamera } from './atomWithCamera';
-import { atomWithTime } from './atomWithTime';
-import { atomWithViewport } from './atomWithViewport';
+import { atomWithViewport, type ViewportAtomValue } from './atomWithViewport';
+import { atomWithViews, type ViewsAtomValue } from './atomWithViews';
 
 export type ThreeState = ReturnType<typeof atomWithThree>;
 
@@ -32,11 +39,10 @@ export function atomWithThree(selector: string, store: Store) {
   // Scene
   const _scene = new Scene();
 
-  // Time
-  const timeAtom = atomWithTime();
-
   // Viewport
-  const vpAtom = atomWithViewport(selector, store);
+  const vpAtom = atomWithViewport(selector);
+
+  const viewsAtom = atomWithViews();
 
   // Helpers
   const updateSizes = () => {
@@ -65,8 +71,10 @@ export function atomWithThree(selector: string, store: Store) {
   // Init
   threeAtom.onMount = () => {
     root.appendChild(_canvas);
-    const unsubVp = subscribe(store, vpAtom, updateSizes, true);
-    const unsubTime = subscribe(store, timeAtom, updateScene);
+    const unsubVp = subscribe(store, vpAtom, updateSizes, {
+      callImmediately: true,
+    });
+    const unsubTime = gsap.ticker.add(updateScene);
     return () => {
       root.removeChild(_canvas);
       _controls.dispose();
@@ -85,6 +93,9 @@ export function atomWithThree(selector: string, store: Store) {
     },
     get scene() {
       return store.get(threeAtom).scene;
+    },
+    mount() {
+      return subscribe(store, threeAtom, () => {});
     },
   };
 
@@ -116,11 +127,38 @@ export function atomWithThree(selector: string, store: Store) {
     get pixelRatio() {
       return store.get(vpAtom).pixelRatio;
     },
+    sub(...args: SubscribeToAtomArgs<ViewportAtomValue, void>) {
+      return subscribe(store, vpAtom, ...args);
+    },
   };
 
-  const time = {
+  const views = {
     get _atom() {
-      return timeAtom;
+      return viewsAtom;
+    },
+    get(view: string) {
+      return store.get(viewsAtom).find((v) => v.name === view);
+    },
+    add(view: WebGLView) {
+      store.set(viewsAtom, (views) => [
+        ...views,
+        { name: view.namespace, loaded: view.props.isLoaded },
+      ]);
+    },
+    remove(name: string) {
+      store.set(viewsAtom, (views) =>
+        views.filter((view) => view.name !== name)
+      );
+    },
+    setLoaded(name: string) {
+      store.set(viewsAtom, (views) =>
+        views.map((view) =>
+          view.name === name ? { ...view, loaded: true } : view
+        )
+      );
+    },
+    sub(...args: SubscribeToAtomArgs<ViewsAtomValue, void>) {
+      return subscribe(store, viewsAtom, ...args);
     },
   };
 
@@ -128,6 +166,9 @@ export function atomWithThree(selector: string, store: Store) {
     three,
     camera,
     viewport,
-    time,
+    views,
+    unsub(namespace: string) {
+      unsub(store, namespace);
+    },
   };
 }
