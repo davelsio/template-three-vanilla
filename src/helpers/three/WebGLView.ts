@@ -3,8 +3,10 @@ import { atomFamily } from 'jotai/utils';
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
+import { Store } from '@helpers/jotai';
+
 import type { TimeAtom, ViewportAtom } from '../atoms';
-import type { State } from './createThreeState';
+import type { ThreeState } from '../atoms';
 
 type SetupCallback = () => void | Promise<void>;
 type WebGLViewOptions<T> = T & {
@@ -58,7 +60,8 @@ export abstract class WebGLView<T extends object = object> extends Group {
   public namespace: string;
   public props: WebGLViewOptions<T>;
 
-  protected _state: State;
+  protected _state: ThreeState;
+  protected _store: Store;
 
   protected _camera: PerspectiveCamera;
   protected _controls: OrbitControls;
@@ -72,12 +75,16 @@ export abstract class WebGLView<T extends object = object> extends Group {
 
   protected constructor(
     namespace: string,
-    state: State,
+    state: ThreeState,
+    store: Store,
     props: WebGLViewOptions<T> = {} as WebGLViewOptions<T>
   ) {
     super();
     this.namespace = namespace;
     this.props = Object.assign({ needsLoadingScreen: true }, props);
+
+    this._state = state;
+    this._store = store;
 
     this._vpAtom = state.viewport._atom;
     this._timeAtom = state.time._atom;
@@ -89,9 +96,8 @@ export abstract class WebGLView<T extends object = object> extends Group {
     this._controls = controls;
     this._renderer = renderer;
     this._scene = scene;
-    this._state = state;
 
-    state.store.sub(state.three._atom, () => {});
+    this._store.sub(state.three._atom, () => {});
   }
 
   /**
@@ -128,7 +134,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
     const disposeView = async () => {
       this._scene.remove(this);
       this.unSubAll();
-      const isLoaded = this._state.store
+      const isLoaded = this._store
         .get(viewsLoadedAtom)
         .includes(this.namespace);
       if (isLoaded) {
@@ -153,8 +159,8 @@ export abstract class WebGLView<T extends object = object> extends Group {
         const isLoaded = viewsLoaded.includes(this.namespace);
         if (isLoaded) {
           disposeView();
-          this._state.store.set(viewsToLoadAtom, removeView);
-          this._state.store.set(viewsLoadedAtom, removeView);
+          this._store.set(viewsToLoadAtom, removeView);
+          this._store.set(viewsLoadedAtom, removeView);
         }
       });
     } else {
@@ -166,14 +172,14 @@ export abstract class WebGLView<T extends object = object> extends Group {
    * Notify the store that this view has been loaded.
    */
   protected flagAsLoaded() {
-    this._state.store.set(viewsLoadedAtom, (prev) => [...prev, this.namespace]);
+    this._store.set(viewsLoadedAtom, (prev) => [...prev, this.namespace]);
   }
 
   /**
    * Notify the store that this view is loading.
    */
   protected flagAsLoading() {
-    this._state.store.set(viewsToLoadAtom, (prev) => [...prev, this.namespace]);
+    this._store.set(viewsToLoadAtom, (prev) => [...prev, this.namespace]);
   }
 
   /**
@@ -187,24 +193,22 @@ export abstract class WebGLView<T extends object = object> extends Group {
       typeof options?.once === 'function' ? options.once : () => options?.once;
 
     const listener = () => {
-      const res = callback(this._state.store.get(atom));
+      const res = callback(this._store.get(atom));
       if (once(res)) {
         unsub();
       }
     };
-    const unsub = this._state.store.sub(atom, listener);
+    const unsub = this._store.sub(atom, listener);
 
     const subsAtom = _subsFamily(this.namespace);
-    this._state.store.set(subsAtom, (prev) => [...prev, unsub]);
+    this._store.set(subsAtom, (prev) => [...prev, unsub]);
 
     if (options?.callImmediately) {
       listener();
     }
 
     return () => {
-      this._state.store.set(subsAtom, (prev) =>
-        prev.filter((sub) => sub !== unsub)
-      );
+      this._store.set(subsAtom, (prev) => prev.filter((sub) => sub !== unsub));
       unsub();
     };
   }
@@ -214,7 +218,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
    */
   protected unSubAll() {
     const subsAtom = _subsFamily(this.namespace);
-    this._state.store.get(subsAtom).forEach((unsub) => unsub());
+    this._store.get(subsAtom).forEach((unsub) => unsub());
     _subsFamily.remove(this.namespace);
   }
 

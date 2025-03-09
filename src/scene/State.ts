@@ -1,12 +1,14 @@
-import { atomWithAssets, atomWithBinding } from '@helpers/atoms';
-import { createThreeState } from '@helpers/three';
+import { createStore } from 'jotai';
 
-export const portalState = createThreeState();
+import { atomWithAssets, atomWithBinding, atomWithThree } from '@helpers/atoms';
+
+export const store = createStore();
+export const state = atomWithThree('#root', store);
 
 /**
  * Assets
  */
-export const assets = atomWithAssets(portalState.store, {
+export const assets = atomWithAssets(store, {
   textures: {
     portalBakedTexture: 'baked.jpg',
   },
@@ -21,14 +23,14 @@ export const assets = atomWithAssets(portalState.store, {
 /**
  * Debug Bindings
  */
-const sceneBinding = atomWithBinding(portalState.store, {
+const sceneBinding = atomWithBinding(store, {
   title: 'Scene',
   expanded: false,
 });
-const fireflyBinding = atomWithBinding(portalState.store, {
+const fireflyBinding = atomWithBinding(store, {
   title: 'Fireflies',
 });
-const portalBinding = atomWithBinding(portalState.store, {
+const portalBinding = atomWithBinding(store, {
   title: 'Portal',
 });
 

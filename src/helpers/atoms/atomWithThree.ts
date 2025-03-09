@@ -6,7 +6,7 @@ import { atomWithCamera } from './atomWithCamera';
 import { atomWithTime } from './atomWithTime';
 import { atomWithViewport } from './atomWithViewport';
 
-export type AtomWithThree = ReturnType<typeof atomWithThree>;
+export type ThreeState = ReturnType<typeof atomWithThree>;
 
 /**
  * Full experience atom with Three.js. Initializes various atoms to manage the
@@ -15,25 +15,22 @@ export type AtomWithThree = ReturnType<typeof atomWithThree>;
  * @param store Jotai store
  */
 export function atomWithThree(selector: string, store: Store) {
-  const canvas = document.createElement('canvas');
-  canvas.classList.add('webgl');
+  const _canvas = document.createElement('canvas');
+  _canvas.classList.add('webgl');
 
   // Camera
-  const {
-    camera: _camera,
-    controls: _controls,
-    _atom: _cameraAtom,
-  } = atomWithCamera(canvas, store);
+  const cameraAtom = atomWithCamera(_canvas);
+  const { camera: _camera, controls: _controls } = store.get(cameraAtom);
 
   // Renderer
-  const renderer = new WebGLRenderer({
+  const _renderer = new WebGLRenderer({
     powerPreference: 'high-performance',
     antialias: true,
-    canvas,
+    canvas: _canvas,
   });
 
   // Scene
-  const scene = new Scene();
+  const _scene = new Scene();
 
   // Time
   const timeAtom = atomWithTime();
@@ -46,36 +43,34 @@ export function atomWithThree(selector: string, store: Store) {
     const { width, height, aspectRatio, pixelRatio } = store.get(vpAtom);
     _camera.aspect = aspectRatio;
     _camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(pixelRatio);
+    _renderer.setSize(width, height);
+    _renderer.setPixelRatio(pixelRatio);
   };
 
   const updateScene = () => {
     if (_controls.enableDamping || _controls.autoRotate) {
       _controls.update();
     }
-    renderer.render(scene, _camera);
+    _renderer.render(_scene, _camera);
   };
 
   // Three
   const root = store.get(vpAtom).root;
   const threeAtom = atom({
-    canvas,
-    camera: _camera,
-    controls: _controls,
-    renderer,
-    scene,
+    canvas: _canvas,
+    renderer: _renderer,
+    scene: _scene,
   });
 
   // Init
   threeAtom.onMount = () => {
-    root.appendChild(canvas);
+    root.appendChild(_canvas);
     const unsubVp = subscribe(store, vpAtom, updateSizes, true);
     const unsubTime = subscribe(store, timeAtom, updateScene);
     return () => {
-      root.removeChild(canvas);
+      root.removeChild(_canvas);
       _controls.dispose();
-      renderer.dispose();
+      _renderer.dispose();
       unsubTime();
       unsubVp();
     };
@@ -95,13 +90,13 @@ export function atomWithThree(selector: string, store: Store) {
 
   const camera = {
     get _atom() {
-      return _cameraAtom;
+      return cameraAtom;
     },
     get camera() {
-      return store.get(_cameraAtom).camera;
+      return store.get(cameraAtom).camera;
     },
     get controls() {
-      return store.get(_cameraAtom).controls;
+      return store.get(cameraAtom).controls;
     },
   };
 

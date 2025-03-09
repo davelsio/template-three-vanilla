@@ -7,9 +7,10 @@ import {
   type Texture,
 } from 'three';
 
-import type { TimeAtomValue } from '@helpers/atoms';
+import type { ThreeState, TimeAtomValue } from '@helpers/atoms';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
-import { type State, WebGLView } from '@helpers/three';
+import { Store } from '@helpers/jotai';
+import { WebGLView } from '@helpers/three';
 import { TypedObject } from '@helpers/utils';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 
@@ -41,8 +42,8 @@ export class Portal extends WebGLView {
   private materials: ModelMaterials;
   private texture: Texture;
 
-  constructor(state: State) {
-    super('Portal', state);
+  constructor(state: ThreeState, store: Store) {
+    super('Portal', state, store);
 
     void this.init(
       this.setupAssets,

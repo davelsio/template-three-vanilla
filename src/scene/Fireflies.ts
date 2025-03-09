@@ -7,8 +7,13 @@ import {
   Vector2,
 } from 'three';
 
-import type { TimeAtomValue, ViewportAtomValue } from '@helpers/atoms';
-import { type State, WebGLView } from '@helpers/three';
+import type {
+  ThreeState,
+  TimeAtomValue,
+  ViewportAtomValue,
+} from '@helpers/atoms';
+import { Store } from '@helpers/jotai';
+import { WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
 import { FirefliesMaterial } from './FirefliesMaterial';
@@ -19,8 +24,8 @@ export class Fireflies extends WebGLView {
   private material: FirefliesMaterial;
   private fireflies: Points;
 
-  constructor(state: State) {
-    super('Fireflies', state);
+  constructor(state: ThreeState, store: Store) {
+    super('Fireflies', state, store);
     void this.init(
       this.setupGeometry,
       this.setupMaterial,

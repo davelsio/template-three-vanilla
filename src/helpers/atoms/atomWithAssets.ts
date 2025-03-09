@@ -9,9 +9,10 @@ import {
   type GLTFAssets,
   ResourceLoader,
   type ResourceLoaderParams,
-  Store,
   type TextureAssets,
 } from '@helpers/three';
+
+import { Store } from '../jotai';
 
 export const loadedAssetsAtom = atom(0);
 export const totalAssetsAtom = atom(0);

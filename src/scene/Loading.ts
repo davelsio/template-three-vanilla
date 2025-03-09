@@ -1,8 +1,9 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
+import { ThreeState } from '@helpers/atoms';
+import { Store } from '@helpers/jotai';
 import {
-  type State,
   viewsProgressAtom,
   ViewsProgressAtomValue,
   WebGLView,
@@ -29,8 +30,8 @@ export class Loading extends WebGLView<LoadingProps> {
   private _overlayMaterial: ShaderMaterial;
   private _overlayMesh: Mesh;
 
-  constructor(state: State) {
-    super('Loading', state, {
+  constructor(state: ThreeState, store: Store) {
+    super('Loading', state, store, {
       loadingColor: { r: 0.03, g: 0.01, b: 0.0, a: 1.0 },
       loadingDuration: 0.5,
       needsLoadingScreen: false,
