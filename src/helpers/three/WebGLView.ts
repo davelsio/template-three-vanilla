@@ -44,12 +44,12 @@ export abstract class WebGLView<T extends object = object> extends Group {
   private _state: ThreeState;
   private _destroy: SetupCallback[];
 
-  protected _camera: PerspectiveCamera;
-  protected _controls: OrbitControls;
-  protected _renderer: WebGLRenderer;
-  protected _scene: Scene;
-  protected _viewport: ThreeState['viewport'];
-  protected _views: ThreeState['views'];
+  private _camera: PerspectiveCamera;
+  private _controls: OrbitControls;
+  private _renderer: WebGLRenderer;
+  private _scene: Scene;
+  private _viewport: ThreeState['viewport'];
+  private _views: ThreeState['views'];
 
   protected constructor(
     namespace: string,

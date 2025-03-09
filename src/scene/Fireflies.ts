@@ -8,7 +8,7 @@ import {
   Vector2,
 } from 'three';
 
-import type { ThreeState, ViewportAtomValue } from '@helpers/atoms';
+import type { ThreeState } from '@helpers/atoms';
 import { WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
@@ -88,46 +88,35 @@ export class Fireflies extends WebGLView {
     this.add(this.fireflies);
   };
 
-  private setupSubscriptions = () => {
+  private setupSubscriptions = ({ viewport }: ThreeState) => {
     gsap.ticker.add((time) => {
-      this.updateTime(time);
+      this.material.uTime = time;
     });
 
-    this._viewport.sub(this.updateResolution, {
+    /**
+     * Ensure that the fireflies are correctly sized if the user moves the
+     * browser window to another screen with a different pixel ratio.
+     */
+    viewport.sub(
+      (state) => {
+        const width = state.width * state.pixelRatio;
+        const height = state.height * state.pixelRatio;
+        this.material.uResolution.set(width, height);
+      },
+      {
+        callImmediately: true,
+        namespace: this.namespace,
+      }
+    );
+
+    fireflyColorAtom.sub((color) => (this.material.uColor = new Color(color)), {
       callImmediately: true,
       namespace: this.namespace,
     });
-    fireflyColorAtom.sub(this.updateColor, {
+
+    fireflySizeAtom.sub((size) => (this.material.uSize = size), {
       callImmediately: true,
       namespace: this.namespace,
     });
-    fireflySizeAtom.sub(this.updateSize, {
-      callImmediately: true,
-      namespace: this.namespace,
-    });
-  };
-
-  /* CALLBACKS */
-
-  /**
-   * Ensure that the fireflies are correctly sized if the user moves the
-   * browser window to another screen with a different pixel ratio.
-   */
-  private updateResolution = (state: ViewportAtomValue) => {
-    const width = state.width * state.pixelRatio;
-    const height = state.height * state.pixelRatio;
-    this.material.uResolution.set(width, height);
-  };
-
-  private updateSize = (size: number) => {
-    this.material.uSize = size;
-  };
-
-  private updateColor = (color: string) => {
-    this.material.uColor = new Color(color);
-  };
-
-  private updateTime = (elapsed: number) => {
-    this.material.uTime = elapsed;
   };
 }

@@ -1,7 +1,7 @@
 import gsap from 'gsap';
 import { Mesh, PlaneGeometry, ShaderMaterial, Uniform, Vector4 } from 'three';
 
-import type { ThreeState, ViewsAtomValue } from '@helpers/atoms';
+import type { ThreeState } from '@helpers/atoms';
 import { WebGLView } from '@helpers/three';
 import type { ColorWithAlpha } from '@helpers/types/ColorWithAlpha';
 import {
@@ -94,23 +94,24 @@ export class Loading extends WebGLView<LoadingProps> {
     this.add(this._overlayMesh);
   };
 
-  private setupSubscriptions = () => {
-    this._views.sub(this.updateProgress, {
-      namespace: this.namespace,
-    });
-  };
+  private setupSubscriptions = ({ views }: ThreeState) => {
+    views.sub(
+      async (views) => {
+        const loaded = views.reduce(
+          (acc, view) => (view.loaded ? acc + 1 : acc),
+          0
+        );
+        const total = views.length;
 
-  public updateProgress = async (views: ViewsAtomValue) => {
-    const loaded = views.reduce(
-      (acc, view) => (view.loaded ? acc + 1 : acc),
-      0
+        await gsap.to(this._barMaterial.uniforms.uProgress, {
+          duration: this.props.loadingDuration,
+          value: loaded / total,
+        });
+        void this.dispose();
+      },
+      {
+        namespace: this.namespace,
+      }
     );
-    const total = views.length;
-
-    await gsap.to(this._barMaterial.uniforms.uProgress, {
-      duration: this.props.loadingDuration,
-      value: loaded / total,
-    });
-    void this.dispose();
   };
 }

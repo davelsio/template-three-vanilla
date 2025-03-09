@@ -125,50 +125,49 @@ export class Portal extends WebGLView {
   };
 
   private setupSubscriptions = () => {
-    portalColorInnerAtom.sub(this.updatePortalStartColor, {
-      namespace: this.namespace,
-    });
-    portalColorOuterAtom.sub(this.updatePortalEndColor, {
-      namespace: this.namespace,
-    });
-    portalDisplacementAtom.sub(this.updatePortalDisplacement, {
-      namespace: this.namespace,
-    });
-    portalLightColorAtom.sub(this.updatePoleLightColor, {
-      namespace: this.namespace,
-    });
-    portalStrengthAtom.sub(this.updatePortalStrength, {
-      namespace: this.namespace,
-    });
-
     gsap.ticker.add((time) => {
-      this.updateTime(time);
+      this.materials.portalLight.uTime = time;
     });
-  };
 
-  /* CALLBACKS */
-
-  private updatePortalStartColor = (value: string) => {
-    this.materials.portalLight.uColorStart = new Color(value);
-  };
-
-  private updatePortalEndColor = (value: string) => {
-    this.materials.portalLight.uColorEnd = new Color(value);
-  };
-
-  private updatePortalDisplacement = (value: number) => {
-    this.materials.portalLight.uOffsetDisplacementUv = value;
-  };
-
-  private updatePortalStrength = (value: number) => {
-    this.materials.portalLight.uOffsetStrengthUv = value;
-  };
-
-  private updatePoleLightColor = (value: string) => {
-    this.materials.poleLight.color.set(new Color(value));
-  };
-
-  private updateTime = (elapsed: number) => {
-    this.materials.portalLight.uTime = elapsed;
+    portalColorInnerAtom.sub(
+      (value: string) => {
+        this.materials.portalLight.uColorStart = new Color(value);
+      },
+      {
+        namespace: this.namespace,
+      }
+    );
+    portalColorOuterAtom.sub(
+      (value: string) => {
+        this.materials.portalLight.uColorEnd = new Color(value);
+      },
+      {
+        namespace: this.namespace,
+      }
+    );
+    portalDisplacementAtom.sub(
+      (value: number) => {
+        this.materials.portalLight.uOffsetDisplacementUv = value;
+      },
+      {
+        namespace: this.namespace,
+      }
+    );
+    portalLightColorAtom.sub(
+      (value: string) => {
+        this.materials.poleLight.color.set(new Color(value));
+      },
+      {
+        namespace: this.namespace,
+      }
+    );
+    portalStrengthAtom.sub(
+      (value: number) => {
+        this.materials.portalLight.uOffsetStrengthUv = value;
+      },
+      {
+        namespace: this.namespace,
+      }
+    );
   };
 }

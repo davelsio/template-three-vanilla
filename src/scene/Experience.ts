@@ -36,27 +36,27 @@ export class PortalScene extends WebGLView {
 
   /* SETUP RENDERING */
 
-  private setupCamera = () => {
-    this._camera.position.set(7, 7, 7);
-    this._camera.fov = 25;
-    this._camera.near = 0.1;
-    this._camera.far = 100;
-    this._camera.updateProjectionMatrix();
+  private setupCamera = ({ camera }: ThreeState) => {
+    camera.position.set(7, 7, 7);
+    camera.fov = 25;
+    camera.near = 0.1;
+    camera.far = 100;
+    camera.updateProjectionMatrix();
   };
 
-  private setupControls = () => {
-    this._controls.enabled = true;
-    this._controls.enableDamping = true;
-    this._controls.update();
+  private setupControls = ({ controls }: ThreeState) => {
+    controls.enabled = true;
+    controls.enableDamping = true;
+    controls.update();
   };
 
-  private setupRenderer = () => {
-    this._renderer.shadowMap.enabled = true;
-    this._renderer.shadowMap.type = PCFSoftShadowMap;
-    this._renderer.toneMapping = ACESFilmicToneMapping;
-    this._renderer.toneMappingExposure = 1;
-    this._renderer.outputColorSpace = SRGBColorSpace;
-    this._scene.background = new Color(backgroundColorAtom.get());
+  private setupRenderer = ({ renderer, scene }: ThreeState) => {
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFSoftShadowMap;
+    renderer.toneMapping = ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1;
+    renderer.outputColorSpace = SRGBColorSpace;
+    scene.background = new Color(backgroundColorAtom.get());
   };
 
   /* SETUP SCENE */
@@ -69,13 +69,9 @@ export class PortalScene extends WebGLView {
 
   /* SUBSCRIPTIONS */
 
-  private setupSubscriptions = () => {
-    backgroundColorAtom.sub(this.updateBackgroundColor, {
+  private setupSubscriptions = ({ scene }: ThreeState) => {
+    backgroundColorAtom.sub((color) => (scene.background = new Color(color)), {
       namespace: this.namespace,
     });
-  };
-
-  private updateBackgroundColor = (color: string) => {
-    this._scene.background = new Color(color);
   };
 }
