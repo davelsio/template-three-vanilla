@@ -80,20 +80,19 @@ export abstract class WebGLView<T extends object = object> extends Group {
 
   /**
    * Initialize the view.
-   * @param setup list of setup functions
+   * @param setup array of setup functions
    */
-  public init(...setup: Array<SetupCallback>) {
-    const initialize = async () => {
-      for (const callback of setup) {
-        await callback();
-      }
-      this._scene.add(this);
-    };
+  public async init(...setup: Array<SetupCallback>) {
+    this._views.add(this);
+    this._scene.add(this);
 
-    if (this.props.isLoaded) {
-      void initialize();
-    } else {
-      void this.withLoader(initialize);
+    for (const callback of setup) {
+      await callback();
+    }
+
+    if (!this.props.isLoaded) {
+      this.props.isLoaded = true;
+      this._views.setLoaded(this.namespace);
     }
   }
 
@@ -112,16 +111,5 @@ export abstract class WebGLView<T extends object = object> extends Group {
     for (const callback of this._destroy) {
       await callback();
     }
-  }
-
-  /**
-   * Run a setup function with a loading state.
-   * @param cb setup function
-   */
-  protected async withLoader(cb: SetupCallback) {
-    this._views.add(this);
-    await cb();
-    this.props.isLoaded = true;
-    this._views.setLoaded(this.namespace);
   }
 }
