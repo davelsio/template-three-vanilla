@@ -107,6 +107,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
     }
 
     this._scene.remove(this);
+    this._views.remove(this.namespace);
     this._state.unsub(this.namespace);
     for (const callback of this._destroy) {
       await callback();
