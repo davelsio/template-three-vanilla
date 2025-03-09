@@ -1,11 +1,9 @@
 import { atom, type ExtractAtomValue } from 'jotai';
 
-import type { Store } from '../jotai';
-
 export type ViewportAtom = ReturnType<typeof atomWithViewport>;
 export type ViewportAtomValue = ExtractAtomValue<ViewportAtom>;
 
-export const atomWithViewport = (selector: string, store: Store) => {
+export const atomWithViewport = (selector: string) => {
   const el = document.querySelector<HTMLElement>(selector);
   if (!el) {
     throw new Error(`Element with selector "${selector}" not found`);
@@ -13,10 +11,8 @@ export const atomWithViewport = (selector: string, store: Store) => {
 
   const vpAtom = atom(getVp(el));
 
-  const updateSize = () => store.set(vpAtom, getVp(el));
-
-  vpAtom.onMount = () => {
-    const unsub = sub(updateSize, true);
+  vpAtom.onMount = (set) => {
+    const unsub = sub(() => set(getVp(el)), true);
     return unsub;
   };
 
