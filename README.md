@@ -62,41 +62,34 @@ const model = await assets.gltfs.get('portalModel');
 > [!NOTE]
 > By default, the debug UI only shows up in the `/debug` route.
 
-Atom-based solution that powered by [tweakpane](https://github.com/cocopon/tweakpane). Debug tweaks can be added using the [`atomWithBinding`](./src/helpers/atoms/atomWithBinding.ts) atom.
+Atom-based solution powered by [tweakpane](https://github.com/cocopon/tweakpane). Debug tweaks are created using the [`atomWithBinding`](./src/helpers/atoms/atomWithBinding.ts) atom.
 
 [Bindings](https://tweakpane.github.io/docs/input-bindings/) can be added directly to the root pane or within folders [folders](https://tweakpane.github.io/docs/ui-components/#folder). It uses the same APIs described in the official tweakpane docs.
 
-I've added an option to automatically listen to external updates, similarly to [lil-gui listen method](https://lil-gui.georgealways.com/#Controller#listen). Tweak visibility can also be configured per route.
+I've included an option to automatically listen to external updates, similarly to [lil-gui's listen method](https://lil-gui.georgealways.com/#Controller#listen), and another to define the pane visibility per route.
 
 ```ts
-// ./src/scene/PortalState.ts
-
-import type { Store } from '@helpers/three'
 import { atomWithBinding } from '@atoms/atomWithBinding';
-import { portalState } from "./PortalState";
 
-// Helper that creates a scoped Jotai store, calls atomWithThree, and provides
-// a few convenience helpers used by the `WebGLView` abstract class.
-export const portalState = createThreeState();
+// Use the same store as the atom with three, or not, up to you.
+const folderBinding = atomWithBinding(store, { title: 'Portal' });
 
-const portalFolderBinding = atomWithBinding(portalState.store, { title: 'Portal' });
-
-export const portalDisplacement = portalFolderBinding('Displacement', 5.0, {
+export const displacement = folderBinding('Displacement', 5.0, {
   min: 0,
   max: 50,
   step: 0.1,
 });
 
-portalDisplacement.get(); // => current value
-portalDisplacement.sub((value) => {
+displacement.get(); // => current value
+displacement.sub((value) => {
   // Fires whenever the value changes
 });
-portalDisplacement._atom; // => the actual jotai atom
+displacement._atom; // => the actual jotai atom
 ```
 
 ### Views
 
-Just create geometries, materials, and meshes normally then add them to the scene. If you want, there is a [WebGLView](src/helpers/three/WebGLView.ts) class that can be extended to create a base view with some helpful methods.
+Just create geometries, materials, and meshes normally then add them to the scene. If you want, there is a [WebGLView](src/helpers/three/WebGLView.ts) class that can be extended to create a base view with some helpful methods. See an example in the [Experience](src/scene/Experience.ts) file.
 
 This class extends the Three.js `Group` interface and knows how to add and remove itself from the experience. It also takes care of loading flags and updating the state.
 

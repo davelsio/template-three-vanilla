@@ -1,4 +1,3 @@
-import type { Atom } from 'jotai';
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three-stdlib';
 
@@ -8,34 +7,6 @@ type SetupCallback = (state: ThreeState) => void | Promise<void>;
 type WebGLViewOptions<T> = T & {
   isLoaded: boolean;
 };
-
-export type SubToAtomArgs<T, R> = [
-  /**
-   * Atom to subscribe.
-   */
-  atom: Atom<T>,
-  /**
-   * Function to execute when the atom state changes.
-   */
-  callback: (value: T) => R,
-  /**
-   * Subscription options.
-   */
-  options?: {
-    /**
-     * Execute the callback when the atom mounts.
-     */
-    callImmediately?: boolean;
-    /**
-     * Execute thec callback only once and unsubscribe.
-
-     * If a function is provided, it will be called with the result of the
-     * callback as an argument. The callback will only be executed once the
-     * result of this function is `true`.
-     */
-    once?: boolean | ((res: R) => boolean | void);
-  },
-];
 
 export abstract class WebGLView<T extends object = object> extends Group {
   public namespace: string;
