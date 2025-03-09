@@ -12,7 +12,7 @@ import { type State, WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
 import { FirefliesMaterial } from './FirefliesMaterial';
-import { fireflyColorAtom, fireflySizeAtom } from './PortalState';
+import { fireflyColorAtom, fireflySizeAtom } from './State';
 
 export class Fireflies extends WebGLView {
   private geometry: BufferGeometry;
@@ -64,8 +64,8 @@ export class Fireflies extends WebGLView {
   };
 
   private setupMaterial = () => {
-    const uSize = this._state.store.get(fireflySizeAtom);
-    const uColor = this._state.store.get(fireflyColorAtom);
+    const uSize = fireflySizeAtom.get();
+    const uColor = fireflyColorAtom.get();
 
     this.material = new FirefliesMaterial({
       blending: AdditiveBlending,
@@ -92,8 +92,8 @@ export class Fireflies extends WebGLView {
     this.subToAtom(this._vpAtom, this.updateResolution, {
       callImmediately: true,
     });
-    this.subToAtom(fireflyColorAtom, this.updateColor);
-    this.subToAtom(fireflySizeAtom, this.updateSize, {
+    this.subToAtom(fireflyColorAtom.atom, this.updateColor);
+    this.subToAtom(fireflySizeAtom.atom, this.updateSize, {
       callImmediately: true,
     });
   };

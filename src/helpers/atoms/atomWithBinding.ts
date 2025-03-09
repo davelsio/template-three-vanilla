@@ -21,7 +21,7 @@ type AtomWithTweakOptions = BindingParams & {
 const locationAtom = atomWithLocation();
 
 const tweakpaneAtom = atom((get) => {
-  const pane = new Pane({ title: 'Debug Panel' });
+  const pane = new Pane({ title: 'Debug Panel', expanded: false });
   const location = get(locationAtom);
   pane.hidden = location.pathname !== '/debug';
   return pane;
@@ -93,6 +93,12 @@ export function atomWithBinding(store: Store, folderParams?: FolderParams) {
       };
     };
 
-    return bindingAtom;
+    return {
+      atom: bindingAtom,
+      get: () => store.get(bindingAtom),
+      sub: (listener: (value: T) => void) => {
+        return store.sub(bindingAtom, () => listener(store.get(bindingAtom)));
+      },
+    };
   };
 }

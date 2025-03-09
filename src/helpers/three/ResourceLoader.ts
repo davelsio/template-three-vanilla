@@ -22,9 +22,13 @@ export type ResourceLoaderParams<
   DataTextures extends DataTextureAssets,
   Textures extends TextureAssets,
   GLTFs extends GLTFAssets,
-> = ConstructorParameters<
-  typeof ResourceLoader<CubeTextures, DataTextures, Textures, GLTFs>
->;
+> = {
+  cubeTextures?: CubeTextures;
+  dataTextures?: DataTextures;
+  textures?: Textures;
+  gltfs?: GLTFs;
+  options?: InitOptions;
+};
 
 export enum AssetType {
   CubeTexture = 'cubeTexture',
@@ -52,13 +56,9 @@ export class ResourceLoader<
   private _textureLoader: TextureLoader;
   private _gltfLoader: GLTFLoader;
 
-  public constructor(args: {
-    cubeTextures?: CubeTextures;
-    dataTextures?: DataTextures;
-    textures?: Textures;
-    gltfs?: GLTFs;
-    options?: InitOptions;
-  }) {
+  public constructor(
+    args: ResourceLoaderParams<CubeTextures, DataTextures, Textures, GLTFs>
+  ) {
     this._assets = {
       cubeTextures: args.cubeTextures ?? {},
       dataTextures: args.dataTextures ?? {},

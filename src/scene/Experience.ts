@@ -10,7 +10,7 @@ import { type State, WebGLView } from '@helpers/three';
 import { Fireflies } from './Fireflies';
 import { Loading } from './Loading';
 import { Portal } from './Portal';
-import { backgroundColorAtom } from './PortalState';
+import { backgroundColorAtom } from './State';
 
 export class PortalScene extends WebGLView {
   private portal: Portal;
@@ -55,9 +55,7 @@ export class PortalScene extends WebGLView {
     this._renderer.toneMapping = ACESFilmicToneMapping;
     this._renderer.toneMappingExposure = 1;
     this._renderer.outputColorSpace = SRGBColorSpace;
-    this._scene.background = new Color(
-      this._state.store.get(backgroundColorAtom)
-    );
+    this._scene.background = new Color(backgroundColorAtom.get());
   };
 
   /* SETUP SCENE */
@@ -71,7 +69,7 @@ export class PortalScene extends WebGLView {
   /* SUBSCRIPTIONS */
 
   private setupSubscriptions = () => {
-    this.subToAtom(backgroundColorAtom, this.updateBackgroundColor);
+    this.subToAtom(backgroundColorAtom.atom, this.updateBackgroundColor);
   };
 
   private updateBackgroundColor = (color: string) => {

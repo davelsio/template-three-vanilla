@@ -6,20 +6,17 @@ export const portalState = createThreeState();
 /**
  * Assets
  */
-export const { gltfsFamily, texturesFamily } = atomWithAssets(
-  portalState.store,
-  {
-    textures: {
-      portalBakedTexture: 'baked.jpg',
-    },
-    gltfs: {
-      portalModel: 'portal.glb',
-    },
-    options: {
-      draco: true,
-    },
-  }
-);
+export const assets = atomWithAssets(portalState.store, {
+  textures: {
+    portalBakedTexture: 'baked.jpg',
+  },
+  gltfs: {
+    portalModel: 'portal.glb',
+  },
+  options: {
+    draco: true,
+  },
+});
 
 /**
  * Debug Bindings

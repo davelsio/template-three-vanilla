@@ -32,9 +32,9 @@ export function atomWithAssets<
   GLTFs extends GLTFAssets,
 >(
   store: Store,
-  ...args: ResourceLoaderParams<CubeTextures, DataTextures, Textures, GLTFs>
+  assets: ResourceLoaderParams<CubeTextures, DataTextures, Textures, GLTFs>
 ) {
-  const resourceLoader = new ResourceLoader(...args);
+  const resourceLoader = new ResourceLoader(assets);
 
   type Cache = {
     cubeTexture: Record<keyof CubeTextures, CubeTexture>;
@@ -51,7 +51,7 @@ export function atomWithAssets<
   } as Cache);
 
   cacheAtom.onMount = () => {
-    const _assets = args[0];
+    const _assets = assets;
     let count = 0;
 
     const cubeTextures = _assets?.cubeTextures;
@@ -76,6 +76,8 @@ export function atomWithAssets<
 
     store.set(totalAssetsAtom, count);
   };
+
+  /* CUBE TEXTURES */
 
   const cubeTexturesFamily = atomFamily((name: keyof CubeTextures) => {
     const cubeTexturesAtom = atom(
@@ -113,6 +115,28 @@ export function atomWithAssets<
     return cubeTexturesAtom;
   });
 
+  const cubeTextures = {
+    get atom() {
+      return cubeTexturesFamily;
+    },
+
+    async get(name: keyof CubeTextures) {
+      const textureAtom = cubeTexturesFamily(name);
+      const texture = await store.get(textureAtom);
+      return texture;
+    },
+
+    sub(name: keyof CubeTextures, listener: (value: CubeTexture) => void) {
+      const textureAtom = cubeTexturesFamily(name);
+      return store.sub(textureAtom, async () => {
+        const texture = await store.get(textureAtom);
+        listener(texture);
+      });
+    },
+  };
+
+  /* TEXTURES */
+
   const texturesFamily = atomFamily((name: keyof Textures) => {
     const texturesAtom = atom(
       async (get) => {
@@ -148,6 +172,28 @@ export function atomWithAssets<
 
     return texturesAtom;
   });
+
+  const textures = {
+    get atom() {
+      return texturesFamily;
+    },
+
+    async get(name: keyof Textures) {
+      const textureAtom = texturesFamily(name);
+      const texture = await store.get(textureAtom);
+      return texture;
+    },
+
+    sub(name: keyof Textures, listener: (value: Texture) => void) {
+      const textureAtom = texturesFamily(name);
+      return store.sub(textureAtom, async () => {
+        const texture = await store.get(textureAtom);
+        listener(texture);
+      });
+    },
+  };
+
+  /* GLTFs */
 
   const gltfsFamily = atomFamily((name: keyof GLTFs) => {
     const gltfsAtom = atom(
@@ -186,5 +232,29 @@ export function atomWithAssets<
     return gltfsAtom;
   });
 
-  return { gltfsFamily, texturesFamily, cubeTexturesFamily };
+  const gltfs = {
+    get atom() {
+      return gltfsFamily;
+    },
+
+    async get(name: keyof GLTFs) {
+      const gltfAtom = gltfsFamily(name);
+      const gltf = await store.get(gltfAtom);
+      return gltf;
+    },
+
+    sub(name: keyof GLTFs, listener: (value: GLTF) => void) {
+      const gltfAtom = gltfsFamily(name);
+      return store.sub(gltfAtom, async () => {
+        const gltf = await store.get(gltfAtom);
+        listener(gltf);
+      });
+    },
+  };
+
+  return {
+    cubeTextures,
+    textures,
+    gltfs,
+  };
 }

@@ -102,14 +102,11 @@ export class Loading extends WebGLView<LoadingProps> {
     this.subToAtom(viewsProgressAtom, this.updateProgress);
   };
 
-  public updateProgress = (progress: ViewsProgressAtomValue) => {
-    gsap
-      .to(this._barMaterial.uniforms.uProgress, {
-        duration: this.props.loadingDuration,
-        value: progress,
-      })
-      .then(() => {
-        void this.dispose();
-      });
+  public updateProgress = async (progress: ViewsProgressAtomValue) => {
+    await gsap.to(this._barMaterial.uniforms.uProgress, {
+      duration: this.props.loadingDuration,
+      value: progress,
+    });
+    void this.dispose();
   };
 }

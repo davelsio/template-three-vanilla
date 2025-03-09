@@ -53,7 +53,6 @@ export function atomWithThree(selector: string, store: Store) {
   // Three
   const root = store.get(vpAtom).root;
   const threeAtom = atom({
-    root,
     canvas,
     camera,
     controls,
@@ -65,9 +64,7 @@ export function atomWithThree(selector: string, store: Store) {
   threeAtom.onMount = () => {
     root.appendChild(canvas);
 
-    const unsubVp = store.sub(vpAtom, () => {
-      updateSizes();
-    });
+    const unsubVp = store.sub(vpAtom, updateSizes);
     updateSizes();
 
     const unsubTime = store.sub(timeAtom, () => {
@@ -84,5 +81,51 @@ export function atomWithThree(selector: string, store: Store) {
     };
   };
 
-  return [threeAtom, vpAtom, timeAtom] as const;
+  const three = {
+    get atom() {
+      return threeAtom;
+    },
+    get camera() {
+      return store.get(threeAtom).camera;
+    },
+    get controls() {
+      return store.get(threeAtom).controls;
+    },
+    get renderer() {
+      return store.get(threeAtom).renderer;
+    },
+    get scene() {
+      return store.get(threeAtom).scene;
+    },
+  };
+
+  const viewport = {
+    get atom() {
+      return vpAtom;
+    },
+    get width() {
+      return store.get(vpAtom).width;
+    },
+    get height() {
+      return store.get(vpAtom).height;
+    },
+    get aspectRatio() {
+      return store.get(vpAtom).aspectRatio;
+    },
+    get pixelRatio() {
+      return store.get(vpAtom).pixelRatio;
+    },
+  };
+
+  const time = {
+    get atom() {
+      return timeAtom;
+    },
+  };
+
+  return {
+    three,
+    viewport,
+    time,
+  };
 }

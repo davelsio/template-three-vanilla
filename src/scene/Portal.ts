@@ -15,14 +15,13 @@ import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 
 import { PortalMaterial } from './PortalMaterial';
 import {
-  gltfsFamily,
+  assets,
   portalColorInnerAtom,
   portalColorOuterAtom,
   portalDisplacementAtom,
   portalLightColorAtom,
   portalStrengthAtom,
-  texturesFamily,
-} from './PortalState';
+} from './State';
 
 interface ModelMeshes {
   baked: Mesh;
@@ -62,13 +61,10 @@ export class Portal extends WebGLView {
   /* SETUP SCENE */
 
   private setupAssets = async () => {
-    this.texture = await this._state.store.get(
-      texturesFamily('portalBakedTexture')
-    );
+    this.texture = await assets.textures.get('portalBakedTexture');
     this.texture.flipY = false;
     this.texture.colorSpace = SRGBColorSpace;
-    // const gltf = await ResourceLoader.loadGltfModel('portalModel');
-    const gltf = await this._state.store.get(gltfsFamily('portalModel'));
+    const gltf = await assets.gltfs.get('portalModel');
     this.model = gltf.scene;
   };
 
@@ -78,13 +74,13 @@ export class Portal extends WebGLView {
     });
 
     const poleLightMaterial = new MeshBasicMaterial({
-      color: new Color(this._state.store.get(portalLightColorAtom)),
+      color: new Color(portalLightColorAtom.get()),
     });
 
-    const uColorEnd = new Color(this._state.store.get(portalColorOuterAtom));
-    const uColorStart = new Color(this._state.store.get(portalColorInnerAtom));
-    const uOffsetDisplacementUv = this._state.store.get(portalDisplacementAtom);
-    const uOffsetStrengthUv = this._state.store.get(portalDisplacementAtom);
+    const uColorEnd = new Color(portalColorOuterAtom.get());
+    const uColorStart = new Color(portalColorInnerAtom.get());
+    const uOffsetDisplacementUv = portalDisplacementAtom.get();
+    const uOffsetStrengthUv = portalDisplacementAtom.get();
     const portalLightMaterial = new PortalMaterial({
       vertexShader: portalVertexShader,
       fragmentShader: portalFragmentShader,
@@ -128,11 +124,11 @@ export class Portal extends WebGLView {
   };
 
   private setupSubscriptions = () => {
-    this.subToAtom(portalColorInnerAtom, this.updatePortalStartColor);
-    this.subToAtom(portalColorOuterAtom, this.updatePortalEndColor);
-    this.subToAtom(portalDisplacementAtom, this.updatePortalDisplacement);
-    this.subToAtom(portalStrengthAtom, this.updatePortalStrength);
-    this.subToAtom(portalLightColorAtom, this.updatePoleLightColor);
+    this.subToAtom(portalColorInnerAtom.atom, this.updatePortalStartColor);
+    this.subToAtom(portalColorOuterAtom.atom, this.updatePortalEndColor);
+    this.subToAtom(portalDisplacementAtom.atom, this.updatePortalDisplacement);
+    this.subToAtom(portalStrengthAtom.atom, this.updatePortalStrength);
+    this.subToAtom(portalLightColorAtom.atom, this.updatePoleLightColor);
     this.subToAtom(this._timeAtom, this.updateTime);
   };
 
