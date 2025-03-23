@@ -1,13 +1,8 @@
 ## Description
 
-A completely deranged and insolent approach to creating Three.js experiences. This is just for me to run quick experiments.
+A completely deranged approach to creating Three.js experiences. This is just to have some fun.
 
-It leverages `jotai` atoms to create a sort of functional state management. All helpers can be found in the [helpers](./src/helpers) folder, and there is an example experience within the [scene](./src/scene/) folder.
-
-### Features
-
-- Atom-based architecture to manage scene state and assets.
-- Custom [Tweakpane](https://tweakpane.github.io/docs/) bindings as Jotai atoms.
+It leverages `jotai` atoms to create a sort of functional three state management system. All helpers can be found in the [helpers](./src/helpers) folder, and there is an example experience within the [scene](./src/scene/) folder.
 
 ## Usage
 
@@ -30,13 +25,16 @@ export const {
   views,
 } = atomWithThree('#root', store);
 
-const unmount = three.mount(); // <- This starts the whole thing
-unmount(); // <- This unmounts the experience
+// Starts the whole thing
+const unmount = three.mount();
+
+// Unmount the experience
+unmount();
 ```
 
 ### Assets
 
-Available either via the [atomWithAssets](./src/helpers/atoms/atomWithAssets.ts) or the [ResourceLoader](src/loaders/ResourceLoader.ts) class. Everything is type-safe.
+Available either via the [atomWithAssets](./src/helpers/atoms/atomWithAssets.ts) or the [ResourceLoader](src/loaders/ResourceLoader.ts) class. Everything has type inference.
 
 ```ts
 // Make sure the assets exist in the `public/` folder.
@@ -62,11 +60,11 @@ const model = await assets.gltfs.get('portalModel');
 > [!NOTE]
 > By default, the debug UI only shows up in the `/debug` route.
 
-Atom-based solution powered by [tweakpane](https://github.com/cocopon/tweakpane). Debug tweaks are created using the [`atomWithBinding`](./src/helpers/atoms/atomWithBinding.ts) atom.
+Debug tweaks solution powered by [jotai](https://jotai.org/) and [tweakpane](https://github.com/cocopon/tweakpane).
 
-[Bindings](https://tweakpane.github.io/docs/input-bindings/) can be added directly to the root pane or within folders [folders](https://tweakpane.github.io/docs/ui-components/#folder). It uses the same APIs described in the official tweakpane docs.
 
-I've included an option to automatically listen to external updates, similarly to [lil-gui's listen method](https://lil-gui.georgealways.com/#Controller#listen), and another to define the pane visibility per route.
+
+[Bindings](https://tweakpane.github.io/docs/input-bindings/) are created using the [`atomWithBinding`](./src/helpers/atoms/atomWithBinding.ts) atom. They can be added directly to the root pane or within folders [folders](https://tweakpane.github.io/docs/ui-components/#folder). The API is the same as in the official tweakpane docs, but there is an extra option to automatically listen to external updates, similarly to [lil-gui's listen method](https://lil-gui.georgealways.com/#Controller#listen).
 
 ```ts
 import { atomWithBinding } from '@atoms/atomWithBinding';
@@ -78,6 +76,7 @@ export const displacement = folderBinding('Displacement', 5.0, {
   min: 0,
   max: 50,
   step: 0.1,
+  listen: true,
 });
 
 displacement.get(); // => current value
