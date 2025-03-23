@@ -58,13 +58,13 @@ const model = await assets.gltfs.get('portalModel');
 ### Debug Panels
 
 > [!NOTE]
-> By default, the debug UI only shows up in the `/debug` route.
+> By default, the tweakpane UI is hidden unless when a query string `?debug=true` is passed.
 
 Debug tweaks solution powered by [jotai](https://jotai.org/) and [tweakpane](https://github.com/cocopon/tweakpane).
 
-
-
-[Bindings](https://tweakpane.github.io/docs/input-bindings/) are created using the [`atomWithBinding`](./src/helpers/atoms/atomWithBinding.ts) atom. They can be added directly to the root pane or within folders [folders](https://tweakpane.github.io/docs/ui-components/#folder). The API is the same as in the official tweakpane docs, but there is an extra option to automatically listen to external updates, similarly to [lil-gui's listen method](https://lil-gui.georgealways.com/#Controller#listen).
+- [Bindings](https://tweakpane.github.io/docs/input-bindings/) are created using the [`atomWithBinding`](./src/helpers/atoms/atomWithBinding.ts) atom.
+- They can be added directly to the root pane or within [folders](https://tweakpane.github.io/docs/ui-components/#folder).
+- The API is the same as in the official tweakpane docs, but there is an extra option to automatically listen to external updates, similar to [lil-gui's listen method](https://lil-gui.georgealways.com/#Controller#listen).
 
 ```ts
 import { atomWithBinding } from '@atoms/atomWithBinding';

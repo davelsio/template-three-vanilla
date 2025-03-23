@@ -15,11 +15,6 @@ type AtomWithTweakOptions = BindingParams & {
    * Automatically refresh the tweakpane UI when the atom changes.
    */
   listen?: boolean;
-  /**
-   * Routes in which the tweak should be visible.
-   * Defaults to all routes.
-   */
-  paths?: string[];
 };
 
 const locationAtom = atomWithLocation();
@@ -27,7 +22,7 @@ const locationAtom = atomWithLocation();
 const tweakpaneAtom = atom((get) => {
   const pane = new Pane({ title: 'Debug Panel', expanded: false });
   const location = get(locationAtom);
-  pane.hidden = location.pathname !== '/debug';
+  pane.hidden = location.searchParams?.get('debug') !== 'true';
   return pane;
 });
 
