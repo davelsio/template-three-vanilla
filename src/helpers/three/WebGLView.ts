@@ -42,7 +42,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
     this._viewport = viewport;
     this._views = views;
 
-    state.three.mount();
+    state.mount();
   }
 
   /**

@@ -18,15 +18,15 @@ export const store = createStore();
 export const {
   camera,
   controls,
+  mount,
   renderer,
   scene,
-  three,
   viewport,
   views,
 } = atomWithThree('#root', store);
 
 // Starts the whole thing
-const unmount = three.mount();
+const unmount = mount();
 
 // Unmount the experience
 unmount();
@@ -90,7 +90,7 @@ displacement._atom; // => the actual jotai atom
 
 Just create geometries, materials, and meshes normally then add them to the scene. If you want, there is a [WebGLView](src/helpers/three/WebGLView.ts) class that can be extended to create a base view with some helpful methods. See an example in the [Experience](src/scene/Experience.ts) file.
 
-This class extends the Three.js `Group` interface and knows how to add and remove itself from the experience. It also takes care of loading flags and updating the state.
+This class extends the Three.js `Group` interface and knows how to mount the experience and add/remove itself from the scene. It also takes care of loading flags and updating the state.
 
 ### Styles
 
