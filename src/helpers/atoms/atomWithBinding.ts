@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 import { atomWithLocation } from 'jotai-location';
 import { FolderApi, Pane } from 'tweakpane';
+import { PaneConfig } from 'tweakpane/dist/types/pane/pane-config';
 import type { BindingParams, FolderParams } from '@tweakpane/core';
 
 import {
@@ -9,6 +10,14 @@ import {
   subscribe,
   type SubscribeToAtomArgs,
 } from '@helpers/jotai';
+
+interface PaneOptions extends Pick<PaneConfig, 'expanded' | 'title'> {
+  type: 'root';
+}
+
+interface FolderOptions extends FolderParams {
+  type?: 'folder';
+}
 
 type AtomWithTweakOptions = BindingParams & {
   /**
@@ -39,9 +48,12 @@ const tweakpaneFolderFamily = atomFamily(
  * Atom factory to create atoms attached to a tweakpane binding. If no folder
  * params are provided, the atom will be attached to the tweakpane root blade.
  * @param store Jotai store
- * @param folderParams tweakpane folder params
+ * @param params tweakpane folder params
  */
-export function atomWithBinding(store: Store, folderParams?: FolderParams) {
+export function atomWithBinding(
+  store: Store,
+  params?: PaneOptions | FolderOptions
+) {
   return <T>(label: string, value: T, options?: AtomWithTweakOptions) => {
     const prevAtom = atom(value);
     const currAtom = atom(value);
@@ -58,16 +70,22 @@ export function atomWithBinding(store: Store, folderParams?: FolderParams) {
     bindingAtom.onMount = () => {
       const { get, set, sub } = store;
 
-      const { listen, ...params } = options ?? {};
+      const { listen, ...bindingOptions } = options ?? {};
 
-      const folder = folderParams && tweakpaneFolderFamily(folderParams);
+      const folder =
+        params && params.type !== 'root' && tweakpaneFolderFamily(params);
       const pane = folder ? get(folder) : get(tweakpaneAtom);
+
+      if (params?.type === 'root') {
+        pane.title = params.title ?? pane.title;
+        pane.expanded = params.expanded ?? pane.expanded;
+      }
 
       const key = bindingAtom.toString();
       const obj = { [key]: value };
       const binding = pane.addBinding(obj, key, {
         label,
-        ...params,
+        ...bindingOptions,
       });
       binding.on('change', ({ value }) => {
         set(bindingAtom, value);
@@ -85,8 +103,8 @@ export function atomWithBinding(store: Store, folderParams?: FolderParams) {
         if (pane.children.length === 0) {
           const rootPane = get(tweakpaneAtom);
           rootPane.remove(pane);
-          if (folderParams) {
-            tweakpaneFolderFamily.remove(folderParams);
+          if (params?.type === 'folder') {
+            tweakpaneFolderFamily.remove(params);
           }
         }
       };
