@@ -1,8 +1,7 @@
 import { atom } from 'jotai';
 
-import { WebGLView } from '@helpers/three';
-
 import { Store, subscribe, type SubscribeToAtomArgs } from '../jotai';
+import { WebGLView } from '../three';
 
 export type ViewsAtomValue = Array<{ name: string; loaded?: boolean }>;
 export type ViewsAtom = ReturnType<typeof atomWithViews>;

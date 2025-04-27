@@ -1,5 +1,4 @@
-import { Atom, atom } from 'jotai';
-import { createStore } from 'jotai';
+import { Atom, atom, createStore } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 
 export type Store = ReturnType<typeof createStore>;

@@ -10,7 +10,7 @@ import {
   ResourceLoader,
   type ResourceLoaderParams,
   type TextureAssets,
-} from '@helpers/three';
+} from '../three';
 
 import { Store } from '../jotai';
 

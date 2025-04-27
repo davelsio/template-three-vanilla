@@ -15,7 +15,7 @@ import {
   Vector4,
 } from 'three';
 
-import { InferConstructableType } from '@helpers/types/InferConstructableType';
+import { InferConstructableType } from '../types/InferConstructableType';
 
 /**
  * Valid uniform value types.

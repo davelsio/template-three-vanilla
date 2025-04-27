@@ -1,7 +1,7 @@
 import { CubeTextureLoader, LoadingManager, TextureLoader } from 'three';
 import { DRACOLoader, GLTFLoader, RGBELoader } from 'three-stdlib';
 
-import { TypedObject } from '@helpers/utils';
+import { TypedObject } from '../utils';
 
 type LoaderOptions = {
   onProgress?: (event: ProgressEvent) => void;
