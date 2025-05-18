@@ -10,11 +10,10 @@ import {
 
 import type { ThreeState } from '@helpers/atoms';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
-import { WebGLView } from '@helpers/three';
+import { CustomShaderMaterial, WebGLView } from '@helpers/three';
 import { TypedObject } from '@helpers/utils';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 
-import { PortalMaterial } from './PortalMaterial';
 import {
   assets,
   portalColorInnerAtom,
@@ -23,6 +22,14 @@ import {
   portalLightColorAtom,
   portalStrengthAtom,
 } from './State';
+
+type PortalUniforms = {
+  uColorEnd: Color;
+  uColorStart: Color;
+  uOffsetDisplacementUv: number;
+  uOffsetStrengthUv: number;
+  uTime: number;
+};
 
 interface ModelMeshes {
   baked: Mesh;
@@ -34,7 +41,7 @@ interface ModelMeshes {
 interface ModelMaterials {
   baked: MeshBasicMaterial;
   poleLight: MeshBasicMaterial;
-  portalLight: PortalMaterial;
+  portalLight: CustomShaderMaterial<PortalUniforms>;
 }
 
 export class Portal extends WebGLView {
@@ -82,7 +89,7 @@ export class Portal extends WebGLView {
     const uColorStart = new Color(portalColorInnerAtom.get());
     const uOffsetDisplacementUv = portalDisplacementAtom.get();
     const uOffsetStrengthUv = portalDisplacementAtom.get();
-    const portalLightMaterial = new PortalMaterial({
+    const portalLightMaterial = new CustomShaderMaterial<PortalUniforms>({
       vertexShader: portalVertexShader,
       fragmentShader: portalFragmentShader,
       uniforms: {
@@ -126,12 +133,14 @@ export class Portal extends WebGLView {
 
   private setupSubscriptions = () => {
     gsap.ticker.add((time) => {
-      this.materials.portalLight.uTime = time;
+      this.materials.portalLight.uniforms.uTime.value = time;
     });
 
     portalColorInnerAtom.sub(
       (value: string) => {
-        this.materials.portalLight.uColorStart = new Color(value);
+        this.materials.portalLight.uniforms.uColorStart.value = new Color(
+          value
+        );
       },
       {
         namespace: this.namespace,
@@ -139,7 +148,7 @@ export class Portal extends WebGLView {
     );
     portalColorOuterAtom.sub(
       (value: string) => {
-        this.materials.portalLight.uColorEnd = new Color(value);
+        this.materials.portalLight.uniforms.uColorEnd.value = new Color(value);
       },
       {
         namespace: this.namespace,
@@ -147,7 +156,7 @@ export class Portal extends WebGLView {
     );
     portalDisplacementAtom.sub(
       (value: number) => {
-        this.materials.portalLight.uOffsetDisplacementUv = value;
+        this.materials.portalLight.uniforms.uOffsetDisplacementUv.value = value;
       },
       {
         namespace: this.namespace,
@@ -163,7 +172,7 @@ export class Portal extends WebGLView {
     );
     portalStrengthAtom.sub(
       (value: number) => {
-        this.materials.portalLight.uOffsetStrengthUv = value;
+        this.materials.portalLight.uniforms.uOffsetStrengthUv.value = value;
       },
       {
         namespace: this.namespace,

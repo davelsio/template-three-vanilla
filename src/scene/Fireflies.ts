@@ -9,15 +9,21 @@ import {
 } from 'three';
 
 import type { ThreeState } from '@helpers/atoms';
-import { WebGLView } from '@helpers/three';
+import { CustomShaderMaterial, WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
-import { FirefliesMaterial } from './FirefliesMaterial';
 import { fireflyColorAtom, fireflySizeAtom } from './State';
+
+type FirefliesUniforms = {
+  uTime: number;
+  uColor: Color;
+  uResolution: Vector2;
+  uSize: number;
+};
 
 export class Fireflies extends WebGLView {
   private geometry: BufferGeometry;
-  private material: FirefliesMaterial;
+  private material: CustomShaderMaterial<FirefliesUniforms>;
   private fireflies: Points;
 
   constructor(state: ThreeState) {
@@ -68,7 +74,7 @@ export class Fireflies extends WebGLView {
     const uSize = fireflySizeAtom.get();
     const uColor = fireflyColorAtom.get();
 
-    this.material = new FirefliesMaterial({
+    this.material = new CustomShaderMaterial<FirefliesUniforms>({
       blending: AdditiveBlending,
       depthWrite: false,
       transparent: true,
@@ -90,7 +96,7 @@ export class Fireflies extends WebGLView {
 
   private setupSubscriptions = ({ viewport }: ThreeState) => {
     gsap.ticker.add((time) => {
-      this.material.uTime = time;
+      this.material.uniforms.uTime.value = time;
     });
 
     /**
@@ -101,7 +107,7 @@ export class Fireflies extends WebGLView {
       (state) => {
         const width = state.width * state.pixelRatio;
         const height = state.height * state.pixelRatio;
-        this.material.uResolution.set(width, height);
+        this.material.uniforms.uResolution.value.set(width, height);
       },
       {
         callImmediately: true,
@@ -109,14 +115,24 @@ export class Fireflies extends WebGLView {
       }
     );
 
-    fireflyColorAtom.sub((color) => (this.material.uColor = new Color(color)), {
-      callImmediately: true,
-      namespace: this.namespace,
-    });
+    fireflyColorAtom.sub(
+      (color) => {
+        this.material.uniforms.uColor.value = new Color(color);
+      },
+      {
+        callImmediately: true,
+        namespace: this.namespace,
+      }
+    );
 
-    fireflySizeAtom.sub((size) => (this.material.uSize = size), {
-      callImmediately: true,
-      namespace: this.namespace,
-    });
+    fireflySizeAtom.sub(
+      (size) => {
+        this.material.uniforms.uSize.value = size;
+      },
+      {
+        callImmediately: true,
+        namespace: this.namespace,
+      }
+    );
   };
 }

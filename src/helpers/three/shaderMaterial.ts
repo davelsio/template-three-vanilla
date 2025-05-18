@@ -1,21 +1,21 @@
 import {
-  Color,
-  CubeTexture,
-  IUniform,
-  Matrix3,
-  Matrix4,
-  Quaternion,
-  ShaderMaterial as ThreeShaderMaterial,
-  ShaderMaterialParameters,
-  Texture,
+  type Color,
+  type CubeTexture,
+  type IUniform,
+  type Matrix3,
+  type Matrix4,
+  type Quaternion,
+  ShaderMaterial,
+  type ShaderMaterialParameters,
+  type Texture,
   Uniform,
   UniformsUtils,
-  Vector2,
-  Vector3,
-  Vector4,
+  type Vector2,
+  type Vector3,
+  type Vector4,
 } from 'three';
 
-import { InferConstructableType } from '../types/InferConstructableType';
+import { TypedObject } from '../utils';
 
 /**
  * Valid uniform value types.
@@ -54,39 +54,25 @@ type ShaderMaterialParams<T> = Omit<ShaderMaterialParameters, 'uniforms'> & {
   uniforms?: T;
 };
 
-/**
- * Helper function to infer the custom shader material class type.
- */
-export type ShaderMaterialType<T> = InferConstructableType<T>;
+export class CustomShaderMaterial<
+  T extends UniformsInput,
+> extends ShaderMaterial {
+  declare public uniforms: { [uniform in keyof T]: IUniform<T[uniform]> };
 
-export function shaderMaterial<T extends UniformsInput>() {
-  class CustomShaderMaterial extends ThreeShaderMaterial {
-    constructor({
-      uniforms,
-      ...args
-    }: ShaderMaterialParams<T> | undefined = {}) {
-      const entries = Object.entries(uniforms ?? {});
+  constructor({
+    uniforms: uniformsInput,
+    ...args
+  }: ShaderMaterialParams<T> | undefined = {}) {
+    let uniforms: UniformsObject | undefined = undefined;
 
-      // Create the uniforms object
-      const _uniforms = entries.reduce<UniformsObject>((acc, [name, value]) => {
-        const uniform = UniformsUtils.clone({ [name]: new Uniform(value) });
-        return { ...acc, ...uniform };
-      }, {});
+    if (uniformsInput) {
+      const entries = TypedObject.entries(uniformsInput ?? ({} as T)).map(
+        ([name, value]) => [name, new Uniform(value)]
+      ) as Array<[keyof T, IUniform<T[keyof T]>]>;
 
-      // Initialize the shader material
-      super({ ...args, uniforms: _uniforms });
-
-      // Create uniform accessors
-      entries.forEach(([name]) =>
-        Object.defineProperty(this, name, {
-          get: () => this.uniforms[name].value,
-          set: (value) => (this.uniforms[name].value = value),
-        })
-      );
+      uniforms = UniformsUtils.clone(Object.fromEntries(entries));
     }
+
+    super({ ...args, uniforms });
   }
-  const material = CustomShaderMaterial;
-  return material as unknown as new (
-    args?: ShaderMaterialParams<T>
-  ) => T & CustomShaderMaterial;
 }
