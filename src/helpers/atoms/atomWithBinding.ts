@@ -1,9 +1,9 @@
+import type { BindingParams, FolderParams } from '@tweakpane/core';
 import { atom } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 import { atomWithLocation } from 'jotai-location';
 import { FolderApi, Pane } from 'tweakpane';
 import { PaneConfig } from 'tweakpane/dist/types/pane/pane-config';
-import type { BindingParams, FolderParams } from '@tweakpane/core';
 
 import { type Store, subscribe, type SubscribeToAtomArgs } from '../jotai';
 
