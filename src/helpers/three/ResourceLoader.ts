@@ -1,5 +1,7 @@
 import { CubeTextureLoader, LoadingManager, TextureLoader } from 'three';
-import { DRACOLoader, GLTFLoader, RGBELoader } from 'three-stdlib';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader';
 
 import { TypedObject } from '../utils';
 

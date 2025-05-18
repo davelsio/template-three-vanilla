@@ -1,8 +1,9 @@
 import { atom } from 'jotai';
 import { atomFamily } from 'jotai/utils';
 import type { CubeTexture, DataTexture, Texture } from 'three';
-import type { GLTF } from 'three-stdlib';
+import type { GLTF } from 'three/addons/loaders/GLTFLoader';
 
+import { Store } from '../jotai';
 import {
   type CubeTextureAssets,
   type DataTextureAssets,
@@ -11,8 +12,6 @@ import {
   type ResourceLoaderParams,
   type TextureAssets,
 } from '../three';
-
-import { Store } from '../jotai';
 
 export const loadedAssetsAtom = atom(0);
 export const totalAssetsAtom = atom(0);

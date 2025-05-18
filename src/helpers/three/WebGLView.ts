@@ -1,5 +1,5 @@
 import { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
-import { OrbitControls } from 'three-stdlib';
+import type { OrbitControls } from 'three/addons/controls/OrbitControls';
 
 import type { ThreeState } from '../atoms';
 
@@ -24,16 +24,16 @@ export abstract class WebGLView<T extends object = object> extends Group {
 
   protected constructor(
     namespace: string,
-    state: ThreeState,
+    three: ThreeState,
     props: WebGLViewOptions<T> = {} as WebGLViewOptions<T>
   ) {
     super();
     this.namespace = namespace;
     this.props = Object.assign({ isLoaded: false }, props);
 
-    this._state = state;
+    this._state = three;
 
-    const { camera, controls, renderer, scene, viewport, views } = state;
+    const { camera, controls, renderer, scene, viewport, views } = three;
 
     this._camera = camera;
     this._controls = controls;
@@ -42,7 +42,7 @@ export abstract class WebGLView<T extends object = object> extends Group {
     this._viewport = viewport;
     this._views = views;
 
-    state.mount();
+    three.mount();
   }
 
   /**

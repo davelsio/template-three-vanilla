@@ -22,18 +22,12 @@
     // paths
     "baseUrl": ".",
     "paths": {
-      "@assets/*": ["./src/assets/*"],
-      "@atoms/*": ["./src/atoms/*"],
-      "@errors/*": ["./src/errors/*"],
-      "@geometries/*": ["./src/components/geometries/*"],
+      "three/wgpu": ["./node_modules/@types/three/src/Three.WebGPU.d.ts"],
+      "three/tsl": ["./node_modules/@types/three/src/Three.TSL.d.ts"],
+      "three/addons/*": ["./node_modules/@types/three/examples/jsm/*"],
+      //
       "@helpers/*": ["./src/helpers/*"],
-      "@loaders/*": ["./src/loaders/*"],
-      "@materials/*": ["./src/components/materials/*"],
       "@shaders/*": ["./src/shaders/*"],
-      "@scenes/*": ["./src/scenes/*"],
-      "@state/*": ["./src/state/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@utils/*": ["./src/utils/*"]
     }
   }
 }

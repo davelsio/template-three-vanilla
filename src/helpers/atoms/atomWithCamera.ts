@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { PerspectiveCamera } from 'three';
-import { OrbitControls } from 'three-stdlib';
+import { OrbitControls } from 'three/addons/controls/OrbitControls';
 
 import { Store } from '../jotai';
 
