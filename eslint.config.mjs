@@ -1,10 +1,8 @@
-// @ts-check
-
-import eslintConfigPrettier from 'eslint-config-prettier';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import tseslint from 'typescript-eslint';
 import eslint from '@eslint/js';
 import html from '@html-eslint/eslint-plugin';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   // Global ignores
@@ -21,34 +19,41 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   eslintConfigPrettier,
+  importPlugin.flatConfigs.recommended,
   {
-    plugins: {
-      'simple-import-sort': simpleImportSort,
+    settings: {
+      /**
+       * Typescript support for eslint-import-plugin
+       * https://github.com/import-js/eslint-plugin-import/tree/main?tab=readme-ov-file#typescript
+       * https://github.com/import-js/eslint-plugin-import/tree/main?tab=readme-ov-file#typescript
+       */
+      'import/resolver': {
+        typescript: true,
+        node: true,
+      },
     },
     rules: {
-      // Sort imports
-      'simple-import-sort/exports': 'warn',
-      'simple-import-sort/imports': [
+      /**
+       * Custom import order rules.
+       * https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
+       */
+      'import/order': [
         'warn',
         {
-          groups: [
-            // Module imports
-            ['^[a-z]', '^@'],
-            // Folder aliases
-            ['^@helpers', '^@scenes', '^@shaders'],
-            // Folder imports (starting with `../` or `./`)
-            [
-              '^\\.\\.(?!/?$)',
-              '^\\.\\./?$',
-              '^\\./(?=.*/)(?!/?$)',
-              '^\\.(?!/?$)',
-              '^\\./?$',
-            ],
-            // Style imports
-            ['^.+\\.s?css$'],
-            // Side effect imports
-            ['^\\u0000'],
+          'newlines-between': 'always',
+          groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
+          pathGroups: [
+            {
+              pattern: '@*/**',
+              group: 'parent',
+              position: 'before',
+            },
           ],
+          distinctGroup: true,
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
         },
       ],
 
