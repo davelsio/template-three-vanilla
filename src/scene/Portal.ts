@@ -10,7 +10,7 @@ import {
 
 import type { ThreeState } from '@helpers/atoms';
 import { isThreeMesh } from '@helpers/guards/isThreeMesh';
-import { CustomShaderMaterial, WebGLView } from '@helpers/three';
+import { ShaderMaterial, WebGLView } from '@helpers/three';
 import { TypedObject } from '@helpers/utils';
 import { portalFragmentShader, portalVertexShader } from '@shaders/portal';
 
@@ -41,7 +41,7 @@ interface ModelMeshes {
 interface ModelMaterials {
   baked: MeshBasicMaterial;
   poleLight: MeshBasicMaterial;
-  portalLight: CustomShaderMaterial<PortalUniforms>;
+  portalLight: ShaderMaterial<PortalUniforms>;
 }
 
 export class Portal extends WebGLView {
@@ -89,7 +89,7 @@ export class Portal extends WebGLView {
     const uColorStart = new Color(portalColorInnerAtom.get());
     const uOffsetDisplacementUv = portalDisplacementAtom.get();
     const uOffsetStrengthUv = portalDisplacementAtom.get();
-    const portalLightMaterial = new CustomShaderMaterial<PortalUniforms>({
+    const portalLightMaterial = new ShaderMaterial<PortalUniforms>({
       vertexShader: portalVertexShader,
       fragmentShader: portalFragmentShader,
       uniforms: {

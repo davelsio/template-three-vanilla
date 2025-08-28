@@ -9,7 +9,7 @@ import {
 } from 'three';
 
 import type { ThreeState } from '@helpers/atoms';
-import { CustomShaderMaterial, WebGLView } from '@helpers/three';
+import { ShaderMaterial, WebGLView } from '@helpers/three';
 import { fireflyFragmentShader, fireflyVertexShader } from '@shaders/fireflies';
 
 import { fireflyColorAtom, fireflySizeAtom } from './State';
@@ -23,7 +23,7 @@ type FirefliesUniforms = {
 
 export class Fireflies extends WebGLView {
   private geometry: BufferGeometry;
-  private material: CustomShaderMaterial<FirefliesUniforms>;
+  private material: ShaderMaterial<FirefliesUniforms>;
   private fireflies: Points;
 
   constructor(state: ThreeState) {
@@ -74,7 +74,7 @@ export class Fireflies extends WebGLView {
     const uSize = fireflySizeAtom.get();
     const uColor = fireflyColorAtom.get();
 
-    this.material = new CustomShaderMaterial<FirefliesUniforms>({
+    this.material = new ShaderMaterial<FirefliesUniforms>({
       blending: AdditiveBlending,
       depthWrite: false,
       transparent: true,

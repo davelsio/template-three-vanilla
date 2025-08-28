@@ -1,3 +1,3 @@
 export * from './ResourceLoader';
-export * from './shaderMaterial';
+export * from './ShaderMaterial';
 export * from './WebGLView';
